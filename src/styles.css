@@ -1591,3 +1591,100 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
     opacity: 1;
   }
 }
+
+/* ============================================================
+   Mobile & tablet responsive layout fixes (CSS-only).
+   Desktop (>= 1024px) is completely untouched.
+   ============================================================ */
+
+/* ---- Header & navigation: mobile + tablet (below lg) ---- */
+@media (max-width: 1023px) {
+  /* Hide the desktop pill navigation on mobile/tablet.
+     The existing hamburger button + dropdown take over. */
+  #site-header .relative.mx-auto > div:nth-child(2) {
+    display: none !important;
+  }
+
+  /* Compact header row: brand left, hamburger right */
+  #site-header .relative.mx-auto {
+    min-height: 56px !important;
+    gap: 0.75rem !important;
+    justify-content: space-between !important;
+  }
+
+  #site-header .relative.mx-auto > div:first-child {
+    margin-left: 0 !important;
+  }
+
+  /* Scale the brand logo down proportionally */
+  #site-header a[href="#hero"] {
+    gap: 0.6rem !important;
+  }
+  #site-header a[href="#hero"] > .absolute {
+    width: 40px !important;
+    height: 40px !important;
+    left: -0.5rem !important;
+    top: -0.25rem !important;
+  }
+  #site-header a[href="#hero"] > .absolute span {
+    font-size: 0.42rem !important;
+  }
+  #site-header a[href="#hero"] > div:nth-child(2) {
+    width: 34px !important;
+    height: 34px !important;
+  }
+  #site-header a[href="#hero"] > div:nth-child(2) img {
+    width: 26px !important;
+    height: 26px !important;
+  }
+  #site-header a[href="#hero"] > div:nth-child(3) h1 {
+    font-size: 1.05rem !important;
+  }
+  #site-header a[href="#hero"] > div:nth-child(3) p {
+    font-size: 0.56rem !important;
+  }
+
+  /* Mobile dropdown menu: keep readable width + safe margins */
+  #site-header nav[class*="mt-3"] {
+    max-width: calc(100% - 2.5rem) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+/* ---- Hero content: mobile only ---- */
+@media (max-width: 767px) {
+  /* Prevent horizontal scrolling from any stray wide element */
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Hero heading scales to fit the viewport without shrinking too far */
+  #hero .hero-content h1 {
+    font-size: clamp(2.15rem, 8vw, 2.6rem) !important;
+    line-height: 1.08 !important;
+    margin-top: 1.25rem !important;
+  }
+
+  /* Feature ticks: clean compact spacing, wrap without overlap */
+  #hero .hero-content ul {
+    gap: 0.6rem 1.25rem !important;
+    margin-top: 1.5rem !important;
+  }
+
+  /* Buttons stack full-width with centered content + breathing room */
+  #hero .hero-content div[class*="mt-10"] {
+    gap: 0.75rem !important;
+    margin-top: 2rem !important;
+  }
+  #hero .hero-content div[class*="mt-10"] a {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Trust feature cards: tighter padding so they fit one-per-row */
+  #hero .hero-content > .mt-4.grid > div {
+    padding: 0.75rem 0.25rem !important;
+  }
+}

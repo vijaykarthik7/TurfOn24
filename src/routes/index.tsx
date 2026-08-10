@@ -932,6 +932,11 @@ function Index() {
                   </div>
                 </div>
 
+                <h1 className="mt-6 text-[clamp(2.5rem,1.2rem+4.5vw,4.25rem)] font-black leading-[1.03] tracking-tight text-white">
+                  Book the Entire Turf
+                  <span className="block text-turf">For a Full Day</span>
+                </h1>
+
                 <ul className="mt-7 flex flex-wrap items-center gap-6 text-sm text-foreground/85">
                   <li className="flex items-center gap-2">
                     <Clock className="h-4 w-4 text-turf" /> Morning to Night
