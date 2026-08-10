@@ -1,0 +1,531 @@
+--- a/src/routes/about.tsx
++++ b/src/routes/index.tsx
+@@ -1,44 +1,65 @@
+-import { Clock, Users, Trophy, Sparkles } from "lucide-react";
++import {
++  ArrowRight,
++  CalendarCheck,
++  CalendarDays,
++  Clock,
++  ShieldCheck,
++  Users,
++  BadgeCheck,
++  IndianRupee,
++  Star,
++  Sparkles,
++  Trophy,
++  Droplets,
++  ParkingCircle,
++  Lightbulb,
++} from "lucide-react";
++import { useEffect, useRef, useState } from "react";
++import heroImg from "@/assets/turf-hero.jpg";
++import turf1 from "@/assets/turf-1.jpg";
+-import { PageShell } from "@/components/PageShell";
++import turf3 from "@/assets/turf-3.jpg";
++import { SiteHeader } from "@/components/SiteHeader";
++import { SiteFooter } from "@/components/SiteFooter";
+-export const Route = createFileRoute("/about")({
++export const Route = createFileRoute("/")({
+-      { title: "About TurfOn24 ÔÇö Football, Any Hour of the Night" },
++      { title: "TurfOn24 ÔÇö Book the Entire Turf for a Full Day" },
+-          "TurfOn24 keeps floodlit football grounds open 24 hours a day. Learn how we started, what we stand for and the numbers behind the turf.",
++          "Book an entire football turf for a full day. Morning to night exclusive access for teams and events, with instant booking and guaranteed best price.",
+-      { property: "og:title", content: "About TurfOn24 ÔÇö Football, Any Hour of the Night" },
++      { property: "og:title", content: "TurfOn24 ÔÇö Book the Entire Turf for a Full Day" },
+-        content: "The story behind a city's round-the-clock floodlit football grounds.",
++        content:
++          "Full-day turf booking with exclusive access, instant confirmation and 24/7 availability.",
+-  component: AboutPage,
++  component: Index,
+-const stats = [
+-  { value: "3", label: "Floodlit grounds" },
+-  { value: "400+", label: "Teams hosted" },
+-  { value: "24/7", label: "Hours open" },
+-  { value: "12k+", label: "Matches played" },
++const trustItems = [
++  { icon: BadgeCheck, title: "Verified Turf", sub: "100% Quality Checked" },
++  { icon: CalendarCheck, title: "Instant Booking", sub: "Quick & Hassle-free" },
++  { icon: IndianRupee, title: "Best Price", sub: "Guaranteed" },
++  { icon: Clock, title: "Always Open", sub: "24/7 Access" },
+-const aboutValues = [
++const features = [
+-    icon: Sparkles,
++    icon: Trophy,
+@@ -54,34 +75,499 @@ const aboutValues = [
+-function AboutPage() {
++const gallery = [
++  { src: turf1, alt: "Floodlit five-a-side football turf at night" },
++  { src: turf2, alt: "Rooftop football turf with city skyline behind" },
++  { src: turf3, alt: "Indoor covered football turf arena" },
++];
++const pricing = [
++  {
++    name: "Hourly",
++    price: "Ôé¦700",
++    unit: "/ hour",
++    perks: ["Any single hour", "Up to 14 players", "Floodlights included", "Free parking"],
++  },
++];
++const testimonials = [
++  { name: "Arjun Mehta", role: "Captain, Steel City FC", text: "We booked the full day for our league finals. Lights, pitch, staff ÔÇö everything was spotless." },
++  { name: "Priya Nair", role: "HR, Nexa Labs", text: "Perfect for our company sports day. Booking took two minutes and the price was unbeatable." },
++  { name: "Rohit Das", role: "Weekend regular", text: "Playing at 2 AM sounds crazy until you try it here. Turf is always ready, always lit." },
++];
++function Index() {
++  const [animatedPrice, setAnimatedPrice] = useState(0);
++  const [bookingType, setBookingType] = useState<"hourly" | "extended">("hourly");
++  const [bookingName, setBookingName] = useState("");
++  const [bookingPhone, setBookingPhone] = useState("");
++  const [bookingDate, setBookingDate] = useState("");
++  const [bookingTime, setBookingTime] = useState("18:00");
++  const [bookingPlayers, setBookingPlayers] = useState(1);
++  const [bookingHours, setBookingHours] = useState(1);
++  const pricingRef = useRef<HTMLElement | null>(null);
++  const bookingTotal = bookingType === "hourly" ? 700 * bookingHours : 700 * 18;
++  useEffect(() => {
++    if (!pricingRef.current) return;
++    let frameId: number | null = null;
++    let startTime: number | null = null;
++    const animatePrice = () => {
++      if (frameId !== null) {
++        cancelAnimationFrame(frameId);
++      }
++      startTime = null;
++      const duration = 1200;
++      const step = (timestamp: number) => {
++        if (startTime === null) startTime = timestamp;
++        const progress = Math.min((timestamp - startTime) / duration, 1);
++        setAnimatedPrice(Math.round(700 * progress));
++        if (progress < 1) {
++          frameId = requestAnimationFrame(step);
++        } else {
++          frameId = null;
++        }
++      };
++      frameId = requestAnimationFrame(step);
++    };
++    const observer = new IntersectionObserver(
++      (entries) => {
++        entries.forEach((entry) => {
++          if (entry.isIntersecting) {
++            animatePrice();
++          }
++        });
++      },
++      { threshold: 0.4 }
++    );
++    observer.observe(pricingRef.current);
++    return () => {
++      observer.disconnect();
++      if (frameId !== null) {
++        cancelAnimationFrame(frameId);
++      }
++    };
++  }, []);
+-    <PageShell eyebrow="ABOUT US" title={"Premium Football Experience"} intro="Everything we do is built for the serious game.">
+-      <div
+-        className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-[repeat(2,420px)]"
+-        style={{ gridAutoRows: "240px", justifyContent: "start" }}
+-      >
+-        {aboutValues.map(({ icon: Icon, title, text }) => (
++    <main className="min-h-screen bg-transparent text-foreground relative overflow-hidden">
++      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
++        <div
++          className="absolute inset-0 bg-cover bg-center"
++          style={{
++            backgroundImage: `url(${heroImg})`,
++            backgroundAttachment: "fixed",
++            backgroundSize: "cover",
++            backgroundPosition: "center",
++          }}
++        />
++        <div className="absolute inset-0">
++          <div className="flood-blink absolute right-[10%] top-[14%] h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.85)_0%,rgba(190,255,210,0.25)_35%,transparent_70%)] blur-md" />
++          <div className="flood-blink-slow absolute right-[26%] top-[30%] h-44 w-44 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.7)_0%,rgba(160,255,190,0.2)_40%,transparent_72%)] blur-md" />
++          <div className="field-pulse absolute top-[80%] right-0 h-[40%] w-[70%] bg-[radial-gradient(ellipse_at_70%_40%,rgba(60,235,120,0.35)_0%,transparent_65%)]" />
++          <div className="dot-grid absolute left-0 top-32 h-96 w-40" />
++        </div>
++      </div>
++      {/* Hero */}
++      <div id="hero" className="relative z-10 flex items-center justify-center p-0">
++        <div
++          className="relative w-full overflow-hidden rounded-3xl bg-transparent"
++          style={{
++            aspectRatio: "1500 / 1080",
++            minHeight: 860,
++          }}
++        >
++          <div className="relative z-10 flex flex-col px-6 pb-8 pt-0 sm:px-10">
++            <SiteHeader />
++            <section className="mt-0 flex flex-col items-start gap-10 md:flex-row md:items-start md:pl-16 md:-ml-8 md:w-3/4">
++              <div className="hero-content self-start mt-6 pt-28 lg:pt-32">
++                <div className="relative hidden h-44 w-44 shrink-0 items-center justify-center md:flex">
++                  <div className="absolute inset-0 rounded-full border-2 border-turf/25" />
++                  <div className="absolute inset-0 rounded-full border border-dotted border-turf/40 animate-ringSpin" />
++                  <div className="absolute inset-2 rounded-full border-t-4 border-turf shadow-[0_0_35px_rgba(60,235,120,0.5)]" />
++                  <div className="absolute inset-6 rounded-full border border-dashed border-turf/40" />
++                  <p className="text-5xl font-extrabold tracking-tight">
++                    24<span className="text-turf">/</span>7
++                  </p>
++                </div>
++                <div>
++                  <p className="text-sm font-semibold uppercase tracking-[0.35em] text-turf">
++                    Full-Day Turf Booking
++                  </p>
++                  <div className="mt-3 h-1 w-14 rounded-full bg-turf" />
++                  <h1 className="mt-6 text-5xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
++                    Book the Entire Turf
++                    <br />
++                    <span className="text-turf drop-shadow-[0_0_28px_rgba(60,235,120,0.45)]">
++                      For a Full Day
++                    </span>
++                  </h1>
++                </div>
++                <ul className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-foreground/85">
++                  <li className="flex items-center gap-2">
++                    <Clock className="h-4 w-4 text-turf" /> Morning to Night
++                  </li>
++                  <li className="hidden h-4 w-px bg-border sm:block" />
++                  <li className="flex items-center gap-2">
++                    <ShieldCheck className="h-4 w-4 text-turf" /> Exclusive Access
++                  </li>
++                  <li className="hidden h-4 w-px bg-border sm:block" />
++                  <li className="flex items-center gap-2">
++                    <Users className="h-4 w-4 text-turf" /> For Teams &amp; Events
++                  </li>
++                </ul>
++                <div className="mt-10 flex flex-wrap gap-4">
++                  <a
++                    href="#pricing"
++                    className="inline-flex items-center gap-3 rounded-xl bg-transparent/70 px-7 py-4 font-semibold text-night shadow-lg transition-transform hover:scale-[1.02]"
++                  >
++                    <CalendarDays className="h-5 w-5 text-turf" /> Check Pricing
++                  </a>
++                  <a
++                    href="#contact"
++                    className="inline-flex items-center gap-3 rounded-xl bg-turf px-7 py-4 font-semibold text-night shadow-[0_0_35px_rgba(60,235,120,0.45)] transition-transform hover:scale-[1.02]"
++                  >
++                    Book Now <ArrowRight className="h-5 w-5" />
++                  </a>
++                </div>
++              </div>
++            </section>
++            <section className="mt-10 grid grid-cols-1 gap-0 overflow-hidden rounded-2xl border border-turf/15 bg-white/10 backdrop-blur-2xl sm:grid-cols-2 lg:grid-cols-4 md:absolute md:left-8 md:right-8 md:bottom-[-16rem] md:z-30 items-stretch">
++              {trustItems.map(({ icon: Icon, title, sub }) => (
++                <div
++                  key={title}
++                  className="flex h-full items-center gap-4 border-turf/10 bg-white/10 backdrop-blur-2xl px-8 py-8 lg:border-r lg:last:border-r-0 transition-transform duration-300 hover:-translate-y-1"
++                >
++                  <Icon className="h-9 w-9 shrink-0 text-turf drop-shadow-[0_0_14px_rgba(60,235,120,0.5)]" />
++                  <div>
++                    <p className="text-lg font-bold">{title}</p>
++                    <p className="text-sm text-muted-foreground">{sub}</p>
++                  </div>
++                </div>
++              ))}
++            </section>
++          </div>
++        </div>
++      </div>
++      {/* About */}
++      <section id="about" className="mx-auto max-w-6xl px-6 py-24">
++        <p className="text-sm font-semibold uppercase tracking-[0.35em] text-turf">ABOUT US</p>
++        <h2 className="mt-4 max-w-2xl text-4xl font-extrabold tracking-tight sm:text-5xl">
++          Premium Football Experience
++        </h2>
++        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
++          {features.map(({ icon: Icon, title, text }) => (
++            <div
++              key={title}
++              className="flex h-full flex-col rounded-2xl border border-turf/15 bg-white/10 backdrop-blur-2xl p-7 transition-colors hover:border-turf/40"
++            >
++              <Icon className="h-8 w-8 text-turf drop-shadow-[0_0_14px_rgba(60,235,120,0.45)]" />
++              <p className="mt-5 text-xl font-bold">{title}</p>
++              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{text}</p>
++            </div>
++          ))}
++        </div>
++      </section>
++      {/* Features */}
++      <section id="features" className="mx-auto max-w-6xl px-6 pb-24">
++        <p className="text-sm font-semibold uppercase tracking-[0.35em] text-turf">Why TurfOn24</p>
++        <div className="mt-4 h-1 w-14 rounded-full bg-turf" />
++        <h2 className="mt-6 max-w-3xl text-4xl font-extrabold tracking-tight sm:text-5xl">
++          Everything a serious game needs
++        </h2>
++        <p className="mt-6 max-w-2xl text-muted-foreground">
++          Features built for play and performance.
++        </p>
++        <div
++          className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-[repeat(2,420px)]"
++          style={{ gridAutoRows: "240px", justifyContent: "start" }}
++        >
+-            key={title}
+-            className="flex-none flex flex-col justify-between rounded-3xl border border-turf/15 bg-night-soft/60 p-10"
++            className="flex-none flex flex-col justify-between rounded-3xl border border-turf/15 bg-white/10 backdrop-blur-2xl p-10 shadow-[0_0_25px_-12px_rgba(60,235,120,0.45)]"
+-            <Icon className="h-10 w-10 text-turf drop-shadow-[0_0_18px_rgba(60,235,120,0.45)]" />
+-            <p className="mt-6 text-xl font-bold">{title}</p>
+-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{text}</p>
++            <Lightbulb className="h-8 w-8 text-turf drop-shadow-[0_0_14px_rgba(60,235,120,0.45)]" />
++            <p className="mt-5 text-xl font-bold">Pro Floodlights</p>
++            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
++              Match-grade LED towers keep midnight games as clear as daylight.
++            </p>
+-        ))}
+-      </div>
++          <div
++            className="flex-none flex flex-col justify-between rounded-3xl border border-turf/15 bg-white/10 backdrop-blur-2xl p-10 shadow-[0_0_25px_-12px_rgba(60,235,120,0.45)]"
++            style={{ width: "420px", height: "240px" }}
++          >
++            <Droplets className="h-8 w-8 text-turf drop-shadow-[0_0_14px_rgba(60,235,120,0.45)]" />
++            <p className="mt-5 text-xl font-bold">Drinking Water Available</p>
++            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
++              Fresh drinking water stations are available for players and teams on-site.
++            </p>
++          </div>
++          <div
++            className="flex-none flex flex-col justify-between rounded-3xl border border-turf/15 bg-white/10 backdrop-blur-2xl p-10 shadow-[0_0_25px_-12px_rgba(60,235,120,0.45)]"
++            style={{ width: "420px", height: "240px" }}
++          >
++            <ShieldCheck className="h-8 w-8 text-turf drop-shadow-[0_0_14px_rgba(60,235,120,0.45)]" />
++            <p className="mt-5 text-xl font-bold">Insured Play</p>
++            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
++              On-site first-aid and full accident cover during every slot.
++            </p>
++          </div>
++          <div
++            className="flex-none flex flex-col justify-between rounded-3xl border border-turf/15 bg-white/10 backdrop-blur-2xl p-10 shadow-[0_0_25px_-12px_rgba(60,235,120,0.45)]"
++            style={{ width: "420px", height: "240px" }}
++          >
++            <IndianRupee className="h-8 w-8 text-turf drop-shadow-[0_0_14px_rgba(60,235,120,0.45)]" />
++            <p className="mt-5 text-xl font-bold">Best Pricing</p>
++            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
++              Competitive rates with transparent pricing. No hidden charges, just quality turf time.
++            </p>
++          </div>
++        </div>
++      </section>
+-      <div className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-turf/15 bg-night-soft/60 sm:grid-cols-2 lg:grid-cols-4">
+-        {stats.map((s) => (
+-          <div key={s.label} className="border-turf/10 px-8 py-10 text-center lg:border-r lg:last:border-r-0">
+-            <p className="text-4xl font-extrabold text-turf drop-shadow-[0_0_18px_rgba(60,235,120,0.4)]">{s.value}</p>
+-            <p className="mt-2 text-sm text-muted-foreground">{s.label}</p>
++      {/* Gallery */}
++      <section ref={pricingRef} className="mx-auto max-w-6xl px-6 pb-24">
++        <p className="text-sm font-semibold uppercase tracking-[0.35em] text-turf">Pricing</p>
++        <h2 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
++          Simple rates, no surprises
++        </h2>
++        <div className="mt-4 inline-flex items-center rounded-full bg-turf/10 px-4 py-2 text-sm uppercase tracking-[0.35em] text-turf shadow-sm">
++          Best hourly rate
++        </div>
++        <div className="mt-12 grid gap-6 justify-center">
++          {pricing.map((p) => (
++            <div
++              key={p.name}
++              className="mx-auto max-w-3xl rounded-2xl border border-turf bg-white/10 backdrop-blur-2xl shadow-[0_0_50px_-12px_rgba(60,235,120,0.45)] p-8"
++            >
++              {p.featured && (
++                <span className="mb-4 inline-block rounded-full bg-turf px-3 py-1 text-xs font-bold text-night">
++                  Most booked
++                </span>
++              )}
++              <p className="text-lg font-bold">{p.name}</p>
++              <p className="mt-3">
++                <span className="text-4xl font-extrabold text-turf">
++                  {p.name === "Hourly" ? `Ôé¦${animatedPrice}` : p.price}
++                </span>
++                <span className="text-sm text-muted-foreground"> {p.unit}</span>
++              </p>
++              <ul className="mt-6 space-y-3 text-sm text-foreground/85">
++                {p.perks.map((perk) => (
++                  <li key={perk} className="flex items-center gap-2">
++                    <BadgeCheck className="h-4 w-4 shrink-0 text-turf" /> {perk}
++                  </li>
++                ))}
++              </ul>
++              <a
++                href="#contact"
++                className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-turf px-6 py-3 font-semibold text-night transition-transform hover:scale-[1.02]"
++              >
++                Book {p.name} <ArrowRight className="h-4 w-4" />
++              </a>
++            </div>
++          ))}
++        </div>
++      </section>
++      {/* Booking Slot */}
++      <section id="hourly-booking" className="mx-auto max-w-6xl px-6 pb-24">
++        <p className="text-sm font-semibold uppercase tracking-[0.35em] text-turf">Bookings</p>
++        <h2 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
++          {bookingType === "hourly" ? "Book an hourly slot" : "Book the turf for a full day"}
++        </h2>
++        <div className="mt-8 flex flex-wrap items-center gap-3">
++          <button
++            type="button"
++            onClick={() => setBookingType("hourly")}
++            className={`rounded-full px-6 py-2 text-sm font-semibold transition ${
++              bookingType === "hourly"
++                ? "bg-turf text-night shadow-[0_0_30px_rgba(60,235,120,0.35)]"
++                : "bg-white/5 text-white/80 hover:bg-white/10"
++            }`}
++          >
++            Hourly
++          </button>
++          <button
++            type="button"
++            onClick={() => setBookingType("extended")}
++            className={`rounded-full px-6 py-2 text-sm font-semibold transition ${
++              bookingType === "extended"
++                ? "bg-turf text-night shadow-[0_0_30px_rgba(60,235,120,0.35)]"
++                : "bg-white/5 text-white/80 hover:bg-white/10"
++            }`}
++          >
++            Extended
++          </button>
++        </div>
++        <div className="mt-12">
++          <div className="rounded-3xl border border-turf/15 bg-white/5 p-8 shadow-[0_0_45px_-18px_rgba(60,235,120,0.45)] backdrop-blur-2xl">
++            <div className="grid gap-4 sm:grid-cols-2">
++              <label className="space-y-2 text-sm text-foreground/80">
++                <span>Your Name *</span>
++                <input
++                  type="text"
++                  value={bookingName}
++                  onChange={(event) => setBookingName(event.target.value)}
++                  placeholder="Enter your name"
++                  className="w-full rounded-2xl border border-turf/20 bg-night/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-turf"
++                />
++              </label>
++              <label className="space-y-2 text-sm text-foreground/80">
++                <span>Phone Number *</span>
++                <input
++                  type="tel"
++                  value={bookingPhone}
++                  onChange={(event) => setBookingPhone(event.target.value)}
++                  placeholder="+91 XXXXX XXXXX"
++                  className="w-full rounded-2xl border border-turf/20 bg-night/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-turf"
++                />
++              </label>
++              <label className="space-y-2 text-sm text-foreground/80">
++                <span>Preferred Date *</span>
++                <input
++                  type="date"
++                  value={bookingDate}
++                  onChange={(event) => setBookingDate(event.target.value)}
++                  className="w-full rounded-2xl border border-turf/20 bg-night/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-turf"
++                />
++              </label>
++              <label className="space-y-2 text-sm text-foreground/80">
++                <span>Preferred Time *</span>
++                <select
++                  value={bookingTime}
++                  onChange={(event) => setBookingTime(event.target.value)}
++                  className="w-full rounded-2xl border border-turf/20 bg-night/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-turf"
++                >
++                  <option value="00:00">12:00 AM</option>
++                  <option value="01:00">1:00 AM</option>
++                  <option value="02:00">2:00 AM</option>
++                  <option value="03:00">3:00 AM</option>
++                  <option value="04:00">4:00 AM</option>
++                  <option value="05:00">5:00 AM</option>
++                  <option value="06:00">6:00 AM</option>
++                  <option value="07:00">7:00 AM</option>
++                  <option value="08:00">8:00 AM</option>
++                  <option value="09:00">9:00 AM</option>
++                  <option value="10:00">10:00 AM</option>
++                  <option value="11:00">11:00 AM</option>
++                  <option value="12:00">12:00 PM</option>
++                  <option value="13:00">1:00 PM</option>
++                  <option value="14:00">2:00 PM</option>
++                  <option value="15:00">3:00 PM</option>
++                  <option value="16:00">4:00 PM</option>
++                  <option value="17:00">5:00 PM</option>
++                  <option value="18:00">6:00 PM</option>
++                  <option value="19:00">7:00 PM</option>
++                  <option value="20:00">8:00 PM</option>
++                  <option value="21:00">9:00 PM</option>
++                  <option value="22:00">10:00 PM</option>
++                  <option value="23:00">11:00 PM</option>
++                </select>
++              </label>
++            </div>
++            <div className="mt-6 space-y-4">
++              <label className="space-y-2 text-sm text-foreground/80">
++                <span>Number of Players</span>
++                <input
++                  type="number"
++                  min={1}
++                  value={bookingPlayers}
++                  onChange={(event) => setBookingPlayers(Number(event.target.value))}
++                  placeholder="Enter number of players"
++                  className="w-full rounded-2xl border border-turf/20 bg-night/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-turf"
++                />
++              </label>
++              {bookingType === "hourly" ? (
++                <label className="space-y-2 text-sm text-foreground/80">
++                  <span>Number of Hours *</span>
++                  <input
++                    type="number"
++                    min={1}
++                    value={bookingHours}
++                    onChange={(event) => setBookingHours(Number(event.target.value))}
++                    className="w-full rounded-2xl border border-turf/20 bg-night/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-turf"
++                  />
++                </label>
++              ) : (
++                <div className="rounded-2xl border border-turf/20 bg-night/80 p-4 text-sm text-foreground/80">
++                  Book the turf for a full day with exclusive access from 6 AM to 12 AM.
++                </div>
++              )}
++            </div>
++            <div className="mt-8 rounded-2xl border border-turf/20 bg-night/80 p-6 text-center">
++              <p className="text-xs uppercase tracking-[0.35em] text-turf">Total amount</p>
++              <p className="mt-4 text-5xl font-extrabold text-white">Ôé¦{bookingTotal}</p>
++              <p className="mt-2 text-sm text-muted-foreground">
++                {bookingType === "hourly"
++                  ? `for ${bookingHours} hour${bookingHours === 1 ? "" : "s"}`
++                  : "for full-day turf booking"}
++              </p>
++            </div>
++            <div className="mt-6 space-y-4 text-sm text-foreground/85">
++              <p>Ô£à Instant confirmation</p>
++              <p>Ô£à Floodlights included</p>
++              <p>Ô£à Full turf access</p>
++              <p>{bookingType === "extended" ? "Ô£à Includes event setup support" : "Ô£à Start anytime after 6 AM"}</p>
++            </div>
++            <button
++              type="button"
++              className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-turf px-6 py-4 text-sm font-semibold text-night shadow-[0_0_30px_rgba(60,235,120,0.4)] transition-transform hover:scale-[1.02]"
++            >
++              {bookingType === "hourly" ? "Book Hourly" : "Book Full Day"}
++            </button>
+-        ))}
+-      </div>
+-    </PageShell>
++        </div>
++      </section>
++      {/* Contact */}
++      <section id="contact" className="mx-auto max-w-6xl px-6 pb-24">
++        <p className="text-sm font-semibold uppercase tracking-[0.35em] text-turf">Contact</p>
++        <h2 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
++          Reach out for bookings and enquiries
++        </h2>
++        <div className="mt-12 grid gap-6 lg:grid-cols-3 items-stretch">
++          <div className="flex h-full flex-col rounded-2xl border border-turf/15 bg-white/10 backdrop-blur-2xl p-8">
++            <p className="font-semibold text-white">Location</p>
++            <p className="mt-3 text-sm text-muted-foreground">Sector 12, Sports City, Cityville</p>
++          </div>
++          <div className="flex h-full flex-col rounded-2xl border border-turf/15 bg-white/10 backdrop-blur-2xl p-8">
++            <p className="font-semibold text-white">Phone</p>
++            <p className="mt-3 text-sm text-muted-foreground">+91 98765 43210</p>
++          </div>
++          <div className="flex h-full flex-col rounded-2xl border border-turf/15 bg-white/10 backdrop-blur-2xl p-8">
++            <p className="font-semibold text-white">Email</p>
++            <p className="mt-3 text-sm text-muted-foreground">play@turfon24.com</p>
++          </div>
++        </div>
++      </section>
++      <SiteFooter />
++    </main>

@@ -1,0 +1,12 @@
+const fs = require('fs');
+const path = require('path');
+const file = path.resolve(__dirname, '..', 'src', 'routes', 'index.tsx');
+const src = fs.readFileSync(file, 'utf8');
+const count = (regex) => (src.match(regex) || []).length;
+console.log('div open:', count(/<div(\s|>)/g));
+console.log('div close:', count(/<\/div>/g));
+console.log('section open:', count(/<section(\s|>)/g));
+console.log('section close:', count(/<\/section>/g));
+console.log('main open:', count(/<main(\s|>)/g));
+console.log('main close:', count(/<\/main>/g));
+console.log('total < and > length', src.length);
