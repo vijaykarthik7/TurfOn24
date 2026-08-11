@@ -1663,13 +1663,23 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
     overflow-x: hidden;
   }
 
-  /* The turf background must stay anchored to its fixed layer while scrolling.
-     background-attachment: fixed is ignored/buggy on mobile browsers and makes
-     the background scroll with the page, leaving black gaps during scroll and
-     address-bar changes. The layer is already position: fixed, so a normal
-     (scroll) attachment keeps the image in place and continuous. */
+  /* background-attachment: fixed is ignored/buggy on mobile browsers (it makes
+     the background scroll/lag with the page, leaving black gaps during scroll
+     and address-bar changes). The layer already covers the full page here, so a
+     normal (scroll) attachment keeps the image continuous. */
   .hero-bg-img {
     background-attachment: scroll !important;
+  }
+
+  /* Mobile: do not use a fixed/attached background. Mobile browsers repaint
+     fixed backgrounds during scroll and the URL-bar animation drags fixed
+     layers up with the page, which shows a black bar and makes the turf appear
+     to move independently from the content. main is position: relative, so
+     anchoring this layer to it (absolute) makes the turf cover the COMPLETE
+     page and scroll naturally with the content — no gaps, no independent
+     movement. Desktop keeps the fixed behavior. */
+  .hero-bg-layer {
+    position: absolute !important;
   }
 
   /* Hero heading scales to fit the viewport without shrinking too far */
