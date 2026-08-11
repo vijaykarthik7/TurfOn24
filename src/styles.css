@@ -1663,6 +1663,15 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
     overflow-x: hidden;
   }
 
+  /* The turf background must stay anchored to its fixed layer while scrolling.
+     background-attachment: fixed is ignored/buggy on mobile browsers and makes
+     the background scroll with the page, leaving black gaps during scroll and
+     address-bar changes. The layer is already position: fixed, so a normal
+     (scroll) attachment keeps the image in place and continuous. */
+  .hero-bg-img {
+    background-attachment: scroll !important;
+  }
+
   /* Hero heading scales to fit the viewport without shrinking too far */
   #hero .hero-content h1 {
     font-size: clamp(2.15rem, 8vw, 2.6rem) !important;

@@ -859,7 +859,7 @@ function Index() {
     <main className="min-h-[100svh] bg-transparent text-foreground relative overflow-x-clip overflow-hidden">
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-center"
+          className="hero-bg-img absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage: `url(${heroImg})`,
             backgroundAttachment: "fixed",
