@@ -857,7 +857,7 @@ function Index() {
 
   return (
     <main className="min-h-[100svh] bg-transparent text-foreground relative overflow-x-clip overflow-hidden">
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+      <div className="hero-bg-layer pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div
           className="hero-bg-img absolute inset-0 bg-cover bg-center"
           style={{
