@@ -29,7 +29,6 @@ export function SiteFooter() {
           <ul className="mt-4 space-y-2 text-sm text-foreground/80">
             <li>Mon – Fri · 24 hours</li>
             <li>Sat – Sun · 24 hours</li>
-            <li>Full-day slots from 6 AM</li>
           </ul>
         </div>
 

@@ -9,7 +9,6 @@ const navLinks = [
   { label: "Gallery", href: "#gallery" },
   { label: "Pricing", href: "#pricing" },
   { label: "Contact", href: "#contact" },
-  { label: "Admin", href: "/admin", isAdmin: true },
 ] as const;
 
 export function SiteHeader() {
