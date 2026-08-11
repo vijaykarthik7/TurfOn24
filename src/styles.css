@@ -1671,15 +1671,22 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
     background-attachment: scroll !important;
   }
 
-  /* Mobile: do not use a fixed/attached background. Mobile browsers repaint
-     fixed backgrounds during scroll and the URL-bar animation drags fixed
-     layers up with the page, which shows a black bar and makes the turf appear
-     to move independently from the content. main is position: relative, so
-     anchoring this layer to it (absolute) makes the turf cover the COMPLETE
-     page and scroll naturally with the content — no gaps, no independent
-     movement. Desktop keeps the fixed behavior. */
+  /* Mobile: do not use a fixed/attached background. Fixed layers repaint/lag
+     during scroll (and the URL-bar animation drags them up with the page),
+     which shows a black bar at the bottom and makes the turf look like it moves
+     independently. position: sticky keeps the SAME viewport-scaled turf image
+     as desktop, is in normal flow so mobile browsers composite it natively
+     (like a sticky header — no repaint gap), and stays pinned behind the
+     content while it scrolls. height + negative bottom margin cancel out so the
+     page content still starts at the very top. */
   .hero-bg-layer {
-    position: absolute !important;
+    position: sticky !important;
+    top: 0 !important;
+    bottom: auto !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    margin-bottom: -100vh !important;
+    margin-bottom: -100dvh !important;
   }
 
   /* Hero heading scales to fit the viewport without shrinking too far */
