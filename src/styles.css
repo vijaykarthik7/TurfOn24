@@ -152,7 +152,10 @@
     border-color: var(--color-border);
   }
 
-  html,
+  html {
+    background-color: var(--night);
+  }
+
   body {
     background-color: transparent;
   }
