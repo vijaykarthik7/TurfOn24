@@ -5,7 +5,6 @@ import {
   CalendarDays,
   ChevronLeft,
   ChevronRight,
-  ChevronDown,
   Clock,
   ShieldCheck,
   Users,
@@ -17,8 +16,6 @@ import {
   Droplets,
   ParkingCircle,
   Lightbulb,
-  Mail,
-  Phone,
 } from "lucide-react";
 import {
   KeyboardEvent as ReactKeyboardEvent,
@@ -36,7 +33,10 @@ import turf2 from "@/assets/turf-2.jpg";
 import turf3 from "@/assets/turf-3.jpg";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import {
+  BookingSection,
+  useBooking,
+} from "@/components/BookingSection";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -125,18 +125,32 @@ const galleryDetails = [
   { label: "04 — STADIUM", subtitle: "FULL FLOODLIGHTS" },
 ];
 
-const pricing = [
+const pricing = {
+  features: [
+    { icon: Clock, title: "Any single hour", text: "Book for just the time you need" },
+    { icon: Users, title: "Up to 14 players", text: "Perfect for small & large teams" },
+    { icon: Lightbulb, title: "Full floodlights", text: "Play day or night" },
+    { icon: Trophy, title: "FIFA-grade turf", text: "Premium playing surface" },
+  ],
+};
+
+const pricingHighlights = [
   {
-    name: "Hourly",
-    price: "₹700",
-    unit: "/ hour",
-    perks: ["Any single hour", "Up to 14 players", "Floodlights included", "Free parking"],
+    icon: Trophy,
+    title: "Premium Football Turf",
+    text: "Experience professional quality artificial turf for a smooth and consistent play.",
+  },
+  {
+    icon: Lightbulb,
+    title: "Full Floodlight Access",
+    text: "Bright, even lighting for a safe and energetic game, anytime.",
+  },
+  {
+    icon: Star,
+    title: "Professional Quality Pitch",
+    text: "Tournament-ready turf with excellent surface for the best playing experience.",
   },
 ];
-
-const pitchTimeSlots = Array.from({ length: 24 }, (_, hour) =>
-  `${String(hour).padStart(2, "0")}:00`
-);
 
 const testimonials = [
   { name: "Arjun Mehta", role: "Captain, Steel City FC", text: "We booked the full day for our league finals. Lights, pitch, staff — everything was spotless." },
@@ -146,27 +160,7 @@ const testimonials = [
 
 function Index() {
   const [animatedPrice, setAnimatedPrice] = useState(0);
-  const [bookingType, setBookingType] = useState<"hourly" | "extended">("hourly");
-  const [bookingName, setBookingName] = useState("");
-  const [bookingPhone, setBookingPhone] = useState("");
-  const [bookingDate, setBookingDate] = useState("");
-  const [bookingTime, setBookingTime] = useState("19:00");
-  const [bookingPlayers, setBookingPlayers] = useState(1);
-  const [bookingHours, setBookingHours] = useState(1);
-  const [animatedBookingTotal, setAnimatedBookingTotal] = useState(700);
-  const [extName, setExtName] = useState("");
-  const [extPhone, setExtPhone] = useState("");
-  const [extStartDate, setExtStartDate] = useState("");
-  const [extEndDate, setExtEndDate] = useState("");
-  const [extStartTime, setExtStartTime] = useState("09:00");
-  const [extEndTime, setExtEndTime] = useState("18:00");
-  const [extPlayers, setExtPlayers] = useState("");
-  const [extMessage, setExtMessage] = useState("");
-  const [extSubmitted, setExtSubmitted] = useState(false);
-  const [extError, setExtError] = useState("");
-  const [pricingHover, setPricingHover] = useState(false);
-  const [pricingCursor, setPricingCursor] = useState({ x: 210, y: 280 });
-  const [selectedPitchTime, setSelectedPitchTime] = useState("19:00");
+  const booking = useBooking();
   const [galleryActiveIndex, setGalleryActiveIndex] = useState<number | null>(null);
   const [galleryHoverIndex, setGalleryHoverIndex] = useState<number | null>(null);
   const [galleryLightboxIndex, setGalleryLightboxIndex] = useState<number | null>(null);
@@ -191,7 +185,6 @@ function Index() {
   const touchDeviceDetected = useRef(false);
   const aboutCardRef = useRef<HTMLDivElement | null>(null);
   const pricingRef = useRef<HTMLElement | null>(null);
-  const totalAnimationRef = useRef<number | null>(null);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
   const featureCardRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -305,92 +298,12 @@ function Index() {
   }, [timelineD]);
 
   const galleryItems = [...gallery, gallery[0]];
-  const bookingTotal = bookingType === "hourly" ? 700 * bookingHours : 700 * 18;
-
-  const bookingSteps = [
-    { key: "date", label: "Date", done: Boolean(bookingDate), current: false },
-    { key: "time", label: "Time", done: Boolean(selectedPitchTime), current: false },
-    { key: "players", label: "Players", done: bookingPlayers > 0, current: false },
-    { key: "price", label: "Price", done: bookingTotal > 0, current: false },
-    { key: "confirm", label: "Confirm", done: Boolean(bookingName && bookingPhone), current: false },
-  ];
-  const bookingCurrentStep = Math.min(
-    bookingSteps.length - 1,
-    bookingSteps.findIndex((step) => !step.done) === -1 ? bookingSteps.length - 1 : bookingSteps.findIndex((step) => !step.done)
-  );
-  bookingSteps.forEach((step, index) => {
-    step.current = index === bookingCurrentStep;
-  });
-
-  const formatBookingTime = (value: string) => {
-    if (!value) return "Not selected";
-    const [hourPart, minutePart] = value.split(":");
-    const hour = Number(hourPart);
-    const period = hour >= 12 ? "PM" : "AM";
-    const displayHour = hour % 12 === 0 ? 12 : hour % 12;
-    return `${displayHour}:${minutePart} ${period}`;
-  };
-
-  const resetExtendedEnquiry = () => {
-    setExtName("");
-    setExtPhone("");
-    setExtStartDate("");
-    setExtEndDate("");
-    setExtStartTime("09:00");
-    setExtEndTime("18:00");
-    setExtPlayers("");
-    setExtMessage("");
-    setExtError("");
-    setExtSubmitted(false);
-  };
-
-  const submitExtendedEnquiry = () => {
-    if (!extName.trim()) {
-      setExtError("Please enter your name.");
-      return;
-    }
-    const phoneDigits = extPhone.replace(/[^0-9]/g, "");
-    if (!extPhone.trim() || phoneDigits.length < 10 || phoneDigits.length > 15) {
-      setExtError("Please enter a valid phone number.");
-      return;
-    }
-    if (!extStartDate) {
-      setExtError("Please select a preferred start date.");
-      return;
-    }
-    if (!extEndDate) {
-      setExtError("Please select a preferred end date.");
-      return;
-    }
-    if (extEndDate < extStartDate) {
-      setExtError("The end date cannot be before the start date.");
-      return;
-    }
-    if (extStartDate === extEndDate && extEndTime <= extStartTime) {
-      setExtError("The end time must be after the start time on the same day.");
-      return;
-    }
-    setExtError("");
-    setExtSubmitted(true);
-  };
 
   const sections = sectionOrder;
 
   const activeIndex = sections.findIndex((section) => section.id === activeSection);
   const ballTop = `${0.9 + (activeIndex >= 0 ? activeIndex * 3.2 : 0)}rem`;
   const lineFillHeight = `${Math.min(Math.max(scrollProgress, 0), 1) * 100}%`;
-
-  const scrollToSection = (sectionId: string) => {
-    if (typeof window === "undefined") return;
-
-    const target = sectionRefs.current[sectionId];
-    if (!target) return;
-
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
-
-    setActiveSection(sectionId);
-    window.history.replaceState(null, "", `#${sectionId}`);
-  };
 
   const aboutStats = [
     { value: `${statsCount[0]}/7`, label: "Round-the-clock access" },
@@ -612,24 +525,6 @@ function Index() {
     setGalleryLightboxTouchStartX(null);
   };
 
-  const handlePricingPointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    setPricingCursor({
-      x: Math.min(Math.max(event.clientX - rect.left, 0), rect.width),
-      y: Math.min(Math.max(event.clientY - rect.top, 0), rect.height),
-    });
-  };
-
-  const handlePricingPointerLeave = () => {
-    setPricingHover(false);
-    setPricingCursor({ x: 210, y: 280 });
-  };
-
-  const handleReserveBook = () => {
-    setBookingTime(selectedPitchTime);
-    scrollToSection("booking");
-  };
-
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -798,38 +693,6 @@ function Index() {
   }, []);
 
   useEffect(() => {
-    if (totalAnimationRef.current !== null) {
-      cancelAnimationFrame(totalAnimationRef.current);
-    }
-
-    const startValue = animatedBookingTotal;
-    const endValue = bookingTotal;
-    const duration = 400;
-    let startTime: number | null = null;
-
-    const step = (timestamp: number) => {
-      if (startTime === null) startTime = timestamp;
-      const progress = Math.min((timestamp - startTime) / duration, 1);
-      const nextValue = Math.round(startValue + (endValue - startValue) * progress);
-      setAnimatedBookingTotal(nextValue);
-
-      if (progress < 1) {
-        totalAnimationRef.current = requestAnimationFrame(step);
-      } else {
-        totalAnimationRef.current = null;
-      }
-    };
-
-    totalAnimationRef.current = requestAnimationFrame(step);
-
-    return () => {
-      if (totalAnimationRef.current !== null) {
-        cancelAnimationFrame(totalAnimationRef.current);
-      }
-    };
-  }, [bookingTotal]);
-
-  useEffect(() => {
     const revealTargets = document.querySelectorAll<HTMLElement>(
       "#gallery, #pricing, #booking"
     );
@@ -862,7 +725,6 @@ function Index() {
           className="hero-bg-img absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage: `url(${heroImg})`,
-            backgroundAttachment: "fixed",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
@@ -1381,574 +1243,81 @@ function Index() {
             pricingRef.current = node;
           }
         }}
-        className="mx-auto max-w-6xl px-6 py-20 mb-16 scroll-mt-24"
+        className="mx-auto max-w-6xl px-6 py-24 mb-16 relative overflow-hidden scroll-mt-24"
       >
-        <p className="text-sm font-semibold uppercase tracking-[0.35em] text-turf">Pricing</p>
-        <h2 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
-          Simple rates, no surprises
-        </h2>
-        <div className="mt-5 inline-flex items-center rounded-full bg-turf/10 px-4 py-2 text-sm uppercase tracking-[0.35em] text-turf shadow-sm">
-          Best hourly rate
-        </div>
-        <div className="mt-12 grid items-stretch gap-10 lg:grid-cols-[1.05fr_1fr]">
-          {pricing.map((p) => {
-            const active = pricingHover;
-            const rotateX = active ? Math.min(Math.max((pricingCursor.y - 280) / 28, -4), 4) : 0;
-            const rotateY = active ? Math.min(Math.max((pricingCursor.x - 210) / 28, -4), 4) : 0;
+        <div className="pointer-events-none absolute left-0 top-10 h-28 w-28 rounded-full bg-turf/10 blur-3xl" />
+        <div className="pointer-events-none absolute right-0 top-20 h-36 w-36 rounded-full bg-turf/15 blur-3xl" />
 
-            return (
-              <div key={p.name} className="relative h-full w-full">
-                <div className="absolute left-6 top-8 h-24 w-24 rounded-full bg-turf/10 blur-3xl opacity-30 pointer-events-none" />
-                <div className="absolute inset-x-10 top-12 h-40 rounded-[2rem] bg-turf/10 blur-3xl opacity-20 pointer-events-none" />
-                <div
-                  className={`pricing-card relative h-full overflow-hidden rounded-[1.5rem] border border-turf/15 bg-black/35 backdrop-blur-xl shadow-[0_0_55px_rgba(16,221,86,0.16)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                    active ? "pricing-card-active" : ""
-                  }`}
-                  onPointerEnter={() => setPricingHover(true)}
-                  onPointerLeave={handlePricingPointerLeave}
-                  onPointerMove={handlePricingPointerMove}
-                  style={{
-                    transform: active ? `translate3d(0,-5px,0) rotateX(${rotateX}deg) rotateY(${rotateY}deg)` : undefined,
-                  }}
-                >
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(96,240,120,0.12),transparent_28%)] opacity-80 pointer-events-none" />
-                  <div className="absolute inset-0 rounded-[1.5rem] border border-turf/10 opacity-80 pointer-events-none" />
-                  <span
-                    className="pricing-card-cursor absolute left-0 top-0 h-[320px] w-[320px] rounded-full bg-[radial-gradient(circle,rgba(96,240,120,0.24),transparent_55%)] opacity-0 pointer-events-none transition-opacity duration-300"
-                    style={{
-                      transform: `translate(${pricingCursor.x - 160}px, ${pricingCursor.y - 160}px)`,
-                    }}
-                  />
-                  <div className="pitch-graphics absolute inset-x-6 bottom-6 h-[180px] rounded-[1.5rem] opacity-20 pointer-events-none" />
-                  <div className="relative z-10 flex h-full min-h-[520px] flex-col justify-between p-8">
-                    <div>
-                      <div className="mb-4 flex flex-wrap items-center gap-3 text-[0.7rem] uppercase tracking-[0.35em] text-turf">
-                        <span className={`h-2 w-2 rounded-full transition duration-300 ${active ? "bg-turf animate-live-pulse" : "bg-turf/50"}`} />
-                        <span className="font-semibold">BEST HOURLY RATE</span>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-3 text-[0.68rem] uppercase tracking-[0.35em] text-muted-foreground">
-                        <span>Hourly</span>
-                        <span className="inline-flex items-center gap-2 rounded-full border border-turf/10 bg-black/50 px-3 py-1 text-turf/80">
-                          <span className="h-2.5 w-2.5 rounded-full bg-turf animate-live-pulse-slow" />
-                          PITCH AVAILABLE
-                        </span>
-                      </div>
-                      <div className="relative mt-6 overflow-hidden rounded-[1.2rem]">
-                        <span className="price-highlight absolute left-1/2 top-0 h-32 w-[260px] -translate-x-1/2 rounded-full bg-gradient-to-r from-transparent via-turf/25 to-transparent opacity-0 blur-2xl animate-price-glow pointer-events-none" />
-                        <div className="relative flex items-end gap-3">
-                          <span className={`text-6xl font-black leading-none tracking-tight text-turf transition-transform duration-500 ${active ? "scale-[1.05]" : ""}`}>
-                            {p.name === "Hourly" ? `₹${animatedPrice}` : p.price}
-                          </span>
-                          <span className="pb-1 text-sm font-semibold uppercase tracking-[0.25em] text-muted-foreground">{p.unit ?? "/ HOUR"}</span>
-                        </div>
-                      </div>
-                      <div className="mt-8 space-y-3">
-                        {p.perks.map((perk) => (
-                          <div key={perk} className="reserve-check flex items-center gap-3 text-[0.78rem] uppercase tracking-[0.3em] text-muted-foreground">
-                            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-turf/30 bg-turf/10 text-[0.65rem] text-turf">✓</span>
-                            <span>{perk}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="mt-8 grid gap-3 text-[0.75rem] uppercase tracking-[0.35em] text-muted-foreground">
-                        <div className="flex flex-wrap items-center justify-between gap-3">
-                          <span>14 PLAYERS MAX</span>
-                          <span className="text-turf/80">FULL FLOODLIGHTS</span>
-                        </div>
-                        <p className="text-right text-[0.68rem] text-muted-foreground/75">
-                          FIELD 01 / NIGHT SESSION
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-
-          <div className="reserve-panel relative h-full w-full rounded-[1.5rem] border border-turf/15 bg-black/35 p-8 backdrop-blur-xl shadow-[0_0_55px_rgba(16,221,86,0.12)] transition-all duration-500 ease-out hover:-translate-y-1 hover:border-turf/25 hover:shadow-[0_0_60px_rgba(16,221,86,0.22)]">
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-              <h3 className="text-lg font-bold tracking-tight">Reserve your slot</h3>
-              <span className="inline-flex items-center gap-2 rounded-full border border-turf/10 bg-black/50 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-turf/80">
-                <span className="h-2 w-2 rounded-full bg-turf animate-live-pulse-slow" />
-                Field 01
+        <div className="grid gap-6 lg:gap-7 xl:grid-cols-[1.55fr_1fr]">
+          <div className="group relative overflow-hidden rounded-[1.75rem] border border-turf/15 bg-white/10 backdrop-blur-2xl p-8 lg:p-9 shadow-[0_0_80px_rgba(16,221,86,0.14)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_0_90px_rgba(16,221,86,0.18)]">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(16,221,86,0.16),transparent_40%)]" />
+            <div className="absolute right-10 bottom-10 h-28 w-28 rounded-full bg-turf/10 blur-3xl" />
+            <div className="relative z-10">
+              <span className="inline-flex items-center gap-2 rounded-full border border-turf/20 bg-turf/10 px-4 py-2 text-sm text-turf">
+                <Clock className="h-4 w-4" /> Best hourly rate
               </span>
-            </div>
-
-            <div className="space-y-6">
-              <div>
-                <label htmlFor="pricing-date" className="mb-2 flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.35em] text-muted-foreground">
-                  <CalendarDays className="h-4 w-4 text-turf" />
-                  Pick a date
-                </label>
-                <input
-                  id="pricing-date"
-                  type="date"
-                  value={bookingDate}
-                  onChange={(event) => setBookingDate(event.target.value)}
-                  className="w-full rounded-[1rem] border border-turf/15 bg-black/30 px-4 py-3.5 text-sm text-white outline-none transition duration-300 hover:border-turf/30 focus:border-turf/60 focus:ring-2 focus:ring-turf/20 [color-scheme:dark]"
-                />
+              <p className="mt-7 text-sm font-semibold uppercase tracking-[0.35em] text-turf">Pricing</p>
+              <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
+                Choose your game plan
+              </h2>
+              <p className="mt-5 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
+                Flexible turf packages for casual matches, teams and full-day events.
+              </p>
+              <div className="mt-8 flex items-end gap-3">
+                <span className="text-6xl font-black leading-none tracking-tight text-turf">
+                  ₹{animatedPrice}
+                </span>
+                <span className="pb-1 text-sm font-semibold uppercase tracking-[0.25em] text-muted-foreground">
+                  / hour
+                </span>
               </div>
-
-              <div>
-                <p className="mb-2 flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.35em] text-muted-foreground">
-                  <Clock className="h-4 w-4 text-turf" />
-                  Kick-off time
-                </p>
-                <div className="relative">
-                  <select
-                    value={selectedPitchTime}
-                    onChange={(event) => setSelectedPitchTime(event.target.value)}
-                    className="w-full cursor-pointer appearance-none rounded-[1rem] border border-turf/15 bg-black/30 px-4 py-3.5 pr-10 text-sm text-white outline-none transition duration-300 hover:border-turf/30 focus:border-turf/60 focus:ring-2 focus:ring-turf/20 [color-scheme:dark]"
+              <div className="mt-8 grid gap-3 sm:grid-cols-2">
+                {pricing.features.map((feature) => (
+                  <div
+                    key={feature.title}
+                    className="rounded-2xl border border-turf/10 bg-night/10 p-5 text-sm transition duration-300 hover:border-turf/20 hover:bg-white/5"
                   >
-                    {pitchTimeSlots.map((time) => (
-                      <option key={time} value={time}>
-                        {formatBookingTime(time)}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-turf" />
-                </div>
+                    <div className="flex items-center gap-2.5">
+                      <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-turf/10 text-turf">
+                        <feature.icon className="h-4 w-4" />
+                      </span>
+                      <p className="font-semibold">{feature.title}</p>
+                    </div>
+                    <p className="mt-2 text-muted-foreground">{feature.text}</p>
+                  </div>
+                ))}
               </div>
-
-              <button
-                type="button"
-                onClick={handleReserveBook}
-                className="pricing-cta group relative flex h-[54px] w-full items-center justify-center overflow-hidden rounded-[1rem] border border-turf/20 bg-gradient-to-r from-turf/15 via-turf/10 to-black/20 px-6 text-base font-semibold text-night shadow-[0_18px_40px_-18px_rgba(96,240,120,0.85)] transition duration-300 ease-out hover:-translate-y-0.5 hover:brightness-110"
-              >
-                <span className="absolute inset-0 rounded-[1rem] border border-turf/30 opacity-60" />
-                <span className="pricing-btn-sweep absolute left-[-70%] top-0 h-full w-24 rounded-full bg-white/15 opacity-0 transition duration-500 ease-out group-hover:translate-x-[240%] group-hover:opacity-90" />
-                <span className="relative">BOOK YOUR PITCH</span>
-                <ArrowRight className="relative h-5 w-5 transition-transform duration-500 ease-out group-hover:translate-x-2" />
-              </button>
-              <div className="text-center text-[0.72rem] uppercase tracking-[0.35em] text-muted-foreground">
-                <a href="#booking" className="inline-flex items-center justify-center gap-2 text-muted-foreground transition-colors duration-300 hover:text-turf">
-                  CHECK AVAILABILITY
-                  <ArrowRight className="h-4 w-4" />
-                </a>
+              <div className="mt-8 inline-flex items-center gap-3 rounded-full border border-turf/20 bg-turf/10 px-4 py-2.5 text-sm text-turf shadow-sm">
+                <BadgeCheck className="h-4 w-4" /> Best value for weekend matches
               </div>
             </div>
+          </div>
+
+          <div className="grid gap-4">
+            {pricingHighlights.map(({ icon: Icon, title, text }) => (
+              <div
+                key={title}
+                className="relative overflow-hidden rounded-[1.5rem] border border-turf/15 bg-white/5 backdrop-blur-2xl p-6 lg:p-7 shadow-[0_0_40px_rgba(16,221,86,0.08)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_0_50px_rgba(16,221,86,0.12)]"
+              >
+                <div className="absolute left-6 top-6 h-14 w-14 rounded-full bg-turf/10 blur-3xl" />
+                <div className="relative z-10 flex items-center gap-4">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-turf/10 text-turf">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <p className="text-lg font-semibold">{title}</p>
+                </div>
+                <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{text}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Booking Slot */}
-      <section
-        id="booking"
-        ref={(node) => { sectionRefs.current["booking"] = node; }}
-        className="mx-auto max-w-6xl px-6 py-16 mb-16 rounded-3xl border border-turf/15 bg-white/5 backdrop-blur-2xl shadow-[0_0_35px_-18px_rgba(60,235,120,0.45)] scroll-mt-24"
-      >
-        <p className="text-sm font-semibold uppercase tracking-[0.35em] text-turf">Bookings</p>
-        <h2 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
-          {bookingType === "hourly" ? "Book an hourly slot" : "Plan Your Extended Booking"}
-        </h2>
-        {bookingType === "extended" && (
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Need the turf for multiple hours, a full day, or multiple days? Send us your preferred schedule and our team will contact you to confirm availability and pricing.
-          </p>
-        )}
-
-        <div className="mt-8 flex items-center">
-          <ToggleGroup
-            type="single"
-            value={bookingType}
-            onValueChange={(value) => value && setBookingType(value as "hourly" | "extended")}
-            className="rounded-full border border-turf/25 bg-black/20 p-1 shadow-[0_0_30px_rgba(60,235,120,0.12)]"
-          >
-            <ToggleGroupItem
-              value="hourly"
-              className="flex-1 rounded-full px-6 py-2 text-sm font-semibold text-white/70 transition duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] data-[state=on]:bg-turf data-[state=on]:text-night data-[state=on]:shadow-[0_0_25px_rgba(60,235,120,0.25)] data-[state=on]:text-sm"
-            >
-              Hourly
-            </ToggleGroupItem>
-            <ToggleGroupItem
-              value="extended"
-              className="flex-1 rounded-full px-6 py-2 text-sm font-semibold text-white/70 transition duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] data-[state=on]:bg-turf data-[state=on]:text-night data-[state=on]:shadow-[0_0_25px_rgba(60,235,120,0.25)] data-[state=on]:text-sm"
-            >
-              Extended
-            </ToggleGroupItem>
-          </ToggleGroup>
-        </div>
-
-        {bookingType === "hourly" && (
-          <div className="booking-steps mt-8">
-            {bookingSteps.map((step, index) => (
-              <div
-                key={step.key}
-                className={`booking-step ${step.done ? "booking-step-done" : ""} ${step.current ? "booking-step-current" : ""}`}
-              >
-                <span className="booking-step-dot">{step.done ? "✓" : index + 1}</span>
-                <span className="booking-step-label">{step.label}</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_340px]">
-          <div className="booking-field-group rounded-3xl border border-turf/15 bg-white/5 p-6 backdrop-blur-xl sm:p-8">
-            {bookingType === "hourly" ? (
-              <>
-            <div className="booking-field-title flex items-center gap-2">
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-turf/10 text-[0.7rem] font-bold text-turf">1</span>
-              Your details
-            </div>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <label className="space-y-2 text-sm text-foreground/80">
-                <span>Your Name *</span>
-                <input
-                  type="text"
-                  value={bookingName}
-                  onChange={(event) => setBookingName(event.target.value)}
-                  placeholder="Enter your name"
-                  className="w-full rounded-2xl border border-turf/20 bg-night/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-turf"
-                />
-              </label>
-              <label className="space-y-2 text-sm text-foreground/80">
-                <span>Phone Number *</span>
-                <input
-                  type="tel"
-                  value={bookingPhone}
-                  onChange={(event) => setBookingPhone(event.target.value)}
-                  placeholder="+91 XXXXX XXXXX"
-                  className="w-full rounded-2xl border border-turf/20 bg-night/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-turf"
-                />
-              </label>
-            </div>
-
-            <div className="booking-field-title mt-8 flex items-center gap-2">
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-turf/10 text-[0.7rem] font-bold text-turf">2</span>
-              Pick a slot
-            </div>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <label className="space-y-2 text-sm text-foreground/80">
-                <span>Preferred Date *</span>
-                <input
-                  type="date"
-                  value={bookingDate}
-                  onChange={(event) => setBookingDate(event.target.value)}
-                  className="w-full rounded-2xl border border-turf/20 bg-night/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-turf"
-                />
-              </label>
-              <label className="space-y-2 text-sm text-foreground/80">
-                <span>Preferred Time *</span>
-                <select
-                  value={bookingTime}
-                  onChange={(event) => setBookingTime(event.target.value)}
-                  className="w-full rounded-2xl border border-turf/20 bg-night/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-turf"
-                >
-                  <option value="00:00">12:00 AM</option>
-                  <option value="01:00">1:00 AM</option>
-                  <option value="02:00">2:00 AM</option>
-                  <option value="03:00">3:00 AM</option>
-                  <option value="04:00">4:00 AM</option>
-                  <option value="05:00">5:00 AM</option>
-                  <option value="06:00">6:00 AM</option>
-                  <option value="07:00">7:00 AM</option>
-                  <option value="08:00">8:00 AM</option>
-                  <option value="09:00">9:00 AM</option>
-                  <option value="10:00">10:00 AM</option>
-                  <option value="11:00">11:00 AM</option>
-                  <option value="12:00">12:00 PM</option>
-                  <option value="13:00">1:00 PM</option>
-                  <option value="14:00">2:00 PM</option>
-                  <option value="15:00">3:00 PM</option>
-                  <option value="16:00">4:00 PM</option>
-                  <option value="17:00">5:00 PM</option>
-                  <option value="18:00">6:00 PM</option>
-                  <option value="19:00">7:00 PM</option>
-                  <option value="20:00">8:00 PM</option>
-                  <option value="21:00">9:00 PM</option>
-                  <option value="22:00">10:00 PM</option>
-                  <option value="23:00">11:00 PM</option>
-                </select>
-              </label>
-            </div>
-
-            <div className="booking-field-title mt-8 flex items-center gap-2">
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-turf/10 text-[0.7rem] font-bold text-turf">3</span>
-              Group size &amp; duration
-            </div>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <label className="space-y-2 text-sm text-foreground/80">
-                <span>Number of Players</span>
-                <input
-                  type="number"
-                  min={1}
-                  value={bookingPlayers}
-                  onChange={(event) => setBookingPlayers(Number(event.target.value))}
-                  placeholder="Enter number of players"
-                  className="w-full rounded-2xl border border-turf/20 bg-night/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-turf"
-                />
-              </label>
-
-              {bookingType === "hourly" ? (
-                <label className="space-y-2 text-sm text-foreground/80">
-                  <span>Number of Hours *</span>
-                  <input
-                    type="number"
-                    min={1}
-                    value={bookingHours}
-                    onChange={(event) => setBookingHours(Number(event.target.value))}
-                    className="w-full rounded-2xl border border-turf/20 bg-night/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-turf"
-                  />
-                </label>
-              ) : (
-                <div className="rounded-2xl border border-turf/20 bg-night/80 p-4 text-sm text-foreground/80">
-                  Book the turf for a full day with exclusive access from 6 AM to 12 AM.
-                </div>
-              )}
-            </div>
-
-            <div className="booking-field-title mt-8 flex items-center gap-2">
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-turf/10 text-[0.7rem] font-bold text-turf">4</span>
-              Confirm &amp; pay
-            </div>
-            <button
-              type="button"
-              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-turf px-6 py-4 text-sm font-semibold text-night shadow-[0_0_30px_rgba(60,235,120,0.4)] transition-transform hover:scale-[1.02]"
-            >
-              Book Hourly
-            </button>
-              </>
-            ) : (
-              <>
-                {extSubmitted ? (
-                  <div className="flex min-h-[420px] flex-col items-center justify-center py-10 text-center">
-                    <span className="relative flex h-20 w-20 items-center justify-center rounded-full border border-turf/30 bg-turf/10 shadow-[0_0_40px_rgba(60,235,120,0.25)]">
-                      <BadgeCheck className="h-10 w-10 text-turf" />
-                    </span>
-                    <h3 className="mt-6 text-2xl font-bold tracking-tight text-white">Enquiry Sent Successfully</h3>
-                    <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
-                      Thank you, <span className="font-semibold text-white">{extName.trim()}</span>. Our admin team will contact you shortly to confirm availability, timing and pricing.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={resetExtendedEnquiry}
-                      className="mt-8 inline-flex items-center gap-2 rounded-full border border-turf/30 bg-turf/10 px-6 py-3 text-sm font-semibold text-turf transition-colors hover:bg-turf/20"
-                    >
-                      Back to Booking
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <div className="booking-field-title flex items-center gap-2">
-                      <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-turf/10 text-[0.7rem] font-bold text-turf">1</span>
-                      Your details
-                    </div>
-                    <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                      <label className="space-y-2 text-sm text-foreground/80">
-                        <span>Full Name *</span>
-                        <input
-                          type="text"
-                          value={extName}
-                          onChange={(event) => setExtName(event.target.value)}
-                          placeholder="Enter your name"
-                          className="w-full rounded-2xl border border-turf/20 bg-night/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-turf"
-                        />
-                      </label>
-                      <label className="space-y-2 text-sm text-foreground/80">
-                        <span>Phone Number *</span>
-                        <input
-                          type="tel"
-                          value={extPhone}
-                          onChange={(event) => setExtPhone(event.target.value)}
-                          placeholder="+91 XXXXX XXXXX"
-                          className="w-full rounded-2xl border border-turf/20 bg-night/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-turf"
-                        />
-                      </label>
-                    </div>
-
-                    <div className="booking-field-title mt-8 flex items-center gap-2">
-                      <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-turf/10 text-[0.7rem] font-bold text-turf">2</span>
-                      Preferred schedule
-                    </div>
-                    <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                      <label className="space-y-2 text-sm text-foreground/80">
-                        <span>Preferred Start Date *</span>
-                        <input
-                          type="date"
-                          value={extStartDate}
-                          onChange={(event) => setExtStartDate(event.target.value)}
-                          className="w-full rounded-2xl border border-turf/20 bg-night/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-turf"
-                        />
-                      </label>
-                      <label className="space-y-2 text-sm text-foreground/80">
-                        <span>Preferred End Date *</span>
-                        <input
-                          type="date"
-                          value={extEndDate}
-                          onChange={(event) => setExtEndDate(event.target.value)}
-                          className="w-full rounded-2xl border border-turf/20 bg-night/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-turf"
-                        />
-                      </label>
-                      <label className="space-y-2 text-sm text-foreground/80">
-                        <span>Preferred Start Time *</span>
-                        <select
-                          value={extStartTime}
-                          onChange={(event) => setExtStartTime(event.target.value)}
-                          className="w-full rounded-2xl border border-turf/20 bg-night/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-turf"
-                        >
-                          {pitchTimeSlots.map((slot) => (
-                            <option key={slot} value={slot}>{formatBookingTime(slot)}</option>
-                          ))}
-                        </select>
-                      </label>
-                      <label className="space-y-2 text-sm text-foreground/80">
-                        <span>Preferred End Time *</span>
-                        <select
-                          value={extEndTime}
-                          onChange={(event) => setExtEndTime(event.target.value)}
-                          className="w-full rounded-2xl border border-turf/20 bg-night/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-turf"
-                        >
-                          {pitchTimeSlots.map((slot) => (
-                            <option key={slot} value={slot}>{formatBookingTime(slot)}</option>
-                          ))}
-                        </select>
-                      </label>
-                    </div>
-
-                    <div className="booking-field-title mt-8 flex items-center gap-2">
-                      <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-turf/10 text-[0.7rem] font-bold text-turf">3</span>
-                      Additional details
-                    </div>
-                    <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                      <label className="space-y-2 text-sm text-foreground/80">
-                        <span>Number of Players</span>
-                        <input
-                          type="number"
-                          min={1}
-                          value={extPlayers}
-                          onChange={(event) => setExtPlayers(event.target.value)}
-                          placeholder="Enter number of players"
-                          className="w-full rounded-2xl border border-turf/20 bg-night/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-turf"
-                        />
-                      </label>
-                    </div>
-                    <div className="mt-4">
-                      <label className="space-y-2 text-sm text-foreground/80">
-                        <span>Message / Requirements</span>
-                        <textarea
-                          rows={4}
-                          value={extMessage}
-                          onChange={(event) => setExtMessage(event.target.value)}
-                          placeholder="Tell us about your requirements, event, number of days, preferred timing, etc."
-                          className="w-full resize-none rounded-2xl border border-turf/20 bg-night/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-turf"
-                        />
-                      </label>
-                    </div>
-
-                    {extError && (
-                      <p className="mt-5 rounded-2xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-300">
-                        {extError}
-                      </p>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={submitExtendedEnquiry}
-                      className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-turf px-6 py-4 text-sm font-semibold text-night shadow-[0_0_30px_rgba(60,235,120,0.4)] transition-transform hover:scale-[1.02]"
-                    >
-                      Send Booking Enquiry
-                      <ArrowRight className="h-4 w-4" />
-                    </button>
-                  </>
-                )}
-              </>
-            )}
-          </div>
-
-          {bookingType === "hourly" ? (
-            <div className="booking-summary relative rounded-3xl border border-turf/15 bg-black/35 p-6 backdrop-blur-xl shadow-[0_0_45px_-18px_rgba(60,235,120,0.4)] sm:p-7">
-              <div className="absolute inset-x-0 top-0 h-40 rounded-t-3xl bg-[radial-gradient(circle_at_top,rgba(96,240,120,0.14),transparent_70%)] opacity-80 pointer-events-none" />
-              <div className="relative z-10">
-              <p className="flex items-center gap-2 text-[0.7rem] font-semibold uppercase tracking-[0.35em] text-turf">
-                <span className="h-2 w-2 rounded-full bg-turf animate-live-pulse" />
-                Booking summary
-              </p>
-
-              <div className="mt-6 space-y-4">
-                <div className="flex items-center justify-between gap-4 text-sm">
-                  <span className="text-muted-foreground">Type</span>
-                  <span className="font-semibold text-white">{bookingType === "hourly" ? "Hourly" : "Extended (Full Day)"}</span>
-                </div>
-                <div className="flex items-center justify-between gap-4 text-sm">
-                  <span className="text-muted-foreground">Date</span>
-                  <span className="font-semibold text-white">{bookingDate || "Not selected"}</span>
-                </div>
-                <div className="flex items-center justify-between gap-4 text-sm">
-                  <span className="text-muted-foreground">Time</span>
-                  <span className="font-semibold text-white">{formatBookingTime(bookingTime)}</span>
-                </div>
-                <div className="flex items-center justify-between gap-4 text-sm">
-                  <span className="text-muted-foreground">Players</span>
-                  <span className="font-semibold text-white">{bookingPlayers > 0 ? bookingPlayers : "—"}</span>
-                </div>
-                <div className="flex items-center justify-between gap-4 text-sm">
-                  <span className="text-muted-foreground">Duration</span>
-                  <span className="font-semibold text-white">
-                    {bookingType === "hourly" ? `${bookingHours} hour${bookingHours === 1 ? "" : "s"}` : "6 AM – 12 AM"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-6 rounded-2xl border border-turf/20 bg-night/60 p-4">
-                <p className="text-xs uppercase tracking-[0.35em] text-turf">Estimated total</p>
-                <p className="mt-2 text-3xl font-extrabold text-white">₹{animatedBookingTotal}</p>
-                {bookingType === "hourly" ? (
-                  <p className="text-sm text-muted-foreground">for {bookingHours} hour{bookingHours === 1 ? "" : "s"} at ₹700/hour</p>
-                ) : (
-                  <p className="text-sm text-muted-foreground">flat full-day rate</p>
-                )}
-              </div>
-
-              <div className="mt-6 space-y-3 text-sm text-foreground/85">
-                <p className="flex items-center gap-2"><span className="text-turf">✓</span> Instant confirmation</p>
-                <p className="flex items-center gap-2"><span className="text-turf">✓</span> Floodlights included</p>
-                <p className="flex items-center gap-2"><span className="text-turf">✓</span> Full turf access</p>
-              </div>
-              </div>
-            </div>
-            ) : (
-            <div className="booking-summary relative rounded-3xl border border-turf/15 bg-black/35 p-6 backdrop-blur-xl shadow-[0_0_45px_-18px_rgba(60,235,120,0.4)] sm:p-7">
-              <div className="absolute inset-x-0 top-0 h-40 rounded-t-3xl bg-[radial-gradient(circle_at_top,rgba(96,240,120,0.14),transparent_70%)] opacity-80 pointer-events-none" />
-              <div className="relative z-10">
-                <p className="flex items-center gap-2 text-[0.7rem] font-semibold uppercase tracking-[0.35em] text-turf">
-                  <span className="h-2 w-2 rounded-full bg-turf animate-live-pulse" />
-                  Prefer to talk directly?
-                </p>
-                <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                  Contact our team for extended bookings and event enquiries.
-                </p>
-                <div className="mt-6 space-y-4">
-                  <div className="flex items-center gap-3 text-sm">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-turf/20 bg-turf/10 text-turf">
-                      <Phone className="h-4 w-4" />
-                    </span>
-                    <div>
-                      <p className="text-xs text-muted-foreground">Phone</p>
-                      <p className="font-semibold text-white">+91 98765 43210</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-turf/20 bg-turf/10 text-turf">
-                      <Mail className="h-4 w-4" />
-                    </span>
-                    <div>
-                      <p className="text-xs text-muted-foreground">Email</p>
-                      <p className="font-semibold text-white">play@turfon24.com</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-6 rounded-2xl border border-turf/20 bg-night/60 p-4">
-                  <p className="text-xs leading-relaxed text-muted-foreground">
-                    For full-day and multi-day bookings, our team will confirm availability and share a custom quote based on your dates and requirements.
-                  </p>
-                </div>
-              </div>
-            </div>
-            )}
-        </div>
-      </section>
+      <BookingSection
+        booking={booking}
+        sectionRef={(node) => { sectionRefs.current["booking"] = node; }}
+      />
 
       {/* Contact */}
       <section

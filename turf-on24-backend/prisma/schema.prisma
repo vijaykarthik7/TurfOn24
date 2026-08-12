@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model HourlyBooking {
+  id            Int      @id @default(autoincrement())
+  fullName      String
+  phone         String
+  preferredDate DateTime @db.Date
+  preferredTime String
+  players       Int
+  hours         Int
+  totalPrice    Decimal  @db.Decimal(10, 2)
+  status        String   @default("pending")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model BookingEnquiry {
+  id        Int      @id @default(autoincrement())
+  fullName  String
+  phone     String
+  startDate DateTime @db.Date
+  endDate   DateTime @db.Date
+  startTime String
+  endTime   String
+  players   Int?
+  message   String?  @db.Text
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

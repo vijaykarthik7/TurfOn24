@@ -1,0 +1,19 @@
+{
+  "name": "turf-on24-backend",
+  "version": "1.0.0",
+  "description": "TurfOn24 backend",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@prisma/adapter-mariadb": "^7.9.1",
+    "@prisma/client": "^7.9.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^5.1.0",
+    "mariadb": "^3.4.5",
+    "prisma": "^7.9.1"
+  }
+}
