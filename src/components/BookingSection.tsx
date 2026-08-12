@@ -22,6 +22,8 @@ import {
   ToggleGroupItem,
 } from "@/components/ui/toggle-group";
 
+import { API_URL } from "@/lib/api";
+
 /* =========================================================
    TIME SLOTS
 ========================================================= */
@@ -130,14 +132,11 @@ function eachTimeBetween(
 /* =========================================================
    BACKEND URL
 
-   If you have VITE_API_URL in .env:
-   VITE_API_URL=http://localhost:5000
-
-   Otherwise it automatically uses localhost:5000.
+   Resolved centrally in src/lib/api.ts:
+   - VITE_API_URL (if set in .env / Vercel dashboard) is used.
+   - localhost/127.0.0.1 -> http://localhost:5000
+   - any other host       -> the production backend URL.
 ========================================================= */
-
-const API_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 /* =========================================================
    BOOKING HOOK
@@ -304,6 +303,18 @@ export function useBooking() {
             unknown
           >;
 
+          const bookingStatus =
+            typeof record["status"] === "string"
+              ? record["status"].toLowerCase()
+              : "";
+
+          if (
+            bookingStatus === "cancelled" ||
+            bookingStatus === "canceled"
+          ) {
+            continue;
+          }
+
           const date =
             typeof record["preferredDate"] ===
             "string"
@@ -345,6 +356,18 @@ export function useBooking() {
             string,
             unknown
           >;
+
+          const bookingStatus =
+            typeof record["status"] === "string"
+              ? record["status"].toLowerCase()
+              : "";
+
+          if (
+            bookingStatus === "cancelled" ||
+            bookingStatus === "canceled"
+          ) {
+            continue;
+          }
 
           const startDate =
             typeof record["startDate"] ===

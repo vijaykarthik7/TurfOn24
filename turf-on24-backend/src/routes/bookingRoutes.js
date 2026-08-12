@@ -31,6 +31,17 @@ function isHourlyBooking(enquiry) {
   return hourlyMessage || (sameDate && sameTime);
 }
 
+function isCancelledBooking(enquiry) {
+  if (!enquiry) return false;
+
+  const status =
+    typeof enquiry.status === "string"
+      ? enquiry.status.toLowerCase()
+      : "";
+
+  return status === "cancelled" || status === "canceled";
+}
+
 function parseHourlyHours(message) {
   if (typeof message === "string") {
     const match = message.match(
@@ -392,17 +403,19 @@ router.post("/", async (req, res) => {
     const result = await withBookingLock(async () => {
       const existing = await prisma.bookingEnquiry.findMany();
 
-      const conflict = existing.find((item) =>
-        bookingsConflict(
-          {
-            hourly: true,
-            startDate: parsedDate,
-            endDate: parsedDate,
-            startTime: String(finalTime),
-            endTime: String(finalTime),
-          },
-          item
-        )
+      const conflict = existing.find(
+        (item) =>
+          !isCancelledBooking(item) &&
+          bookingsConflict(
+            {
+              hourly: true,
+              startDate: parsedDate,
+              endDate: parsedDate,
+              startTime: String(finalTime),
+              endTime: String(finalTime),
+            },
+            item
+          )
       );
 
       if (conflict) {
@@ -645,17 +658,19 @@ router.post("/enquiries", async (req, res) => {
     const result = await withBookingLock(async () => {
       const existing = await prisma.bookingEnquiry.findMany();
 
-      const conflict = existing.find((item) =>
-        bookingsConflict(
-          {
-            hourly: false,
-            startDate: parsedStartDate,
-            endDate: parsedEndDate,
-            startTime: String(startTime),
-            endTime: String(endTime),
-          },
-          item
-        )
+      const conflict = existing.find(
+        (item) =>
+          !isCancelledBooking(item) &&
+          bookingsConflict(
+            {
+              hourly: false,
+              startDate: parsedStartDate,
+              endDate: parsedEndDate,
+              startTime: String(startTime),
+              endTime: String(endTime),
+            },
+            item
+          )
       );
 
       if (conflict) {
@@ -719,6 +734,95 @@ router.post("/enquiries", async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to save booking enquiry",
+      error: String(error?.message || error),
+    });
+  }
+});
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE BOOKING STATUS (ADMIN APPROVAL)
+|--------------------------------------------------------------------------
+| PATCH /api/bookings/:id
+| Body: { status: "pending" | "confirmed" | "completed" | "cancelled" }
+|
+| Approving a booking ("confirmed") is what actually books the slot.
+| Rejecting it ("cancelled") frees the slot for other customers.
+|--------------------------------------------------------------------------
+*/
+
+const BOOKING_STATUSES = [
+  "pending",
+  "confirmed",
+  "completed",
+  "cancelled",
+  "canceled",
+];
+
+router.patch("/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid booking id",
+      });
+    }
+
+    const { status } = req.body;
+
+    if (!status || typeof status !== "string") {
+      return res.status(400).json({
+        success: false,
+        message: "Status is required",
+      });
+    }
+
+    const normalizedStatus = status.trim().toLowerCase();
+
+    if (!BOOKING_STATUSES.includes(normalizedStatus)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid status. Allowed: ${BOOKING_STATUSES.join(", ")}`,
+      });
+    }
+
+    const existing = await prisma.bookingEnquiry.findUnique({
+      where: { id },
+    });
+
+    if (!existing) {
+      return res.status(404).json({
+        success: false,
+        message: "Booking not found",
+      });
+    }
+
+    const updated = await prisma.bookingEnquiry.update({
+      where: { id },
+      data: { status: normalizedStatus },
+    });
+
+    console.log("BOOKING STATUS UPDATED:");
+    console.log({
+      id,
+      from: existing.status,
+      to: normalizedStatus,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: `Booking status updated to ${normalizedStatus}`,
+      enquiry: updated,
+    });
+  } catch (error) {
+    console.error("PATCH /api/bookings/:id ERROR:");
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update booking status",
       error: String(error?.message || error),
     });
   }

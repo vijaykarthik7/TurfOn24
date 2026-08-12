@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import {
   Bell,
   CalendarCheck,
+  CheckCircle2,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -18,6 +19,8 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
+import { API_URL, apiUrl } from "@/lib/api";
+
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
@@ -27,17 +30,6 @@ export const Route = createFileRoute("/admin")({
   }),
   component: AdminPage,
 });
-
-/*
- * IMPORTANT
- * ---------
- * The VITE_API_URL access below intentionally uses bracket notation.
- * This fixes TS4111:
- * "Property 'VITE_API_URL' comes from an index signature..."
- */
-const API_URL =
-  (import.meta.env["VITE_API_URL"] as string | undefined) ??
-  "http://localhost:5000";
 
 type ViewKey =
   | "dashboard"
@@ -401,14 +393,42 @@ function normalizeExtendedBooking(value: unknown): ExtendedBooking | null {
 }
 
 async function fetchJson(url: string): Promise<ApiResponse | unknown[]> {
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-    },
-  });
+  let response: Response;
 
-  const payload: unknown = await response.json();
+  try {
+    response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+  } catch (error) {
+    const detail =
+      error instanceof Error ? error.message : String(error);
+
+    throw new Error(
+      `Network error reaching the backend at ${url} (${detail}). ` +
+        "Make sure the backend is running and reachable.",
+    );
+  }
+
+  const contentType = response.headers.get("content-type") || "";
+  let payload: unknown;
+
+  if (contentType.includes("application/json")) {
+    try {
+      payload = await response.json();
+    } catch {
+      payload = null;
+    }
+  } else {
+    const text = await response.text();
+
+    throw new Error(
+      `Backend returned a non-JSON response (HTTP ${response.status}) from ${url}. ` +
+        (text.trim() ? `Response: ${text.trim().slice(0, 200)}` : ""),
+    );
+  }
 
   if (!response.ok) {
     const message =
@@ -416,7 +436,7 @@ async function fetchJson(url: string): Promise<ApiResponse | unknown[]> {
         ? payload["message"]
         : `Request failed with status ${response.status}`;
 
-    throw new Error(message);
+    throw new Error(`${message} (HTTP ${response.status})`);
   }
 
   return payload as ApiResponse | unknown[];
@@ -436,6 +456,61 @@ function StatusBadge({
       <span className="h-1.5 w-1.5 rounded-full bg-current" />
       {label}
     </span>
+  );
+}
+
+/*
+ * Per-row booking status + approval actions.
+ * Pending bookings get Approve / Reject buttons; everything else just
+ * shows its status badge. Approving ("confirmed") is what books the slot.
+ */
+function BookingActions({
+  status,
+  busy,
+  onApprove,
+  onReject,
+}: {
+  status: string;
+  busy: boolean;
+  onApprove: () => void;
+  onReject: () => void;
+}) {
+  const value = status.toLowerCase();
+
+  if (value === "confirmed") {
+    return <StatusBadge label="Confirmed" tone="green" />;
+  }
+
+  if (value === "completed") {
+    return <StatusBadge label="Completed" tone="sky" />;
+  }
+
+  if (value === "cancelled" || value === "canceled") {
+    return <StatusBadge label="Cancelled" tone="rose" />;
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <button
+        type="button"
+        onClick={onApprove}
+        disabled={busy}
+        className="inline-flex items-center gap-1.5 rounded-full border border-turf/30 bg-turf/10 px-3 py-1.5 text-xs font-medium text-turf transition-colors hover:bg-turf/20 disabled:opacity-50"
+      >
+        <CheckCircle2 className="h-3.5 w-3.5" />
+        Approve
+      </button>
+
+      <button
+        type="button"
+        onClick={onReject}
+        disabled={busy}
+        className="inline-flex items-center gap-1.5 rounded-full border border-rose-400/30 bg-rose-400/10 px-3 py-1.5 text-xs font-medium text-rose-300 transition-colors hover:bg-rose-400/20 disabled:opacity-50"
+      >
+        <X className="h-3.5 w-3.5" />
+        Reject
+      </button>
+    </div>
   );
 }
 
@@ -483,10 +558,14 @@ function PanelHeader({
 function HourlyBookingsTable({
   bookings,
   onRefresh,
+  onUpdateStatus,
+  updatingId,
   loading,
 }: {
   bookings: HourlyBooking[];
   onRefresh: () => void;
+  onUpdateStatus: (id: number, status: string) => void;
+  updatingId: number | null;
   loading: boolean;
 }) {
   return (
@@ -532,6 +611,7 @@ function HourlyBookingsTable({
                 <th className="px-4 py-3 font-medium">Players</th>
                 <th className="px-4 py-3 font-medium">Hours</th>
                 <th className="px-4 py-3 font-medium">Amount</th>
+                <th className="px-4 py-3 font-medium">Actions</th>
               </tr>
             </thead>
 
@@ -580,6 +660,19 @@ function HourlyBookingsTable({
                   <td className="px-4 py-4 font-medium text-white">
                     ₹{booking.totalPrice.toLocaleString("en-IN")}
                   </td>
+
+                  <td className="px-4 py-4">
+                    <BookingActions
+                      status={booking.status}
+                      busy={updatingId === booking.id}
+                      onApprove={() =>
+                        onUpdateStatus(booking.id, "confirmed")
+                      }
+                      onReject={() =>
+                        onUpdateStatus(booking.id, "cancelled")
+                      }
+                    />
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -593,10 +686,14 @@ function HourlyBookingsTable({
 function ExtendedBookingsTable({
   enquiries,
   onRefresh,
+  onUpdateStatus,
+  updatingId,
   loading,
 }: {
   enquiries: ExtendedBooking[];
   onRefresh: () => void;
+  onUpdateStatus: (id: number, status: string) => void;
+  updatingId: number | null;
   loading: boolean;
 }) {
   return (
@@ -642,6 +739,7 @@ function ExtendedBookingsTable({
                 <th className="px-4 py-3 font-medium">Time</th>
                 <th className="px-4 py-3 font-medium">Players</th>
                 <th className="px-4 py-3 font-medium">Customer Message</th>
+                <th className="px-4 py-3 font-medium">Actions</th>
               </tr>
             </thead>
 
@@ -695,6 +793,19 @@ function ExtendedBookingsTable({
                       </p>
                     </div>
                   </td>
+
+                  <td className="px-4 py-4">
+                    <BookingActions
+                      status={enquiry.status}
+                      busy={updatingId === enquiry.id}
+                      onApprove={() =>
+                        onUpdateStatus(enquiry.id, "confirmed")
+                      }
+                      onReject={() =>
+                        onUpdateStatus(enquiry.id, "cancelled")
+                      }
+                    />
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -710,11 +821,15 @@ function DashboardView({
   enquiries,
   loading,
   onRefresh,
+  onUpdateStatus,
+  updatingId,
 }: {
   hourlyBookings: HourlyBooking[];
   enquiries: ExtendedBooking[];
   loading: boolean;
   onRefresh: () => void;
+  onUpdateStatus: (id: number, status: string) => void;
+  updatingId: number | null;
 }) {
   const totalBookings = hourlyBookings.length;
   const totalExtended = enquiries.length;
@@ -787,12 +902,16 @@ function DashboardView({
       <HourlyBookingsTable
         bookings={hourlyBookings}
         onRefresh={onRefresh}
+        onUpdateStatus={onUpdateStatus}
+        updatingId={updatingId}
         loading={loading}
       />
 
       <ExtendedBookingsTable
         enquiries={enquiries}
         onRefresh={onRefresh}
+        onUpdateStatus={onUpdateStatus}
+        updatingId={updatingId}
         loading={loading}
       />
     </div>
@@ -804,11 +923,15 @@ function BookingsView({
   enquiries,
   loading,
   onRefresh,
+  onUpdateStatus,
+  updatingId,
 }: {
   hourlyBookings: HourlyBooking[];
   enquiries: ExtendedBooking[];
   loading: boolean;
   onRefresh: () => void;
+  onUpdateStatus: (id: number, status: string) => void;
+  updatingId: number | null;
 }) {
   return (
     <div className="space-y-5">
@@ -827,12 +950,16 @@ function BookingsView({
       <HourlyBookingsTable
         bookings={hourlyBookings}
         onRefresh={onRefresh}
+        onUpdateStatus={onUpdateStatus}
+        updatingId={updatingId}
         loading={loading}
       />
 
       <ExtendedBookingsTable
         enquiries={enquiries}
         onRefresh={onRefresh}
+        onUpdateStatus={onUpdateStatus}
+        updatingId={updatingId}
         loading={loading}
       />
     </div>
@@ -1152,14 +1279,15 @@ function AdminPage() {
   const [enquiries, setEnquiries] = useState<ExtendedBooking[]>([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [updatingId, setUpdatingId] = useState<number | null>(null);
 
   const fetchAdminData = useCallback(async () => {
     try {
       setLoading(true);
       setErrorMessage("");
 
-      const hourlyUrl = `${API_URL}/api/bookings/hourly`;
-      const enquiriesUrl = `${API_URL}/api/bookings/enquiries`;
+      const hourlyUrl = apiUrl("/api/bookings/hourly");
+      const enquiriesUrl = apiUrl("/api/bookings/enquiries");
 
       console.log("[Admin] API URL:", API_URL);
       console.log("[Admin] Fetching:", hourlyUrl);
@@ -1225,7 +1353,58 @@ function AdminPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [API_URL]);
+
+  const updateBookingStatus = useCallback(
+    async (id: number, status: string) => {
+      try {
+        setUpdatingId(id);
+        setErrorMessage("");
+
+        const response = await fetch(apiUrl(`/api/bookings/${id}`), {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status }),
+        });
+
+        const contentType = response.headers.get("content-type") || "";
+        let data: ApiResponse | null = null;
+
+        if (contentType.includes("application/json")) {
+          try {
+            data = (await response.json()) as ApiResponse;
+          } catch {
+            data = null;
+          }
+        }
+
+        if (!response.ok) {
+          const message =
+            data && isObject(data) && typeof data["message"] === "string"
+              ? data["message"]
+              : `Failed to update booking status (HTTP ${response.status})`;
+
+          throw new Error(message);
+        }
+
+        await fetchAdminData();
+      } catch (error) {
+        console.error("[Admin] Failed to update booking status:", error);
+
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Failed to update booking status.";
+
+        setErrorMessage(message);
+      } finally {
+        setUpdatingId(null);
+      }
+    },
+    [fetchAdminData],
+  );
 
   useEffect(() => {
     void fetchAdminData();
@@ -1363,6 +1542,10 @@ function AdminPage() {
               enquiries={enquiries}
               loading={loading}
               onRefresh={() => void fetchAdminData()}
+              onUpdateStatus={(id, status) =>
+                void updateBookingStatus(id, status)
+              }
+              updatingId={updatingId}
             />
           ) : null}
 
@@ -1372,6 +1555,10 @@ function AdminPage() {
               enquiries={enquiries}
               loading={loading}
               onRefresh={() => void fetchAdminData()}
+              onUpdateStatus={(id, status) =>
+                void updateBookingStatus(id, status)
+              }
+              updatingId={updatingId}
             />
           ) : null}
 
