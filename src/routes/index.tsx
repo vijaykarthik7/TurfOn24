@@ -719,7 +719,7 @@ function Index() {
   }, []);
 
   return (
-    <main className="min-h-[100svh] bg-transparent text-foreground relative overflow-x-clip overflow-hidden">
+    <main className="min-h-[100svh] has-mobile-hero bg-transparent text-foreground relative overflow-x-clip overflow-hidden">
       {/* Mobile hero wrapper: contains the background layer and the hero content.
           On mobile the background layer is a single viewport-fixed layer that
           covers the whole page continuously (never adds document height). On

@@ -1720,13 +1720,15 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
     overflow-x: hidden;
   }
 
-  /* Root cause: do NOT force a full-viewport minimum height on the homepage
-     page wrapper on mobile. A `100svh` minimum here can stretch the page and
-     open a blank strip between the hero's benefit cards and the About Us
-     section. Let the page size itself from its content instead. */
-  main:has(.mobile-hero-wrap) {
-    min-height: auto !important;
-  }
+    /* Root cause: do NOT force a full-viewport minimum height on the homepage
+      page wrapper on mobile. A `100svh` minimum here can stretch the page and
+      open a blank strip between the hero's benefit cards and the About Us
+      section. Let the page size itself from its content instead. */
+    /* Use an explicit class on <main> instead of :has() for broader browser
+      compatibility on mobile devices. */
+    main.has-mobile-hero {
+     min-height: auto !important;
+    }
 
   /* Single, continuous, viewport-fixed background layer for the whole page.
      Because it is `position: fixed` it never participates in the document
