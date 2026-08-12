@@ -1,11 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { ReactNode } from "react";
+import type { FormEvent, ReactNode } from "react";
 import {
   Bell,
   CalendarCheck,
   CheckCircle2,
   LayoutDashboard,
+  Lock,
+  LogIn,
   LogOut,
   Menu,
   MessageSquare,
@@ -13,6 +15,7 @@ import {
   Search,
   Settings,
   TrendingUp,
+  User,
   Users,
   Wallet,
   X,
@@ -20,6 +23,10 @@ import {
 import type { LucideIcon } from "lucide-react";
 
 import { API_URL, apiUrl } from "@/lib/api";
+
+const ADMIN_USERNAME = "demo123";
+const ADMIN_PASSWORD = "demo123";
+const AUTH_STORAGE_KEY = "turfon24_admin_auth";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -1182,12 +1189,133 @@ function MessagesView({
   );
 }
 
+function AdminLoginPage({
+  username,
+  password,
+  error,
+  busy,
+  onUsernameChange,
+  onPasswordChange,
+  onSubmit,
+}: {
+  username: string;
+  password: string;
+  error: string;
+  busy: boolean;
+  onUsernameChange: (value: string) => void;
+  onPasswordChange: (value: string) => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+}) {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-night-soft px-4 py-10 text-zinc-200">
+      <div className="relative w-full max-w-md overflow-hidden rounded-[1.75rem] border border-turf/15 bg-white/[0.04] p-8 shadow-[0_0_80px_rgba(16,221,86,0.12)] backdrop-blur-2xl">
+        <div className="pointer-events-none absolute left-0 top-0 h-24 w-24 rounded-full bg-turf/10 blur-3xl" />
+        <div className="pointer-events-none absolute right-0 bottom-0 h-24 w-24 rounded-full bg-turf/10 blur-3xl" />
+
+        <div className="relative z-10">
+          <div className="flex items-center gap-3">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-turf/30 bg-turf/10 text-xl font-bold text-turf">
+              T
+            </span>
+
+            <div>
+              <p className="text-sm font-bold text-white">TurfOn24</p>
+
+              <p className="text-[0.65rem] uppercase tracking-[0.3em] text-turf/70">
+                Admin Panel
+              </p>
+            </div>
+          </div>
+
+          <h1 className="mt-8 text-2xl font-bold tracking-tight text-white">
+            Admin Login
+          </h1>
+
+          <p className="mt-1.5 text-sm text-zinc-400">
+            Sign in to manage bookings and enquiries.
+          </p>
+
+          <form className="mt-8 space-y-4" onSubmit={onSubmit}>
+            <div>
+              <label
+                htmlFor="admin-username"
+                className="text-xs uppercase tracking-wider text-zinc-400"
+              >
+                Username
+              </label>
+
+              <div className="relative mt-2">
+                <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-turf/70" />
+
+                <input
+                  id="admin-username"
+                  type="text"
+                  autoComplete="username"
+                  value={username}
+                  onChange={(event) => onUsernameChange(event.target.value)}
+                  placeholder="demo123"
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.03] py-3 pl-10 pr-4 text-sm text-white outline-none transition-colors placeholder:text-zinc-600 focus:border-turf/40"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="admin-password"
+                className="text-xs uppercase tracking-wider text-zinc-400"
+              >
+                Password
+              </label>
+
+              <div className="relative mt-2">
+                <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-turf/70" />
+
+                <input
+                  id="admin-password"
+                  type="password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(event) => onPasswordChange(event.target.value)}
+                  placeholder="••••••"
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.03] py-3 pl-10 pr-4 text-sm text-white outline-none transition-colors placeholder:text-zinc-600 focus:border-turf/40"
+                />
+              </div>
+            </div>
+
+            {error ? (
+              <p className="rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-300">
+                {error}
+              </p>
+            ) : null}
+
+            <button
+              type="submit"
+              disabled={busy}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-turf px-6 py-3 text-sm font-semibold text-night shadow-[0_0_35px_rgba(60,235,120,0.35)] transition hover:brightness-110 disabled:opacity-60"
+            >
+              <LogIn className="h-4 w-4" />
+              {busy ? "Signing in..." : "Sign In"}
+            </button>
+          </form>
+
+          <p className="mt-6 text-center text-xs text-zinc-500">
+            Demo credentials:{" "}
+            <span className="text-turf/80">demo123 / demo123</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function SidebarContent({
   view,
   onNavigate,
+  onLogout,
 }: {
   view: ViewKey;
   onNavigate: (view: ViewKey) => void;
+  onLogout: () => void;
 }) {
   return (
     <div className="flex h-full flex-col">
@@ -1257,6 +1385,7 @@ function SidebarContent({
 
         <button
           type="button"
+          onClick={onLogout}
           className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:border-rose-400/40 hover:text-rose-300"
         >
           <LogOut className="h-4 w-4" />
@@ -1271,6 +1400,16 @@ function SidebarContent({
 function AdminPage() {
   const [view, setView] = useState<ViewKey>("dashboard");
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const [authenticated, setAuthenticated] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.sessionStorage.getItem(AUTH_STORAGE_KEY) === "1";
+  });
+
+  const [loginUsername, setLoginUsername] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [loginBusy, setLoginBusy] = useState(false);
 
   const [hourlyBookings, setHourlyBookings] = useState<HourlyBooking[]>(
     [],
@@ -1433,12 +1572,53 @@ function AdminPage() {
     setMobileOpen(false);
   };
 
+  const handleLogin = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setLoginError("");
+
+    if (loginUsername !== ADMIN_USERNAME || loginPassword !== ADMIN_PASSWORD) {
+      setLoginError("Invalid username or password. Try demo123 / demo123.");
+      return;
+    }
+
+    setLoginBusy(true);
+
+    window.setTimeout(() => {
+      window.sessionStorage.setItem(AUTH_STORAGE_KEY, "1");
+      setAuthenticated(true);
+      setLoginPassword("");
+      setLoginBusy(false);
+    }, 350);
+  };
+
+  const handleLogout = () => {
+    window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
+    setAuthenticated(false);
+    setView("dashboard");
+    setMobileOpen(false);
+  };
+
+  if (!authenticated) {
+    return (
+      <AdminLoginPage
+        username={loginUsername}
+        password={loginPassword}
+        error={loginError}
+        busy={loginBusy}
+        onUsernameChange={setLoginUsername}
+        onPasswordChange={setLoginPassword}
+        onSubmit={handleLogin}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-night-soft text-zinc-200">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[76px] flex-col border-r border-turf/10 bg-white/[0.03] backdrop-blur-xl md:flex lg:w-[268px]">
         <SidebarContent
           view={view}
           onNavigate={navigate}
+          onLogout={handleLogout}
         />
       </aside>
 
@@ -1462,6 +1642,7 @@ function AdminPage() {
             <SidebarContent
               view={view}
               onNavigate={navigate}
+              onLogout={handleLogout}
             />
           </aside>
         </div>

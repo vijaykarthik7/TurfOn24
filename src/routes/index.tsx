@@ -720,128 +720,133 @@ function Index() {
 
   return (
     <main className="min-h-[100svh] bg-transparent text-foreground relative overflow-x-clip overflow-hidden">
-      <div className="hero-bg-layer pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div
-          className="hero-bg-img absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `url(${heroImg})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
-        <div className="absolute inset-0">
-          <div className="flood-blink absolute right-[10%] top-[14%] h-72 w-72 rounded-full">
-            <div className="h-full w-full rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.85)_0%,rgba(190,255,210,0.25)_35%,transparent_70%)] blur-md motion-safe:animate-[spin_18s_linear_infinite]" />
+      {/* Mobile hero wrapper: contains the background layer and the hero content.
+          On mobile the background layer is a single viewport-fixed layer that
+          covers the whole page continuously (never adds document height). On
+          desktop the wrapper is neutral and the layer stays viewport-fixed
+          exactly as before. */}
+      <div className="mobile-hero-wrap">
+        <div className="hero-bg-layer pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+          <div
+            className="hero-bg-img absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: `url(${heroImg})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
+          <div className="absolute inset-0">
+            <div className="flood-blink absolute right-[10%] top-[14%] h-72 w-72 rounded-full">
+              <div className="h-full w-full rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.85)_0%,rgba(190,255,210,0.25)_35%,transparent_70%)] blur-md motion-safe:animate-[spin_18s_linear_infinite]" />
+            </div>
+            <div className="flood-blink-slow absolute right-[26%] top-[30%] h-44 w-44 rounded-full">
+              <div className="h-full w-full rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.7)_0%,rgba(160,255,190,0.2)_40%,transparent_72%)] blur-md motion-safe:animate-[spin_24s_linear_infinite_reverse]" />
+            </div>
+            <div className="field-pulse absolute top-[80%] right-0 h-[40%] w-[70%] bg-[radial-gradient(ellipse_at_70%_40%,rgba(60,235,120,0.35)_0%,transparent_65%)]" />
+            <div className="dot-grid absolute left-0 top-32 h-96 w-40" />
           </div>
-          <div className="flood-blink-slow absolute right-[26%] top-[30%] h-44 w-44 rounded-full">
-            <div className="h-full w-full rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.7)_0%,rgba(160,255,190,0.2)_40%,transparent_72%)] blur-md motion-safe:animate-[spin_24s_linear_infinite_reverse]" />
-          </div>
-          <div className="field-pulse absolute top-[80%] right-0 h-[40%] w-[70%] bg-[radial-gradient(ellipse_at_70%_40%,rgba(60,235,120,0.35)_0%,transparent_65%)]" />
-          <div className="dot-grid absolute left-0 top-32 h-96 w-40" />
         </div>
-      </div>
 
-      
+        {/* Hero */}
+        <div
+          id="hero"
+          ref={(node) => {
+            sectionRefs.current["hero"] = node;
+          }}
+          className="relative z-10 mx-auto flex w-[min(96vw,1700px)] flex-col justify-center overflow-x-clip px-4 pt-0 pb-10 sm:px-5 md:px-6 lg:px-6"
+        >
+          <div className="relative overflow-hidden rounded-[2.5rem] bg-transparent">
+            <div className="relative z-10 flex flex-col gap-10 rounded-[2.5rem] px-4 pb-10 pt-2 sm:px-6 sm:pb-12 sm:pt-4 lg:px-8 lg:pb-14">
+              <SiteHeader />
 
-      {/* Hero */}
-      <div
-        id="hero"
-        ref={(node) => {
-          sectionRefs.current["hero"] = node;
-        }}
-        className="relative z-10 mx-auto flex w-[min(96vw,1700px)] flex-col justify-center overflow-x-clip px-4 pt-0 pb-10 sm:px-5 md:px-6 lg:px-6"
-      >
-        <div className="relative overflow-hidden rounded-[2.5rem] bg-transparent">
-          <div className="relative z-10 flex flex-col gap-10 rounded-[2.5rem] px-4 pb-10 pt-2 sm:px-6 sm:pb-12 sm:pt-4 lg:px-8 lg:pb-14">
-            <SiteHeader />
-
-            <section className="flex flex-col gap-10">
-              <div className="hero-content w-full max-w-[min(100%,760px)]">
-                <div className="relative flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
-                  {/* Rotating hero logo */}
-                  <div className="hero-logo hidden shrink-0 self-center md:block" aria-hidden="true">
-                    <svg viewBox="0 0 200 200" className="h-28 w-28 lg:h-32 lg:w-32">
-                      <defs>
-                        <linearGradient id="heroLogoGrad" x1="0" y1="0" x2="1" y2="1">
-                          <stop offset="0%" stopColor="rgba(96,240,120,0.9)" />
-                          <stop offset="100%" stopColor="rgba(60,235,120,0.2)" />
-                        </linearGradient>
-                        <path id="heroLogoCirclePath" d="M100,100 m-82,0 a82,82 0 1,1 164,0 a82,82 0 1,1 -164,0" />
-                      </defs>
-                      <circle cx="100" cy="100" r="98" fill="rgba(8,14,10,0.75)" stroke="url(#heroLogoGrad)" strokeWidth="2" />
-                      <g className="hero-logo-rotor">
-                        <circle cx="100" cy="100" r="92" fill="none" stroke="rgba(96,240,120,0.28)" strokeWidth="1.5" strokeDasharray="4 9" />
-                        <text fontSize="12.5" letterSpacing="3" fontFamily="Manrope, ui-sans-serif, sans-serif" fontWeight="800" fill="rgba(96,240,120,0.95)">
-                          <textPath href="#heroLogoCirclePath">TURFON24 • 24/7 • FULL DAY • TURFON24 • 24/7 • FULL DAY •</textPath>
-                        </text>
-                      </g>
-                      <circle cx="100" cy="100" r="60" fill="#0c1510" stroke="rgba(96,240,120,0.35)" strokeWidth="1.5" />
-                      <g opacity="0.6">
-                        <polygon points="100,72 117,83 111,103 89,103 83,83" fill="none" stroke="#3ceb78" strokeWidth="2" />
-                        <line x1="100" y1="72" x2="100" y2="42" stroke="#3ceb78" strokeWidth="2" />
-                        <line x1="117" y1="83" x2="142" y2="60" stroke="#3ceb78" strokeWidth="2" />
-                        <line x1="111" y1="103" x2="142" y2="140" stroke="#3ceb78" strokeWidth="2" />
-                        <line x1="89" y1="103" x2="58" y2="140" stroke="#3ceb78" strokeWidth="2" />
-                        <line x1="83" y1="83" x2="58" y2="60" stroke="#3ceb78" strokeWidth="2" />
-                      </g>
-                      <text x="100" y="109" textAnchor="middle" fontSize="27" letterSpacing="1" fontFamily="Manrope, ui-sans-serif, sans-serif" fontWeight="800" fill="#3ceb78" filter="drop-shadow(0 0 12px rgba(60,235,120,0.45))">24/7</text>
-                    </svg>
+              <section className="flex flex-col gap-10">
+                <div className="hero-content w-full max-w-[min(100%,760px)]">
+                  <div className="relative flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
+                    {/* Rotating hero logo */}
+                    <div className="hero-logo hidden shrink-0 self-center md:block" aria-hidden="true">
+                      <svg viewBox="0 0 200 200" className="h-28 w-28 lg:h-32 lg:w-32">
+                        <defs>
+                          <linearGradient id="heroLogoGrad" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stopColor="rgba(96,240,120,0.9)" />
+                            <stop offset="100%" stopColor="rgba(60,235,120,0.2)" />
+                          </linearGradient>
+                          <path id="heroLogoCirclePath" d="M100,100 m-82,0 a82,82 0 1,1 164,0 a82,82 0 1,1 -164,0" />
+                        </defs>
+                        <circle cx="100" cy="100" r="98" fill="rgba(8,14,10,0.75)" stroke="url(#heroLogoGrad)" strokeWidth="2" />
+                        <g className="hero-logo-rotor">
+                          <circle cx="100" cy="100" r="92" fill="none" stroke="rgba(96,240,120,0.28)" strokeWidth="1.5" strokeDasharray="4 9" />
+                          <text fontSize="12.5" letterSpacing="3" fontFamily="Manrope, ui-sans-serif, sans-serif" fontWeight="800" fill="rgba(96,240,120,0.95)">
+                            <textPath href="#heroLogoCirclePath">TURFON24 • 24/7 • FULL DAY • TURFON24 • 24/7 • FULL DAY •</textPath>
+                          </text>
+                        </g>
+                        <circle cx="100" cy="100" r="60" fill="#0c1510" stroke="rgba(96,240,120,0.35)" strokeWidth="1.5" />
+                        <g opacity="0.6">
+                          <polygon points="100,72 117,83 111,103 89,103 83,83" fill="none" stroke="#3ceb78" strokeWidth="2" />
+                          <line x1="100" y1="72" x2="100" y2="42" stroke="#3ceb78" strokeWidth="2" />
+                          <line x1="117" y1="83" x2="142" y2="60" stroke="#3ceb78" strokeWidth="2" />
+                          <line x1="111" y1="103" x2="142" y2="140" stroke="#3ceb78" strokeWidth="2" />
+                          <line x1="89" y1="103" x2="58" y2="140" stroke="#3ceb78" strokeWidth="2" />
+                          <line x1="83" y1="83" x2="58" y2="60" stroke="#3ceb78" strokeWidth="2" />
+                        </g>
+                        <text x="100" y="109" textAnchor="middle" fontSize="27" letterSpacing="1" fontFamily="Manrope, ui-sans-serif, sans-serif" fontWeight="800" fill="#3ceb78" filter="drop-shadow(0 0 12px rgba(60,235,120,0.45))">24/7</text>
+                      </svg>
+                    </div>
+                    <div className="w-full">
+                      <p className="text-sm font-semibold uppercase tracking-[0.35em] text-turf">
+                        Full-Day Turf Booking
+                      </p>
+                    </div>
                   </div>
-                  <div className="w-full">
-                    <p className="text-sm font-semibold uppercase tracking-[0.35em] text-turf">
-                      Full-Day Turf Booking
-                    </p>
+
+                  <h1 className="mt-6 text-[clamp(2.5rem,1.2rem+4.5vw,4.25rem)] font-black leading-[1.03] tracking-tight text-white">
+                    Book the Entire Turf
+                    <span className="block text-turf">For a Full Day</span>
+                  </h1>
+
+                  <ul className="mt-7 flex flex-wrap items-center gap-6 text-sm text-foreground/85">
+                    <li className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-turf" /> Morning to Night
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <ShieldCheck className="h-4 w-4 text-turf" /> Exclusive Access
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-turf" /> For Teams &amp; Events
+                    </li>
+                  </ul>
+
+                  <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
+                    <a
+                      href="#pricing"
+                      className="inline-flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                    >
+                      <CalendarDays className="h-5 w-5 text-turf" /> Check Pricing
+                    </a>
+                    <a
+                      href="#booking"
+                      className="inline-flex items-center gap-3 rounded-xl bg-turf px-6 py-3 text-sm font-semibold text-night shadow-[0_0_35px_rgba(60,235,120,0.45)] transition hover:brightness-110"
+                    >
+                      Book Now <ArrowRight className="h-5 w-5" />
+                    </a>
                   </div>
                 </div>
+              </section>
 
-                <h1 className="mt-6 text-[clamp(2.5rem,1.2rem+4.5vw,4.25rem)] font-black leading-[1.03] tracking-tight text-white">
-                  Book the Entire Turf
-                  <span className="block text-turf">For a Full Day</span>
-                </h1>
-
-                <ul className="mt-7 flex flex-wrap items-center gap-6 text-sm text-foreground/85">
-                  <li className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-turf" /> Morning to Night
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <ShieldCheck className="h-4 w-4 text-turf" /> Exclusive Access
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-turf" /> For Teams &amp; Events
-                  </li>
-                </ul>
-
-                <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
-                  <a
-                    href="#pricing"
-                    className="inline-flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              <section className="mt-4 grid grid-cols-1 gap-4 overflow-hidden sm:grid-cols-2 lg:grid-cols-4 items-stretch">
+                {trustItems.map(({ icon: Icon, title, sub }) => (
+                  <div
+                    key={title}
+                    className="flex h-full items-center gap-4 px-8 py-8"
                   >
-                    <CalendarDays className="h-5 w-5 text-turf" /> Check Pricing
-                  </a>
-                  <a
-                    href="#booking"
-                    className="inline-flex items-center gap-3 rounded-xl bg-turf px-6 py-3 text-sm font-semibold text-night shadow-[0_0_35px_rgba(60,235,120,0.45)] transition hover:brightness-110"
-                  >
-                    Book Now <ArrowRight className="h-5 w-5" />
-                  </a>
-                </div>
-              </div>
-            </section>
-
-            <section className="mt-4 grid grid-cols-1 gap-4 overflow-hidden sm:grid-cols-2 lg:grid-cols-4 items-stretch">
-              {trustItems.map(({ icon: Icon, title, sub }) => (
-                <div
-                  key={title}
-                  className="flex h-full items-center gap-4 px-8 py-8"
-                >
-                  <Icon className="h-9 w-9 shrink-0 text-turf" />
-                  <div>
-                    <p className="text-lg font-bold">{title}</p>
-                    <p className="text-sm text-muted-foreground">{sub}</p>
+                    <Icon className="h-9 w-9 shrink-0 text-turf" />
+                    <div>
+                      <p className="text-lg font-bold">{title}</p>
+                      <p className="text-sm text-muted-foreground">{sub}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </section>
+                ))}
+              </section>
+            </div>
           </div>
         </div>
       </div>

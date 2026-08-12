@@ -1720,16 +1720,40 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
     overflow-x: hidden;
   }
 
-  /* Keep the hero background pinned to the viewport on mobile too so every
-     section (about, features, gallery, pricing, booking, contact) shares the
-     same fixed background instead of falling back to a plain dark void below
-     the hero. A dedicated `position: fixed` layer (as opposed to
-     `background-attachment: fixed` on the body) is well supported on modern
-     mobile browsers and scrolls the content over the background. */
+  /* Root cause: do NOT force a full-viewport minimum height on the homepage
+     page wrapper on mobile. A `100svh` minimum here can stretch the page and
+     open a blank strip between the hero's benefit cards and the About Us
+     section. Let the page size itself from its content instead. */
+  main:has(.mobile-hero-wrap) {
+    min-height: auto !important;
+  }
+
+  /* Single, continuous, viewport-fixed background layer for the whole page.
+     Because it is `position: fixed` it never participates in the document
+     flow, never adds page height and can never create a blank area; content
+     simply scrolls over it and every section shares the same stadium
+     background. */
   .hero-bg-layer {
     position: fixed !important;
     inset: 0 !important;
-    height: auto !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+    z-index: -1 !important;
+  }
+
+  /* Stable, visually continuous cover image on real devices */
+  .hero-bg-img {
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: scroll !important;
+  }
+
+  /* The mobile hero wrapper is just a plain block container: it must never
+     constrain, offset or add height for the fixed background layer. */
+  .mobile-hero-wrap {
+    position: static !important;
   }
 
   /* Hero heading scales to fit the viewport without shrinking too far */
