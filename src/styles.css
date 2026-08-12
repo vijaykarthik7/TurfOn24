@@ -1720,27 +1720,16 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
     overflow-x: hidden;
   }
 
-  /* background-attachment: fixed is ignored/buggy on mobile browsers (it makes
-     the background scroll/lag with the page, leaving black gaps during scroll
-     and address-bar changes). A normal (scroll) attachment keeps the image
-     continuous on whatever element it belongs to. */
-  .hero-bg-img {
-    background-attachment: scroll !important;
-  }
-
-  /* Mobile: do NOT pin the background to the viewport. A `position: fixed`
-     background layer makes the image visibly move/lag while scrolling and can
-     expose dark gaps whenever the browser's toolbar collapses (the fixed layer
-     re-sizes and the cover image re-crops). Instead, anchor the layer to the
-     top of the page for one viewport-height screen so it scrolls naturally
-     with the content — no lag, no unwanted space, no toolbar jumps. */
+  /* Keep the hero background pinned to the viewport on mobile too so every
+     section (about, features, gallery, pricing, booking, contact) shares the
+     same fixed background instead of falling back to a plain dark void below
+     the hero. A dedicated `position: fixed` layer (as opposed to
+     `background-attachment: fixed` on the body) is well supported on modern
+     mobile browsers and scrolls the content over the background. */
   .hero-bg-layer {
-    position: absolute !important;
-    top: 0 !important;
-    right: 0 !important;
-    left: 0 !important;
-    bottom: auto !important;
-    height: 100svh !important;
+    position: fixed !important;
+    inset: 0 !important;
+    height: auto !important;
   }
 
   /* Hero heading scales to fit the viewport without shrinking too far */
