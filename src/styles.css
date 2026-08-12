@@ -1717,7 +1717,9 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
   /* Prevent horizontal scrolling from any stray wide element */
   html,
   body {
-    overflow-x: hidden;
+    overflow-x: hidden !important;
+    min-height: 100svh !important;
+    min-height: 100vh !important;
   }
 
     /* Root cause: do NOT force a full-viewport minimum height on the homepage
@@ -1737,8 +1739,13 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
      background. */
   .hero-bg-layer {
     position: fixed !important;
-    inset: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
     width: 100% !important;
+    min-height: 100svh !important;
+    min-height: 100vh !important;
     height: 100% !important;
     pointer-events: none !important;
     z-index: -1 !important;
@@ -1746,6 +1753,11 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
 
   /* Stable, visually continuous cover image on real devices */
   .hero-bg-img {
+    position: absolute !important;
+    inset: 0 !important;
+    min-height: 100svh !important;
+    min-height: 100vh !important;
+    width: 100% !important;
     background-size: cover !important;
     background-position: center center !important;
     background-repeat: no-repeat !important;
