@@ -100,6 +100,216 @@ const navItems: Array<{
   { id: "settings", label: "Settings", icon: Settings },
 ];
 
+/*
+ * TEMPORARY DEMO MODE
+ * When true the Admin Dashboard runs entirely on mock data so the UI can be
+ * presented without the backend running. Set back to false to restore the
+ * real API behavior (live fetch + error state).
+ */
+const DEMO_MODE = true;
+
+type DemoStats = {
+  hourly: number;
+  extended: number;
+  revenue: number;
+  customers: number;
+};
+
+const DEMO_STATS: DemoStats = {
+  hourly: 24,
+  extended: 12,
+  revenue: 18450,
+  customers: 31,
+};
+
+const DEMO_HOURLY_BOOKINGS: HourlyBooking[] = [
+  {
+    id: 1,
+    fullName: "Arjun Mehta",
+    phone: "+91 98200 12345",
+    preferredDate: "2026-08-13",
+    preferredTime: "19:00",
+    players: 14,
+    hours: 2,
+    totalPrice: 1400,
+    status: "confirmed",
+    message: "",
+    createdAt: "2026-08-13T10:15:00.000Z",
+    updatedAt: "2026-08-13T10:15:00.000Z",
+  },
+  {
+    id: 2,
+    fullName: "Priya Nair",
+    phone: "+91 98100 23456",
+    preferredDate: "2026-08-13",
+    preferredTime: "20:00",
+    players: 10,
+    hours: 1,
+    totalPrice: 700,
+    status: "pending",
+    message: "",
+    createdAt: "2026-08-13T09:40:00.000Z",
+    updatedAt: "2026-08-13T09:40:00.000Z",
+  },
+  {
+    id: 3,
+    fullName: "Rohit Das",
+    phone: "+91 99000 34567",
+    preferredDate: "2026-08-12",
+    preferredTime: "21:00",
+    players: 12,
+    hours: 1,
+    totalPrice: 700,
+    status: "confirmed",
+    message: "",
+    createdAt: "2026-08-12T18:05:00.000Z",
+    updatedAt: "2026-08-12T18:05:00.000Z",
+  },
+  {
+    id: 4,
+    fullName: "Sneha Kulkarni",
+    phone: "+91 97600 45678",
+    preferredDate: "2026-08-12",
+    preferredTime: "18:00",
+    players: 14,
+    hours: 2,
+    totalPrice: 1400,
+    status: "completed",
+    message: "",
+    createdAt: "2026-08-12T08:30:00.000Z",
+    updatedAt: "2026-08-13T08:00:00.000Z",
+  },
+  {
+    id: 5,
+    fullName: "Vikram Singh",
+    phone: "+91 98765 56789",
+    preferredDate: "2026-08-11",
+    preferredTime: "22:00",
+    players: 8,
+    hours: 1,
+    totalPrice: 700,
+    status: "pending",
+    message: "",
+    createdAt: "2026-08-11T16:45:00.000Z",
+    updatedAt: "2026-08-11T16:45:00.000Z",
+  },
+  {
+    id: 6,
+    fullName: "Ananya Iyer",
+    phone: "+91 95400 67890",
+    preferredDate: "2026-08-11",
+    preferredTime: "19:30",
+    players: 11,
+    hours: 1,
+    totalPrice: 700,
+    status: "confirmed",
+    message: "",
+    createdAt: "2026-08-11T12:20:00.000Z",
+    updatedAt: "2026-08-11T12:20:00.000Z",
+  },
+  {
+    id: 7,
+    fullName: "Karan Malhotra",
+    phone: "+91 90000 78901",
+    preferredDate: "2026-08-10",
+    preferredTime: "20:30",
+    players: 14,
+    hours: 1,
+    totalPrice: 700,
+    status: "cancelled",
+    message: "",
+    createdAt: "2026-08-10T11:10:00.000Z",
+    updatedAt: "2026-08-10T14:25:00.000Z",
+  },
+  {
+    id: 8,
+    fullName: "Divya Sharma",
+    phone: "+91 88800 89012",
+    preferredDate: "2026-08-10",
+    preferredTime: "18:30",
+    players: 13,
+    hours: 1,
+    totalPrice: 700,
+    status: "confirmed",
+    message: "",
+    createdAt: "2026-08-10T09:55:00.000Z",
+    updatedAt: "2026-08-10T09:55:00.000Z",
+  },
+];
+
+const DEMO_EXTENDED_BOOKINGS: ExtendedBooking[] = [
+  {
+    id: 101,
+    fullName: "Arjun Mehta",
+    phone: "+91 98200 12345",
+    startDate: "2026-08-20",
+    endDate: "2026-08-21",
+    startTime: "09:00",
+    endTime: "18:00",
+    players: 14,
+    message: "Team finals — full-day exclusive booking with floodlights.",
+    status: "confirmed",
+    createdAt: "2026-08-13T08:00:00.000Z",
+    updatedAt: "2026-08-13T08:00:00.000Z",
+  },
+  {
+    id: 102,
+    fullName: "Rohan Verma",
+    phone: "+91 97900 90123",
+    startDate: "2026-08-22",
+    endDate: "2026-08-23",
+    startTime: "10:00",
+    endTime: "17:00",
+    players: 14,
+    message: "Corporate sports day — need music and seating setup as well.",
+    status: "pending",
+    createdAt: "2026-08-12T14:30:00.000Z",
+    updatedAt: "2026-08-12T14:30:00.000Z",
+  },
+  {
+    id: 103,
+    fullName: "Meera Pillai",
+    phone: "+91 97000 01234",
+    startDate: "2026-08-25",
+    endDate: "2026-08-26",
+    startTime: "16:00",
+    endTime: "22:00",
+    players: 12,
+    message: "Night sessions for our Sunday league.",
+    status: "confirmed",
+    createdAt: "2026-08-12T09:15:00.000Z",
+    updatedAt: "2026-08-12T09:15:00.000Z",
+  },
+  {
+    id: 104,
+    fullName: "Aditya Rao",
+    phone: "+91 96000 12345",
+    startDate: "2026-08-27",
+    endDate: "2026-08-27",
+    startTime: "08:00",
+    endTime: "14:00",
+    players: 10,
+    message: "Morning tournament trials.",
+    status: "pending",
+    createdAt: "2026-08-11T17:40:00.000Z",
+    updatedAt: "2026-08-11T17:40:00.000Z",
+  },
+  {
+    id: 105,
+    fullName: "Nisha Gupta",
+    phone: "+91 95000 23456",
+    startDate: "2026-08-29",
+    endDate: "2026-08-30",
+    startTime: "09:00",
+    endTime: "18:00",
+    players: 14,
+    message: "Weekend football camp for kids.",
+    status: "confirmed",
+    createdAt: "2026-08-10T15:50:00.000Z",
+    updatedAt: "2026-08-10T15:50:00.000Z",
+  },
+];
+
 const toneClasses: Record<Tone, string> = {
   green: "border-turf/25 bg-turf/10 text-turf",
   amber: "border-amber-400/25 bg-amber-400/10 text-amber-300",
@@ -830,6 +1040,7 @@ function DashboardView({
   onRefresh,
   onUpdateStatus,
   updatingId,
+  demoStats,
 }: {
   hourlyBookings: HourlyBooking[];
   enquiries: ExtendedBooking[];
@@ -837,19 +1048,30 @@ function DashboardView({
   onRefresh: () => void;
   onUpdateStatus: (id: number, status: string) => void;
   updatingId: number | null;
+  demoStats?: DemoStats | null;
 }) {
-  const totalBookings = hourlyBookings.length;
-  const totalExtended = enquiries.length;
+  const totalBookings = demoStats
+    ? demoStats.hourly
+    : hourlyBookings.length;
+  const totalExtended = demoStats
+    ? demoStats.extended
+    : enquiries.length;
 
-  const totalRevenue = hourlyBookings.reduce(
-    (sum, booking) => sum + booking.totalPrice,
-    0,
-  );
+  const totalRevenue = demoStats
+    ? demoStats.revenue
+    : hourlyBookings.reduce(
+        (sum, booking) => sum + booking.totalPrice,
+        0,
+      );
 
-  const totalCustomers = new Set([
-    ...hourlyBookings.map((booking) => booking.phone).filter(Boolean),
-    ...enquiries.map((enquiry) => enquiry.phone).filter(Boolean),
-  ]).size;
+  const totalCustomers = demoStats
+    ? demoStats.customers
+    : new Set([
+        ...hourlyBookings.map((booking) => booking.phone).filter(Boolean),
+        ...enquiries.map((enquiry) => enquiry.phone).filter(Boolean),
+      ]).size;
+
+  const statSource = demoStats ? "Demo data" : "From database";
 
   return (
     <div className="space-y-5">
@@ -884,12 +1106,14 @@ function DashboardView({
           label="Hourly Bookings"
           value={totalBookings}
           icon={CalendarCheck}
+          source={statSource}
         />
 
         <StatCard
           label="Extended Bookings"
           value={totalExtended}
           icon={MessageSquare}
+          source={statSource}
         />
 
         <StatCard
@@ -897,12 +1121,14 @@ function DashboardView({
           value={totalRevenue}
           prefix="₹"
           icon={Wallet}
+          source={statSource}
         />
 
         <StatCard
           label="Customers"
           value={totalCustomers}
           icon={Users}
+          source={statSource}
         />
       </div>
 
@@ -1360,7 +1586,7 @@ function SidebarContent({
 
               <Icon className="h-5 w-5 shrink-0" />
 
-              <span className="hidden lg:block">{item.label}</span>
+              <span className="block md:hidden lg:block">{item.label}</span>
             </button>
           );
         })}
@@ -1421,6 +1647,16 @@ function AdminPage() {
   const [updatingId, setUpdatingId] = useState<number | null>(null);
 
   const fetchAdminData = useCallback(async () => {
+    if (DEMO_MODE) {
+      setLoading(true);
+      setErrorMessage("");
+      await new Promise((resolve) => window.setTimeout(resolve, 400));
+      setHourlyBookings(DEMO_HOURLY_BOOKINGS);
+      setEnquiries(DEMO_EXTENDED_BOOKINGS);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setErrorMessage("");
@@ -1496,6 +1732,24 @@ function AdminPage() {
 
   const updateBookingStatus = useCallback(
     async (id: number, status: string) => {
+      if (DEMO_MODE) {
+        setUpdatingId(id);
+        setErrorMessage("");
+        await new Promise((resolve) => window.setTimeout(resolve, 350));
+        setHourlyBookings((current) =>
+          current.map((booking) =>
+            booking.id === id ? { ...booking, status } : booking,
+          ),
+        );
+        setEnquiries((current) =>
+          current.map((enquiry) =>
+            enquiry.id === id ? { ...enquiry, status } : enquiry,
+          ),
+        );
+        setUpdatingId(null);
+        return;
+      }
+
       try {
         setUpdatingId(id);
         setErrorMessage("");
@@ -1547,6 +1801,8 @@ function AdminPage() {
 
   useEffect(() => {
     void fetchAdminData();
+
+    if (DEMO_MODE) return;
 
     const interval = window.setInterval(() => {
       void fetchAdminData();
@@ -1727,6 +1983,7 @@ function AdminPage() {
                 void updateBookingStatus(id, status)
               }
               updatingId={updatingId}
+              demoStats={DEMO_MODE ? DEMO_STATS : null}
             />
           ) : null}
 
@@ -1778,11 +2035,13 @@ function StatCard({
   value,
   prefix,
   icon: Icon,
+  source = "From database",
 }: {
   label: string;
   value: number;
   prefix?: string;
   icon: LucideIcon;
+  source?: string;
 }) {
   return (
     <div className="rounded-2xl border border-turf/10 bg-white/[0.03] p-5 transition-all hover:border-turf/25 hover:bg-white/[0.05]">
@@ -1807,7 +2066,7 @@ function StatCard({
           Live
         </span>
 
-        <span className="text-zinc-500">From database</span>
+        <span className="text-zinc-500">{source}</span>
       </div>
     </div>
   );
