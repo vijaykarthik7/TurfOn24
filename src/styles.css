@@ -769,6 +769,57 @@
   }
 }
 
+@media (min-width: 1025px) {
+  /* Desktop-only card readability enhancement for Features/About sections */
+  /* Features cards: no background override here (use utility classes) */
+  /* About cards remain styled below */
+
+  #features .grid > div > div,
+  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  #features .grid > div > div::before,
+  #features .grid > div > div::after,
+  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl::before,
+  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl::after {
+    content: none !important;
+    background: none !important;
+    box-shadow: none !important;
+    opacity: 0 !important;
+  }
+
+  #features .grid > div > div > *,
+  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl > * {
+    position: relative !important;
+    z-index: 1 !important;
+  }
+
+  /* Features cards use default utility classes (no background override). */
+  /* About card text styling retained below. */
+  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl p,
+  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl .text-sm,
+  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl .text-lg,
+  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl .font-bold,
+  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl .font-semibold {
+    color: rgba(235, 242, 238, 0.72) !important;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35) !important;
+  }
+
+  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl .text-lg,
+  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl .font-bold {
+    color: #f3f7f4 !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  #features .grid > div > div p.text-sm.leading-relaxed {
+    color: #E6EDE9 !important;
+    font-weight: 500 !important;
+  }
+}
+
 @media (max-width: 1024px) {
   .gallery-grid {
     column-count: 1;

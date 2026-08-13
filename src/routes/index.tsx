@@ -855,7 +855,7 @@ function Index() {
       <section
         id="about"
         ref={(node) => { sectionRefs.current["about"] = node; }}
-        className="mx-auto max-w-6xl px-6 py-24 mb-16 relative overflow-hidden scroll-mt-24"
+        className="mx-auto max-w-6xl px-6 py-24 mb-16 relative overflow-hidden scroll-mt-24 md:px-10 md:py-18 md:mb-0 lg:px-16"
       >
         <div className="pointer-events-none absolute left-0 top-10 h-28 w-28 rounded-full bg-turf/10 blur-3xl" />
         <div className="pointer-events-none absolute right-0 top-20 h-36 w-36 rounded-full bg-turf/15 blur-3xl" />
@@ -863,7 +863,7 @@ function Index() {
         <div className="grid gap-6 lg:gap-7 xl:grid-cols-[1.55fr_1fr]">
           <div
           ref={aboutCardRef}
-          className={`group relative overflow-hidden rounded-[1.75rem] border border-turf/15 bg-white/10 backdrop-blur-2xl p-8 lg:p-9 shadow-[0_0_80px_rgba(16,221,86,0.14)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_0_90px_rgba(16,221,86,0.18)] ${starReveal ? "about-star-reveal" : ""}`}
+          className={`group relative overflow-hidden rounded-[1.75rem] border border-turf/15 bg-white/15 backdrop-blur-2xl p-8 lg:p-9 shadow-[0_0_80px_rgba(16,221,86,0.14)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_0_90px_rgba(16,221,86,0.18)] ${starReveal ? "about-star-reveal" : ""}`}
         >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(16,221,86,0.16),transparent_40%)]" />
             <div className="absolute right-10 bottom-10 h-28 w-28 rounded-full bg-turf/10 blur-3xl" />
@@ -875,7 +875,7 @@ function Index() {
               <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
                 Premium Football Experience
               </h2>
-              <p className="mt-5 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
+              <p className="mt-5 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base md:mt-4">
                 TurfOn24 brings championship-level pitch, floodlights, and night-time energy together for teams, leagues, and events.
               </p>
               <div className="mt-8 grid gap-3 sm:grid-cols-2">
@@ -905,7 +905,7 @@ function Index() {
             {features.slice(0, 3).map(({ icon: Icon, title, text }) => (
               <div
                 key={title}
-                className="relative overflow-hidden rounded-[1.5rem] border border-turf/15 bg-white/5 backdrop-blur-2xl p-6 lg:p-7 shadow-[0_0_40px_rgba(16,221,86,0.08)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_0_50px_rgba(16,221,86,0.12)]"
+                className="relative overflow-hidden rounded-[1.5rem] border border-turf/15 bg-black/40 backdrop-blur-2xl p-6 lg:p-7 shadow-[0_0_40px_rgba(16,221,86,0.08)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_0_50px_rgba(16,221,86,0.12)]"
               >
                 <div className="absolute left-6 top-6 h-14 w-14 rounded-full bg-turf/10 blur-3xl" />
                 <div className="relative z-10 flex items-center gap-4">
@@ -925,7 +925,7 @@ function Index() {
       <section
         id="features"
         ref={(node) => { sectionRefs.current["features"] = node; }}
-        className="mx-auto max-w-6xl px-6 py-24 mb-16 relative overflow-hidden scroll-mt-24"
+        className="mx-auto max-w-6xl px-6 py-24 mb-16 relative overflow-hidden scroll-mt-24 md:px-10 md:py-18 md:mb-0 lg:px-16"
       >
         <div className="pointer-events-none absolute left-0 top-12 h-32 w-32 rounded-full bg-turf/10 blur-3xl" />
         <div className="pointer-events-none absolute right-0 bottom-10 h-28 w-28 rounded-full bg-turf/15 blur-3xl" />
@@ -998,8 +998,8 @@ function Index() {
                   featureCardRefs.current[index] = node;
                 }}
                 key={title}
-                className={`relative overflow-hidden rounded-[1.75rem] border border-turf/15 bg-white/5 backdrop-blur-2xl p-6 lg:p-7 shadow-[0_0_40px_rgba(16,221,86,0.08)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_0_55px_rgba(16,221,86,0.16)] ${
-                  index % 2 === 0 ? "lg:self-start lg:ml-auto lg:max-w-[480px]" : "lg:self-end lg:mr-auto lg:max-w-[480px]"
+                className={`relative overflow-hidden rounded-[1.75rem] border border-turf/15 backdrop-blur-2xl p-6 lg:p-7 shadow-[0_0_40px_rgba(16,221,86,0.08)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_0_55px_rgba(16,221,86,0.16)] ${
+                  index % 2 === 0 ? "bg-black/40 lg:self-start lg:ml-auto lg:max-w-[480px]" : "bg-white/5 lg:self-end lg:mr-auto lg:max-w-[480px]"
                 }`}
               >
                 <div className="absolute left-1/2 top-0 h-9 w-9 -translate-x-1/2 rounded-full bg-turf/15 ring-1 ring-turf/25" />
@@ -1021,13 +1021,13 @@ function Index() {
       <section
         id="gallery"
         ref={(node) => { sectionRefs.current["gallery"] = node; }}
-        className="gallery mx-auto max-w-6xl px-6 py-20 mb-16 scroll-mt-24"
+        className="gallery mx-auto max-w-6xl px-6 py-20 mb-16 scroll-mt-24 md:px-10 md:py-18 md:mb-0 lg:px-16 lg:py-24"
       >
         <p className="text-sm font-semibold uppercase tracking-[0.35em] text-turf">Gallery</p>
         <h2 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
           See the turf in action
         </h2>
-        <p className="mt-5 max-w-2xl text-muted-foreground">
+        <p className="mt-5 max-w-2xl text-muted-foreground md:mt-4">
           Browse the venue, floodlights, and premium feel of our full-day turf experience.
         </p>
         <div className="gallery-carousel mt-10 relative">
@@ -1248,13 +1248,13 @@ function Index() {
             pricingRef.current = node;
           }
         }}
-        className="mx-auto max-w-6xl px-6 py-24 mb-16 relative overflow-hidden scroll-mt-24"
+        className="mx-auto max-w-6xl px-6 py-24 mb-16 relative overflow-hidden scroll-mt-24 md:px-10 md:py-18 md:mb-0 lg:px-16"
       >
         <div className="pointer-events-none absolute left-0 top-10 h-28 w-28 rounded-full bg-turf/10 blur-3xl" />
         <div className="pointer-events-none absolute right-0 top-20 h-36 w-36 rounded-full bg-turf/15 blur-3xl" />
 
         <div className="grid gap-6 lg:gap-7 xl:grid-cols-[1.55fr_1fr]">
-          <div className="group relative overflow-hidden rounded-[1.75rem] border border-turf/15 bg-white/10 backdrop-blur-2xl p-8 lg:p-9 shadow-[0_0_80px_rgba(16,221,86,0.14)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_0_90px_rgba(16,221,86,0.18)]">
+          <div className="group relative overflow-hidden rounded-[1.75rem] border border-turf/15 bg-white/15 backdrop-blur-2xl p-8 lg:p-9 shadow-[0_0_80px_rgba(16,221,86,0.14)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_0_90px_rgba(16,221,86,0.18)]">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(16,221,86,0.16),transparent_40%)]" />
             <div className="absolute right-10 bottom-10 h-28 w-28 rounded-full bg-turf/10 blur-3xl" />
             <div className="relative z-10">
@@ -1265,7 +1265,7 @@ function Index() {
               <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
                 Choose your game plan
               </h2>
-              <p className="mt-5 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
+              <p className="mt-5 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base md:mt-4">
                 Flexible turf packages for casual matches, teams and full-day events.
               </p>
               <div className="mt-8 flex items-end gap-3">
@@ -1302,7 +1302,7 @@ function Index() {
             {pricingHighlights.map(({ icon: Icon, title, text }) => (
               <div
                 key={title}
-                className="relative overflow-hidden rounded-[1.5rem] border border-turf/15 bg-white/5 backdrop-blur-2xl p-6 lg:p-7 shadow-[0_0_40px_rgba(16,221,86,0.08)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_0_50px_rgba(16,221,86,0.12)]"
+                className="relative overflow-hidden rounded-[1.5rem] border border-turf/15 bg-black/40 backdrop-blur-2xl p-6 lg:p-7 shadow-[0_0_40px_rgba(16,221,86,0.08)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_0_50px_rgba(16,221,86,0.12)]"
               >
                 <div className="absolute left-6 top-6 h-14 w-14 rounded-full bg-turf/10 blur-3xl" />
                 <div className="relative z-10 flex items-center gap-4">
@@ -1328,22 +1328,22 @@ function Index() {
       <section
         id="contact"
         ref={(node) => { sectionRefs.current["contact"] = node; }}
-        className="mx-auto max-w-6xl px-6 py-20 mb-16 scroll-mt-24"
+        className="mx-auto max-w-6xl px-6 py-20 mb-16 scroll-mt-24 md:px-10 md:py-18 md:mb-0 lg:px-16 lg:py-24"
       >
         <p className="text-sm font-semibold uppercase tracking-[0.35em] text-turf">Contact</p>
         <h2 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
           Reach out for bookings and enquiries
         </h2>
         <div className="mt-12 grid gap-6 lg:grid-cols-3 items-stretch">
-          <div className="flex h-full flex-col rounded-3xl border border-turf/15 bg-white/10 backdrop-blur-2xl p-8 shadow-[0_0_25px_-12px_rgba(60,235,120,0.45)] transition-all duration-500 ease-out hover:-translate-y-1 hover:border-turf/25 hover:shadow-[0_0_35px_-10px_rgba(60,235,120,0.6)]">
+          <div className="flex h-full flex-col rounded-3xl border border-turf/15 bg-black/50 backdrop-blur-2xl p-8 shadow-[0_0_25px_-12px_rgba(60,235,120,0.45)] transition-all duration-500 ease-out hover:-translate-y-1 hover:border-turf/25 hover:shadow-[0_0_35px_-10px_rgba(60,235,120,0.6)]">
             <p className="font-semibold text-white">Location</p>
             <p className="mt-3 text-sm text-muted-foreground">Sector 12, Sports City, Cityville</p>
           </div>
-          <div className="flex h-full flex-col rounded-3xl border border-turf/15 bg-white/10 backdrop-blur-2xl p-8 shadow-[0_0_25px_-12px_rgba(60,235,120,0.45)] transition-all duration-500 ease-out hover:-translate-y-1 hover:border-turf/25 hover:shadow-[0_0_35px_-10px_rgba(60,235,120,0.6)]">
+          <div className="flex h-full flex-col rounded-3xl border border-turf/15 bg-black/50 backdrop-blur-2xl p-8 shadow-[0_0_25px_-12px_rgba(60,235,120,0.45)] transition-all duration-500 ease-out hover:-translate-y-1 hover:border-turf/25 hover:shadow-[0_0_35px_-10px_rgba(60,235,120,0.6)]">
             <p className="font-semibold text-white">Phone</p>
             <p className="mt-3 text-sm text-muted-foreground">+91 98765 43210</p>
           </div>
-          <div className="flex h-full flex-col rounded-3xl border border-turf/15 bg-white/10 backdrop-blur-2xl p-8 shadow-[0_0_25px_-12px_rgba(60,235,120,0.45)] transition-all duration-500 ease-out hover:-translate-y-1 hover:border-turf/25 hover:shadow-[0_0_35px_-10px_rgba(60,235,120,0.6)]">
+          <div className="flex h-full flex-col rounded-3xl border border-turf/15 bg-black/50 backdrop-blur-2xl p-8 shadow-[0_0_25px_-12px_rgba(60,235,120,0.45)] transition-all duration-500 ease-out hover:-translate-y-1 hover:border-turf/25 hover:shadow-[0_0_35px_-10px_rgba(60,235,120,0.6)]">
             <p className="font-semibold text-white">Email</p>
             <p className="mt-3 text-sm text-muted-foreground">play@turfon24.com</p>
           </div>

@@ -158,9 +158,9 @@ export function useBooking() {
   const [bookingName, setBookingName] = useState("");
   const [bookingPhone, setBookingPhone] = useState("");
   const [bookingDate, setBookingDate] = useState("");
-  const [bookingTime, setBookingTime] = useState("19:00");
-  const [bookingPlayers, setBookingPlayers] = useState(1);
-  const [bookingHours, setBookingHours] = useState(1);
+  const [bookingTime, setBookingTime] = useState("");
+  const [bookingPlayers, setBookingPlayers] = useState(0);
+  const [bookingHours, setBookingHours] = useState(0);
 
   /* -------------------------------------------------------
      EXTENDED BOOKING
@@ -627,21 +627,19 @@ export function useBooking() {
     {
       key: "time",
       label: "Time",
-      done: bookingTime !== "19:00",
+      done: Boolean(bookingTime),
       current: false,
     },
     {
       key: "players",
       label: "Players",
-      done: bookingPlayers !== 1,
+      done: bookingPlayers > 0,
       current: false,
     },
     {
-      key: "price",
-      label: "Price",
-      done:
-        bookingHours !== 1 &&
-        bookingTotal > 0,
+      key: "hour",
+      label: "Hour",
+      done: bookingHours > 0,
       current: false,
     },
   ];
@@ -695,9 +693,9 @@ export function useBooking() {
     setBookingName("");
     setBookingPhone("");
     setBookingDate("");
-    setBookingTime("19:00");
-    setBookingPlayers(1);
-    setBookingHours(1);
+    setBookingTime("");
+    setBookingPlayers(0);
+    setBookingHours(0);
     setHourlyError("");
     setHourlySubmitted(false);
     setBookingStage("details");
@@ -1400,7 +1398,7 @@ export function BookingSection({
     <section
       id="booking"
       ref={sectionRef}
-      className="mx-auto mb-16 max-w-6xl scroll-mt-24 rounded-3xl border border-turf/15 bg-white/5 px-6 py-16 shadow-[0_0_35px_-18px_rgba(60,235,120,0.45)] backdrop-blur-2xl"
+      className="mx-auto mb-16 max-w-6xl scroll-mt-24 rounded-3xl border border-turf/15 bg-black/40 px-6 py-16 shadow-[0_0_35px_-18px_rgba(60,235,120,0.45)] backdrop-blur-2xl md:mb-0"
     >
       {/* HEADER */}
 
@@ -1439,18 +1437,28 @@ export function BookingSection({
               );
             }
           }}
-          className="rounded-full border border-turf/25 bg-black/20 p-1 shadow-[0_0_30px_rgba(60,235,120,0.12)]"
+          className="relative flex h-[52px] w-[208px] gap-0 overflow-hidden rounded-full border border-turf/20 bg-night p-1 shadow-[0_0_24px_rgba(60,235,120,0.10)]"
         >
+          <span
+            aria-hidden
+            className="pointer-events-none absolute bottom-1 left-1 top-1 z-0 w-[calc(50%_-_4px)] rounded-full bg-turf shadow-[0_0_18px_rgba(96,240,120,0.45)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+            style={{
+              transform:
+                bookingType === "extended"
+                  ? "translateX(100%)"
+                  : "translateX(0%)",
+            }}
+          />
           <ToggleGroupItem
             value="hourly"
-            className="flex-1 rounded-full px-6 py-2 text-sm font-semibold text-white/70 transition data-[state=on]:bg-turf data-[state=on]:text-night"
+            className="relative z-10 flex h-full flex-1 items-center justify-center rounded-full bg-transparent px-6 text-sm font-semibold whitespace-nowrap text-muted-foreground transition-colors duration-200 hover:bg-transparent hover:text-turf hover:shadow-[0_0_16px_-4px_rgba(96,240,120,0.22)] focus-visible:ring-turf/40 data-[state=on]:bg-transparent data-[state=on]:text-night"
           >
             Hourly
           </ToggleGroupItem>
 
           <ToggleGroupItem
             value="extended"
-            className="flex-1 rounded-full px-6 py-2 text-sm font-semibold text-white/70 transition data-[state=on]:bg-turf data-[state=on]:text-night"
+            className="relative z-10 flex h-full flex-1 items-center justify-center rounded-full bg-transparent px-6 text-sm font-semibold whitespace-nowrap text-muted-foreground transition-colors duration-200 hover:bg-transparent hover:text-turf hover:shadow-[0_0_16px_-4px_rgba(96,240,120,0.22)] focus-visible:ring-turf/40 data-[state=on]:bg-transparent data-[state=on]:text-night"
           >
             Extended
           </ToggleGroupItem>
@@ -2348,7 +2356,7 @@ export function BookingSection({
                   <span className="font-semibold text-white">
                     {bookingPlayers > 0
                       ? bookingPlayers
-                      : "—"}
+                      : "Not selected"}
                   </span>
                 </div>
 
@@ -2358,31 +2366,32 @@ export function BookingSection({
                   </span>
 
                   <span className="font-semibold text-white">
-                    {bookingHours} hour
-                    {bookingHours === 1
-                      ? ""
-                      : "s"}
+                    {bookingHours > 0
+                      ? `${bookingHours} hour${bookingHours === 1 ? "" : "s"}`
+                      : "Not selected"}
                   </span>
                 </div>
               </div>
 
-              <div className="mt-6 rounded-2xl border border-turf/20 bg-night/60 p-4">
-                <p className="text-xs uppercase tracking-[0.35em] text-turf">
-                  Estimated total
-                </p>
+              {bookingHours >= 1 && (
+                <div className="mt-6 rounded-2xl border border-turf/20 bg-night/60 p-4">
+                  <p className="text-xs uppercase tracking-[0.35em] text-turf">
+                    Estimated total
+                  </p>
 
-                <p className="mt-2 text-3xl font-extrabold text-white">
-                  ₹{animatedBookingTotal}
-                </p>
+                  <p className="mt-2 text-3xl font-extrabold text-white">
+                    ₹{animatedBookingTotal}
+                  </p>
 
-                <p className="text-sm text-muted-foreground">
-                  for {bookingHours} hour
-                  {bookingHours === 1
-                    ? ""
-                    : "s"}{" "}
-                  at ₹700/hour
-                </p>
-              </div>
+                  <p className="text-sm text-muted-foreground">
+                    for {bookingHours} hour
+                    {bookingHours === 1
+                      ? ""
+                      : "s"}{" "}
+                    at ₹700/hour
+                  </p>
+                </div>
+              )}
 
               <div className="mt-6 space-y-3 text-sm text-foreground/85">
                 <p>
