@@ -1394,11 +1394,81 @@ export function BookingSection({
     submitHourlyBooking,
   } = booking;
 
+  const [bookingsEnabled, setBookingsEnabled] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch(`${API_URL}/api/admin/settings/online_bookings_enabled`, {
+      method: "GET",
+      headers: { Accept: "application/json" },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && data.setting) {
+          setBookingsEnabled(data.setting.value !== "false");
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (!bookingsEnabled) {
+    return (
+      <section
+        id="booking"
+        ref={sectionRef}
+        className="mx-auto mb-16 max-w-7xl scroll-mt-24 rounded-3xl border border-turf/15 bg-black/40 px-6 py-16 shadow-[0_0_35px_-18px_rgba(60,235,120,0.45)] backdrop-blur-2xl md:mb-0 lg:px-10 xl:px-12"
+      >
+        <p className="text-sm font-semibold uppercase tracking-[0.35em] text-turf">
+          Bookings
+        </p>
+
+        <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">
+          Book a Slot
+        </h2>
+
+        <div className="mt-12 flex flex-col items-center justify-center rounded-3xl border border-amber-400/20 bg-amber-400/5 p-10 text-center backdrop-blur-xl">
+          <span className="flex h-16 w-16 items-center justify-center rounded-full border border-amber-400/30 bg-amber-400/10">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-amber-300"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+          </span>
+
+          <h3 className="mt-5 text-xl font-bold tracking-tight text-white">
+            Online bookings are currently unavailable.
+          </h3>
+
+          <p className="mt-3 max-w-md text-sm leading-relaxed text-zinc-400">
+            Please contact us directly to make a booking. We apologize for the
+            inconvenience.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section
       id="booking"
       ref={sectionRef}
-      className="mx-auto mb-16 max-w-6xl scroll-mt-24 rounded-3xl border border-turf/15 bg-black/40 px-6 py-16 shadow-[0_0_35px_-18px_rgba(60,235,120,0.45)] backdrop-blur-2xl md:mb-0"
+      className="mx-auto mb-16 max-w-7xl scroll-mt-24 rounded-3xl border border-turf/15 bg-black/40 px-6 py-16 shadow-[0_0_35px_-18px_rgba(60,235,120,0.45)] backdrop-blur-2xl md:mb-0 lg:px-10 xl:px-12"
     >
       {/* HEADER */}
 
@@ -1406,7 +1476,7 @@ export function BookingSection({
         Bookings
       </p>
 
-      <h2 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
+      <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">
         {bookingType === "hourly"
           ? "Book an hourly slot"
           : "Plan Your Extended Booking"}

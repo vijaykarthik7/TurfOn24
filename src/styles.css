@@ -26,6 +26,7 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -108,8 +109,7 @@
   --primary-foreground: oklch(0.208 0.042 265.755);
   --secondary: oklch(0.279 0.041 260.031);
   --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
+  --muted: oklch(0.704 0.04 256.788);
   --accent: oklch(0.279 0.041 260.031);
   --accent-foreground: oklch(0.984 0.003 247.858);
   --destructive: oklch(0.704 0.191 22.216);
@@ -154,23 +154,17 @@
 
   html {
     background-color: var(--night);
+    scroll-behavior: smooth;
   }
 
   body {
     background-color: transparent;
-  }
-
-  html {
-    scroll-behavior: smooth;
+    color: var(--color-foreground);
+    font-family: var(--font-display);
   }
 
   [id] {
     scroll-margin-top: 96px;
-  }
-
-  body {
-    color: var(--color-foreground);
-    font-family: var(--font-display);
   }
 }
 
@@ -180,22 +174,27 @@
     opacity: 1;
     filter: brightness(1.25);
   }
+
   18% {
     opacity: 0.35;
     filter: brightness(0.7);
   }
+
   26% {
     opacity: 0.95;
     filter: brightness(1.15);
   }
+
   44% {
     opacity: 0.5;
     filter: brightness(0.85);
   }
+
   62% {
     opacity: 1;
     filter: brightness(1.35);
   }
+
   78% {
     opacity: 0.42;
     filter: brightness(0.75);
@@ -207,9 +206,11 @@
   100% {
     opacity: 0.55;
   }
+
   40% {
     opacity: 0.15;
   }
+
   70% {
     opacity: 0.65;
   }
@@ -248,6 +249,7 @@
     opacity: 0;
     transform: translateY(18px) scale(0.98);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -263,9 +265,16 @@
   overflow: hidden;
   border-radius: 1.5rem;
   border: 1px solid rgba(34, 197, 94, 0.35);
-  background: linear-gradient(180deg, rgba(7, 24, 15, 0.98), rgba(3, 14, 8, 0.98));
+  background: linear-gradient(
+    180deg,
+    rgba(7, 24, 15, 0.98),
+    rgba(3, 14, 8, 0.98)
+  );
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45);
-  transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 650ms ease, border-color 650ms ease;
+  transition:
+    transform 650ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 650ms ease,
+    border-color 650ms ease;
 }
 
 .pricing-card::before {
@@ -274,7 +283,11 @@
   inset: 0;
   margin: 1px;
   border-radius: 1.45rem;
-  background: linear-gradient(180deg, rgba(96, 240, 120, 0.08), transparent 60%);
+  background: linear-gradient(
+    180deg,
+    rgba(96, 240, 120, 0.08),
+    transparent 60%
+  );
   opacity: 0.34;
   pointer-events: none;
 }
@@ -284,7 +297,11 @@
   position: absolute;
   inset: 0;
   filter: blur(18px);
-  background: radial-gradient(circle at 50% 10%, rgba(96, 240, 120, 0.12), transparent 24%);
+  background: radial-gradient(
+    circle at 50% 10%,
+    rgba(96, 240, 120, 0.12),
+    transparent 24%
+  );
   opacity: 0.32;
   pointer-events: none;
 }
@@ -325,7 +342,9 @@
 
 .pricing-card .pricing-btn-shine,
 .pricing-card .gallery-card-shine {
-  transition: transform 1000ms cubic-bezier(0.22, 1, 0.36, 1), opacity 1000ms ease;
+  transition:
+    transform 1000ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 1000ms ease;
 }
 
 .pricing-card-active .pricing-btn-shine {
@@ -353,7 +372,9 @@
   height: 320px;
   border-radius: 999px;
   opacity: 0;
-  transition: opacity 350ms ease, transform 350ms ease;
+  transition:
+    opacity 350ms ease,
+    transform 350ms ease;
   pointer-events: none;
 }
 
@@ -365,10 +386,16 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, rgba(96, 240, 120, 0.18), transparent 38%);
+  background: radial-gradient(
+    circle at center,
+    rgba(96, 240, 120, 0.18),
+    transparent 38%
+  );
   opacity: 0.75;
   transform: scale(0.98);
-  transition: transform 600ms ease, opacity 600ms ease;
+  transition:
+    transform 600ms ease,
+    opacity 600ms ease;
 }
 
 .about-star-reveal {
@@ -382,23 +409,57 @@
   width: calc(100% - 4rem);
   border-radius: 1.5rem;
   background-image:
-    radial-gradient(circle at center, rgba(96, 240, 120, 0.12) 0.4rem, transparent 0.5rem),
-    linear-gradient(to right, rgba(96, 240, 120, 0.09) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(96, 240, 120, 0.09) 1px, transparent 1px),
-    linear-gradient(to right, rgba(96, 240, 120, 0.1) 24%, transparent 24% 76%, rgba(96, 240, 120, 0.1) 76%),
-    linear-gradient(to bottom, rgba(96, 240, 120, 0.1) 22%, transparent 22% 78%, rgba(96, 240, 120, 0.1) 78%);
-  background-size: 7.5rem 7.5rem, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
-  background-position: center 2rem, left top, left top, left top, left top;
+    radial-gradient(
+      circle at center,
+      rgba(96, 240, 120, 0.12) 0.4rem,
+      transparent 0.5rem
+    ),
+    linear-gradient(
+      to right,
+      rgba(96, 240, 120, 0.09) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(96, 240, 120, 0.09) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to right,
+      rgba(96, 240, 120, 0.1) 24%,
+      transparent 24% 76%,
+      rgba(96, 240, 120, 0.1) 76%
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(96, 240, 120, 0.1) 22%,
+      transparent 22% 78%,
+      rgba(96, 240, 120, 0.1) 78%
+    );
+  background-size:
+    7.5rem 7.5rem,
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    100% 100%;
+  background-position:
+    center 2rem,
+    left top,
+    left top,
+    left top,
+    left top;
   opacity: 0.1;
   filter: blur(0.5px);
   pointer-events: none;
 }
 
 @keyframes livePulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.55;
     transform: scale(1.1);
@@ -414,10 +475,12 @@
 }
 
 @keyframes priceGlow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0;
     transform: translateX(-50%) scale(1);
   }
+
   50% {
     opacity: 0.45;
     transform: translateX(0) scale(1.08);
@@ -445,7 +508,9 @@
 }
 
 .pricing-cta:hover::before {
-  box-shadow: inset 0 0 0 1px rgba(96, 240, 120, 0.22), 0 0 18px rgba(96, 240, 120, 0.22);
+  box-shadow:
+    inset 0 0 0 1px rgba(96, 240, 120, 0.22),
+    0 0 18px rgba(96, 240, 120, 0.22);
 }
 
 .pricing-btn-sweep {
@@ -457,7 +522,9 @@
   background: rgba(255, 255, 255, 0.18);
   transform: translateX(0);
   opacity: 0;
-  transition: transform 500ms ease, opacity 300ms ease;
+  transition:
+    transform 500ms ease,
+    opacity 300ms ease;
 }
 
 .pricing-cta:hover .pricing-btn-sweep {
@@ -528,38 +595,50 @@
 .gallery-frame-rect {
   stroke-linecap: round;
   stroke-linejoin: round;
-  /* Use a fixed pathLength (1000) on the rect and animate across it */
-  stroke-dasharray: 140 860; /* 140 = highlight length, 860 = gap, sums to 1000 */
+  stroke-dasharray: 140 860;
   stroke-dashoffset: 0;
   will-change: stroke-dashoffset, opacity;
-  /* CSS custom properties for per-card delay and speed */
   --frame-speed: 3.8s;
   --frame-delay: 0s;
   animation: galleryFrameFlow var(--frame-speed) linear infinite;
   animation-delay: var(--frame-delay);
-  filter: drop-shadow(0 0 6px rgba(96,240,120,0.22));
+  filter: drop-shadow(0 0 6px rgba(96, 240, 120, 0.22));
   transition: opacity 300ms ease;
 }
 
 @keyframes galleryFrameFlow {
-  to { stroke-dashoffset: -1000; }
+  to {
+    stroke-dashoffset: -1000;
+  }
 }
 
-/* Hover: speed up and brighten frame slightly */
 .gallery-card:hover .gallery-frame-rect {
   --frame-speed: 2.2s;
   opacity: 1;
-  filter: drop-shadow(0 0 10px rgba(96,240,120,0.32));
+  filter: drop-shadow(0 0 10px rgba(96, 240, 120, 0.32));
 }
 
-/* Make frame subtle by default */
-.gallery-card-entry .gallery-frame-rect { opacity: 0.6; }
-.gallery-card-dimmed .gallery-frame-rect { opacity: 0.45; }
-.gallery-card-active .gallery-frame-rect { opacity: 1; }
+.gallery-card-entry .gallery-frame-rect {
+  opacity: 0.6;
+}
 
-/* Reduce heavy glow effects for performance */
-.gallery-card-glow { filter: none !important; box-shadow: none !important; }
-.gallery-card-shine { backface-visibility: hidden; transform: translateZ(0); }
+.gallery-card-dimmed .gallery-frame-rect {
+  opacity: 0.45;
+}
+
+.gallery-card-active .gallery-frame-rect {
+  opacity: 1;
+}
+
+.gallery-card-glow {
+  filter: none !important;
+  box-shadow: none !important;
+}
+
+.gallery-card-shine {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
 
 .gallery-card-dimmed {
   transform: scale(0.98);
@@ -585,21 +664,30 @@
 }
 
 .gallery-card-img {
-  transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1), filter 500ms ease;
+  transition:
+    transform 650ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 500ms ease;
   transform-origin: center center;
   will-change: transform;
 }
 
-/* Subtle breathing/pulsing effect: scale between 1 and 1.04 smoothly */
 .gallery-card-img {
   animation: galleryImageBreath 6s ease-in-out infinite alternate;
   will-change: transform;
 }
 
 @keyframes galleryImageBreath {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.04); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.04);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -619,7 +707,11 @@
 }
 
 .gallery-card-overlay {
-  background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.72) 100%);
+  background: linear-gradient(
+    180deg,
+    transparent 40%,
+    rgba(0, 0, 0, 0.72) 100%
+  );
 }
 
 .gallery-card-active .gallery-card-overlay {
@@ -631,6 +723,7 @@
     opacity: 0;
     transform: translateY(18px) scale(0.94);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -638,7 +731,9 @@
 }
 
 .gallery-card-glow {
-  box-shadow: inset 0 0 42px rgba(96, 240, 120, 0.16), 0 0 28px rgba(96, 240, 120, 0.14);
+  box-shadow:
+    inset 0 0 42px rgba(96, 240, 120, 0.16),
+    0 0 28px rgba(96, 240, 120, 0.14);
   border-radius: 1.85rem;
 }
 
@@ -676,7 +771,10 @@
 .gallery-card-number,
 .gallery-card-corner-line,
 .gallery-card-corner-line-hover {
-  transition: width 500ms ease, opacity 500ms ease, transform 500ms ease;
+  transition:
+    width 500ms ease,
+    opacity 500ms ease,
+    transform 500ms ease;
 }
 
 .gallery-card-number {
@@ -709,16 +807,24 @@
 .gallery-enter-active {
   opacity: 1;
   transform: translateY(0) scale(1);
-  transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1), opacity 650ms ease;
+  transition:
+    transform 650ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 650ms ease;
 }
 
 .gallery-light-spot {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(circle at center, rgba(14, 78, 28, 0.14), transparent 25%);
+  background: radial-gradient(
+    circle at center,
+    rgba(14, 78, 28, 0.14),
+    transparent 25%
+  );
   opacity: 0;
-  transition: opacity 350ms ease, transform 350ms ease;
+  transition:
+    opacity 350ms ease,
+    transform 350ms ease;
 }
 
 .gallery:hover .gallery-light-spot {
@@ -741,7 +847,7 @@
   -webkit-column-break-inside: avoid;
 }
 
-/* Trust items: style each as an individual card and nudge the grid left slightly */
+/* Trust items */
 #hero .hero-content > .mt-4.grid {
   margin-left: -8px !important;
   margin-right: auto !important;
@@ -749,11 +855,15 @@
 }
 
 #hero .hero-content > .mt-4.grid > div > div {
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04)) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(0, 0, 0, 0.04)
+  ) !important;
   border-radius: 1rem !important;
   padding: 1rem 1.25rem !important;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.45) !important;
-  border: 1px solid rgba(60,235,120,0.06) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45) !important;
+  border: 1px solid rgba(60, 235, 120, 0.06) !important;
   align-items: center !important;
 }
 
@@ -762,6 +872,7 @@
     margin-left: 0 !important;
     max-width: 100% !important;
   }
+
   #hero .hero-content > .mt-4.grid > div > div {
     box-shadow: none !important;
     border-radius: 0.85rem !important;
@@ -770,20 +881,19 @@
 }
 
 @media (min-width: 1025px) {
-  /* Desktop-only card readability enhancement for Features/About sections */
-  /* Features cards: no background override here (use utility classes) */
-  /* About cards remain styled below */
-
   #features .grid > div > div,
-  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl {
+  #about
+    .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl {
     position: relative !important;
     overflow: hidden !important;
   }
 
   #features .grid > div > div::before,
   #features .grid > div > div::after,
-  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl::before,
-  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl::after {
+  #about
+    .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl::before,
+  #about
+    .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl::after {
     content: none !important;
     background: none !important;
     box-shadow: none !important;
@@ -791,31 +901,45 @@
   }
 
   #features .grid > div > div > *,
-  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl > * {
+  #about
+    .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl
+    > * {
     position: relative !important;
     z-index: 1 !important;
   }
 
-  /* Features cards use default utility classes (no background override). */
-  /* About card text styling retained below. */
-  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl p,
-  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl .text-sm,
-  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl .text-lg,
-  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl .font-bold,
-  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl .font-semibold {
+  #about
+    .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl
+    p,
+  #about
+    .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl
+    .text-sm,
+  #about
+    .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl
+    .text-lg,
+  #about
+    .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl
+    .font-bold,
+  #about
+    .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl
+    .font-semibold {
     color: rgba(235, 242, 238, 0.72) !important;
     text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35) !important;
   }
 
-  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl .text-lg,
-  #about .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl .font-bold {
+  #about
+    .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl
+    .text-lg,
+  #about
+    .group.relative.overflow-hidden.rounded-\[1\.75rem\]\.border\.border-turf\/15\.bg-white\/10\.backdrop-blur-2xl
+    .font-bold {
     color: #f3f7f4 !important;
   }
 }
 
 @media (min-width: 1025px) {
   #features .grid > div > div p.text-sm.leading-relaxed {
-    color: #E6EDE9 !important;
+    color: #e6ede9 !important;
     font-weight: 500 !important;
   }
 }
@@ -838,19 +962,15 @@
   pointer-events: none;
 }
 
-/* Overrides for header visual tweak: reduce perceived header height and nudge logo left
-   Implemented as CSS only so no component files need changing. */
 #site-header .relative.mx-auto {
   min-height: 68px !important;
 }
 
 #site-header a[href="#hero"] > .absolute {
-  left: -0.75rem !important; /* nudge brand badge slightly left */
+  left: -0.75rem !important;
   top: -0.25rem !important;
 }
 
-/* Stronger targeting to center and reduce navigation pill size without changing markup or JS.
-   Uses structural selectors to reliably match the nav pill element and keep vertical position unchanged. */
 #site-header .relative.mx-auto > div:nth-child(2) > div {
   width: auto !important;
   max-width: 760px !important;
@@ -863,7 +983,6 @@
   justify-content: center !important;
 }
 
-/* On smaller screens keep the pill full width but with tighter padding */
 @media (max-width: 1024px) {
   #site-header .relative.mx-auto > div:nth-child(2) > div {
     max-width: calc(100% - 40px) !important;
@@ -876,13 +995,12 @@
   }
 }
 
-/* Move the entire brand block slightly more to the left without changing vertical position */
 #site-header .relative.mx-auto > div:first-child {
   margin-left: -10px !important;
 }
 
 #site-header a[href="#hero"] > .absolute {
-  left: -1rem !important; /* stronger left nudge */
+  left: -1rem !important;
   top: -0.25rem !important;
 }
 
@@ -902,7 +1020,7 @@
 
 .timeline-snake-base {
   fill: none;
-  stroke: rgba(96,240,120,0.65);
+  stroke: rgba(96, 240, 120, 0.65);
   stroke-width: 5;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -910,7 +1028,7 @@
 
 .timeline-snake-flow {
   fill: none;
-  stroke: rgba(96,240,120,0.92);
+  stroke: rgba(96, 240, 120, 0.92);
   stroke-width: 6;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -943,10 +1061,12 @@
 }
 
 @keyframes snakePulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }
+
   50% {
     transform: scale(1.3);
     opacity: 0.8;
@@ -971,64 +1091,62 @@
   }
 }
 
-/* Floating right-side navigation rail (visual-only overrides).
-   - CSS only: does not change any markup or JS behaviour.
-   - Keeps internal structure, progress line, and active indicator intact.
-*/
+/* Floating right-side navigation rail */
 nav[aria-label="Football match timeline"] {
   position: fixed !important;
-  right: 28px !important; /* 24-32px from the right edge */
+  right: 28px !important;
   top: 50% !important;
   transform: translateY(-50%) !important;
   z-index: 1000 !important;
   width: auto !important;
-  max-width: 150px !important; /* slightly narrower than before */
+  max-width: 150px !important;
   min-width: 120px !important;
   max-height: calc(100vh - 48px) !important;
   padding: 8px !important;
-  border-radius: 28px !important; /* pill-shaped */
-  background: rgba(8,12,10,0.56) !important; /* semi-transparent dark glass */
-  border: 1px solid rgba(96,240,120,0.06) !important; /* subtle green border */
-  box-shadow: 0 14px 40px rgba(0,0,0,0.45) !important;
-  backdrop-filter: blur(8px) !important; /* slight blur */
+  border-radius: 28px !important;
+  background: rgba(8, 12, 10, 0.56) !important;
+  border: 1px solid rgba(96, 240, 120, 0.06) !important;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(8px) !important;
   overflow: visible !important;
 }
 
-/* Reduce internal spacing and make the rail tighter */
-nav[aria-label="Football match timeline"] .relative.flex.h-full.items-start.gap-6 {
+nav[aria-label="Football match timeline"]
+  .relative.flex.h-full.items-start.gap-6 {
   gap: 8px !important;
 }
 
-/* Narrow the central column containing the progress line */
 nav[aria-label="Football match timeline"] .relative.flex.h-full > .relative.flex {
   padding-top: 6px !important;
   padding-bottom: 6px !important;
 }
 
-/* Tighter button layout inside the rail */
 nav[aria-label="Football match timeline"] button {
   padding: 6px 8px !important;
   border-radius: 16px !important;
   gap: 8px !important;
 }
 
-/* Slightly smaller type to fit the slimmer rail */
-nav[aria-label="Football match timeline"] .text-\[11px\] { font-size: 10px !important; }
-nav[aria-label="Football match timeline"] .text-\[12px\] { font-size: 11px !important; }
+nav[aria-label="Football match timeline"] .text-\[11px\] {
+  font-size: 10px !important;
+}
 
-/* Keep the vertical progress line visible and thin */
-nav[aria-label="Football match timeline"] .absolute.inset-y-0.left-1\/2.w-\[2px\] {
+nav[aria-label="Football match timeline"] .text-\[12px\] {
+  font-size: 11px !important;
+}
+
+nav[aria-label="Football match timeline"]
+  .absolute.inset-y-0.left-1\/2.w-\[2px\] {
   width: 2px !important;
   left: 50% !important;
 }
 
-/* Indicator dot positioning preserved but reduced slightly */
-nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h-4.w-4.rounded-full {
+nav[aria-label="Football match timeline"]
+  .pointer-events-none.absolute.left-0.h-4.w-4.rounded-full {
   width: 14px !important;
   height: 14px !important;
 }
 
-/* Tablet: reduce width and spacing slightly */
 @media (min-width: 1024px) and (max-width: 1279px) {
   nav[aria-label="Football match timeline"] {
     right: 22px !important;
@@ -1037,8 +1155,6 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
   }
 }
 
-/* Mobile: do not change visibility/behavior (component is hidden under lg by markup).
-   If the component is shown, reposition to avoid covering content by moving it lower-right. */
 @media (max-width: 767px) {
   nav[aria-label="Football match timeline"] {
     right: 12px !important;
@@ -1049,6 +1165,7 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
     padding: 6px !important;
     border-radius: 14px !important;
   }
+
   nav[aria-label="Football match timeline"] button {
     padding: 6px 6px !important;
   }
@@ -1167,7 +1284,8 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
 #booking {
   opacity: 0;
   transform: translateY(26px);
-  transition: opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+  transition:
+    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
     transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
   will-change: opacity, transform;
 }
@@ -1189,10 +1307,6 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
   }
 }
 
-/* #pricing cards keep the same frosted-glass backdrop blur as the About and
-   Contact cards. The reveal rule above forces will-change/transform, which
-   promotes #pricing to its own composited layer and breaks backdrop-filter in
-   Chromium. Neutralize it so the blur samples the page background. */
 #pricing {
   will-change: auto;
 }
@@ -1220,16 +1334,28 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
   animation: galleryRise 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.gallery-featured-item-0 { grid-area: f; }
-.gallery-featured-item-1 { grid-area: a; }
-.gallery-featured-item-2 { grid-area: b; }
-.gallery-featured-item-3 { grid-area: t; }
+.gallery-featured-item-0 {
+  grid-area: f;
+}
+
+.gallery-featured-item-1 {
+  grid-area: a;
+}
+
+.gallery-featured-item-2 {
+  grid-area: b;
+}
+
+.gallery-featured-item-3 {
+  grid-area: t;
+}
 
 @keyframes galleryRise {
   from {
     opacity: 0;
     transform: translateY(24px);
   }
+
   to {
     opacity: 1;
     transform: none;
@@ -1294,9 +1420,11 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
   0% {
     top: 6%;
   }
+
   50% {
     top: 92%;
   }
+
   100% {
     top: 6%;
   }
@@ -1308,10 +1436,7 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
   }
 }
 
-/* ---- Booking form native input icons (white on dark bg) ----
-   color-scheme: dark tells the browser to render native controls
-   (date picker icon, number spinners, autofill) in a light palette
-   so they stay visible on the dark field background. */
+/* ---- Booking form native input icons ---- */
 #booking input[type="date"],
 #booking input[type="number"] {
   color-scheme: dark;
@@ -1397,9 +1522,11 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
     overflow-x: auto;
     padding-bottom: 0.25rem;
   }
+
   .booking-step-label {
     display: none;
   }
+
   .booking-step {
     padding: 0.45rem 0.55rem;
   }
@@ -1454,7 +1581,8 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
   transform: scale(0.88);
   opacity: 0.7;
   filter: saturate(0.8) brightness(0.9);
-  transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
+  transition:
+    transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
     opacity 500ms cubic-bezier(0.22, 1, 0.36, 1),
     filter 500ms ease,
     box-shadow 500ms ease;
@@ -1478,12 +1606,10 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
   filter: saturate(0.7) brightness(0.8);
 }
 
-/* The image itself must never drift continuously */
 .gallery-carousel-card .gallery-card-img {
   animation: none;
 }
 
-/* Animated frame: travelling light, pulse + glow on the active slide */
 .gallery-carousel-card .gallery-frame-rect {
   opacity: 0.45;
 }
@@ -1503,11 +1629,16 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
 }
 
 @keyframes galleryFramePulse {
-  0%, 100% { opacity: 0.9; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+
+  50% {
+    opacity: 1;
+  }
 }
 
-/* Corner brackets */
 .gallery-corner-bracket {
   position: absolute;
   width: 1.1rem;
@@ -1562,11 +1693,16 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
 }
 
 @keyframes galleryCornerPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.45; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.45;
+  }
 }
 
-/* Prev / next controls */
 .gallery-carousel-nav {
   position: absolute;
   top: 50%;
@@ -1591,10 +1727,14 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
   box-shadow: 0 0 24px rgba(60, 235, 120, 0.25);
 }
 
-.gallery-carousel-nav-prev { left: 0.5rem; }
-.gallery-carousel-nav-next { right: 0.5rem; }
+.gallery-carousel-nav-prev {
+  left: 0.5rem;
+}
 
-/* Caption + dots */
+.gallery-carousel-nav-next {
+  right: 0.5rem;
+}
+
 .gallery-carousel-caption {
   text-align: center;
 }
@@ -1624,12 +1764,19 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
     flex-basis: 88%;
     padding: 0 0.35rem;
   }
+
   .gallery-carousel-nav {
     width: 2.25rem;
     height: 2.25rem;
   }
-  .gallery-carousel-nav-prev { left: 0.35rem; }
-  .gallery-carousel-nav-next { right: 0.35rem; }
+
+  .gallery-carousel-nav-prev {
+    left: 0.35rem;
+  }
+
+  .gallery-carousel-nav-next {
+    right: 0.35rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1638,58 +1785,95 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
   .gallery-carousel-card-dimmed {
     transition-duration: 150ms;
   }
+
   .gallery-carousel-card-selected .gallery-frame,
   .gallery-carousel-card-selected .gallery-corner-tl,
   .gallery-carousel-card-selected .gallery-corner-br {
     animation: none;
   }
+
   .gallery-carousel-card .gallery-frame-rect {
     animation: none;
   }
 }
 
-
-
 /* ===== Admin Dashboard ===== */
+
 .admin-sidebar-in {
   animation: adminSidebarIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
 @keyframes adminSidebarIn {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .admin-fade-up {
   opacity: 0;
   animation: adminFadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
+
 @keyframes adminFadeUp {
-  from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .admin-chart-in {
   animation: adminChartIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
 @keyframes adminChartIn {
-  from { opacity: 0; transform: translateY(10px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .admin-drawer-backdrop {
   animation: adminBackdropIn 0.3s ease both;
 }
+
 @keyframes adminBackdropIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .admin-drawer {
   animation: adminDrawerIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
 @keyframes adminDrawerIn {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(0); }
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1706,17 +1890,13 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
 /* ============================================================
    Mobile & tablet responsive layout fixes (CSS-only).
    Desktop (>= 1024px) is completely untouched.
-   ============================================================ */
+============================================================ */
 
-/* ---- Header & navigation: mobile + tablet (below lg) ---- */
 @media (max-width: 1023px) {
-  /* Hide the desktop pill navigation on mobile/tablet.
-     The existing hamburger button + dropdown take over. */
   #site-header .relative.mx-auto > div:nth-child(2) {
     display: none !important;
   }
 
-  /* Compact header row: brand left, hamburger right */
   #site-header .relative.mx-auto {
     min-height: 56px !important;
     gap: 0.75rem !important;
@@ -1727,35 +1907,39 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
     margin-left: 0 !important;
   }
 
-  /* Scale the brand logo down proportionally */
   #site-header a[href="#hero"] {
     gap: 0.6rem !important;
   }
+
   #site-header a[href="#hero"] > .absolute {
     width: 40px !important;
     height: 40px !important;
     left: -0.5rem !important;
     top: -0.25rem !important;
   }
+
   #site-header a[href="#hero"] > .absolute span {
     font-size: 0.42rem !important;
   }
+
   #site-header a[href="#hero"] > div:nth-child(2) {
     width: 34px !important;
     height: 34px !important;
   }
+
   #site-header a[href="#hero"] > div:nth-child(2) img {
     width: 26px !important;
     height: 26px !important;
   }
+
   #site-header a[href="#hero"] > div:nth-child(3) h1 {
     font-size: 1.05rem !important;
   }
+
   #site-header a[href="#hero"] > div:nth-child(3) p {
     font-size: 0.56rem !important;
   }
 
-  /* Mobile dropdown menu: keep readable width + safe margins */
   #site-header nav[class*="mt-3"] {
     max-width: calc(100% - 2.5rem) !important;
     margin-left: auto !important;
@@ -1764,8 +1948,8 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
 }
 
 /* ---- Hero content: mobile only ---- */
+
 @media (max-width: 767px) {
-  /* Prevent horizontal scrolling from any stray wide element */
   html,
   body {
     overflow-x: hidden !important;
@@ -1773,21 +1957,10 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
     min-height: 100vh !important;
   }
 
-    /* Root cause: do NOT force a full-viewport minimum height on the homepage
-      page wrapper on mobile. A `100svh` minimum here can stretch the page and
-      open a blank strip between the hero's benefit cards and the About Us
-      section. Let the page size itself from its content instead. */
-    /* Use an explicit class on <main> instead of :has() for broader browser
-      compatibility on mobile devices. */
-    main.has-mobile-hero {
-     min-height: auto !important;
-    }
+  main.has-mobile-hero {
+    min-height: auto !important;
+  }
 
-  /* Single, continuous, viewport-fixed background layer for the whole page.
-     Because it is `position: fixed` it never participates in the document
-     flow, never adds page height and can never create a blank area; content
-     simply scrolls over it and every section shares the same stadium
-     background. */
   .hero-bg-layer {
     position: fixed !important;
     top: 0 !important;
@@ -1802,7 +1975,6 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
     z-index: -1 !important;
   }
 
-  /* Stable, visually continuous cover image on real devices */
   .hero-bg-img {
     position: absolute !important;
     inset: 0 !important;
@@ -1815,37 +1987,198 @@ nav[aria-label="Football match timeline"] .pointer-events-none.absolute.left-0.h
     background-attachment: scroll !important;
   }
 
-  /* The mobile hero wrapper is just a plain block container: it must never
-     constrain, offset or add height for the fixed background layer. */
   .mobile-hero-wrap {
     position: static !important;
   }
 
-  /* Hero heading scales to fit the viewport without shrinking too far */
   #hero .hero-content h1 {
     font-size: clamp(2.15rem, 8vw, 2.6rem) !important;
     line-height: 1.08 !important;
     margin-top: 1.25rem !important;
   }
 
-  /* Feature ticks: clean compact spacing, wrap without overlap */
   #hero .hero-content ul {
     gap: 0.6rem 1.25rem !important;
     margin-top: 1.5rem !important;
   }
 
-  /* Buttons stack full-width with centered content + breathing room */
   #hero .hero-content div[class*="mt-10"] {
     gap: 0.75rem !important;
     margin-top: 2rem !important;
   }
+
   #hero .hero-content div[class*="mt-10"] a {
     width: 100% !important;
     justify-content: center !important;
   }
 
-  /* Trust feature cards: tighter padding so they fit one-per-row */
   #hero .hero-content > .mt-4.grid > div {
     padding: 0.75rem 0.25rem !important;
+  }
+}
+
+/* ============================================================
+   DESKTOP BALANCED CONTENT LAYOUT — NON-HERO SECTIONS ONLY
+   Hero is intentionally NOT included here.
+
+   About / Features / Gallery / Pricing / Booking / Contact
+   are all balanced around the fixed right-side navigation.
+============================================================ */
+
+@media (min-width: 1025px) {
+
+  /* ----------------------------------------------------------
+     ABOUT / FEATURES / GALLERY / PRICING / CONTACT
+  ---------------------------------------------------------- */
+
+  #about,
+  #features,
+  #gallery,
+  #pricing,
+  #contact {
+    position: relative !important;
+    left: 0 !important;
+
+    margin-left: 45px !important;
+    margin-right: 245px !important;
+
+    width: calc(100% - 290px) !important;
+    max-width: 1280px !important;
+
+    overflow: visible !important;
+  }
+
+
+  /* Keep inner content from becoming wider than the section */
+
+  #features .grid,
+  #gallery .gallery-featured-grid,
+  #gallery .gallery-carousel,
+  #pricing > div,
+  #contact > div {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+
+  /* ----------------------------------------------------------
+     BOOKING
+  ---------------------------------------------------------- */
+
+  #booking {
+    position: relative !important;
+    left: 0 !important;
+
+    margin-left: 45px !important;
+    margin-right: 270px !important;
+
+    width: calc(100% - 315px) !important;
+    max-width: 1280px !important;
+
+    overflow-x: hidden !important;
+  }
+
+  #booking > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+
+  /* ----------------------------------------------------------
+     BOOKING STEPS
+  ---------------------------------------------------------- */
+
+  #booking .booking-steps {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  #booking .booking-step {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  #booking .booking-step-label {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+
+  /* ----------------------------------------------------------
+     CONSISTENT LARGE + BOLD SECTION HEADINGS
+     Hero heading is deliberately excluded.
+  ---------------------------------------------------------- */
+
+  #about h2,
+  #features h2,
+  #gallery h2,
+  #pricing h2,
+  #booking h2,
+  #contact h2 {
+    font-size: clamp(2.5rem, 4vw, 4rem) !important;
+    line-height: 1.05 !important;
+    font-weight: 800 !important;
+  }
+}
+
+
+/* ============================================================
+   LARGE DESKTOP
+   NON-HERO SECTIONS ONLY
+============================================================ */
+
+@media (min-width: 1440px) {
+
+  #about,
+  #features,
+  #gallery,
+  #pricing,
+  #contact {
+    margin-left: 55px !important;
+    margin-right: 250px !important;
+    width: calc(100% - 305px) !important;
+    max-width: 1320px !important;
+    left: 0 !important;
+  }
+
+  #booking {
+    margin-left: 55px !important;
+    margin-right: 275px !important;
+    width: calc(100% - 330px) !important;
+    max-width: 1320px !important;
+    left: 0 !important;
+  }
+}
+
+
+/* ============================================================
+   EXTRA LARGE DESKTOP
+   NON-HERO SECTIONS ONLY
+============================================================ */
+
+@media (min-width: 1800px) {
+
+  #about,
+  #features,
+  #gallery,
+  #pricing,
+  #contact {
+    margin-left: 70px !important;
+    margin-right: 260px !important;
+    width: calc(100% - 330px) !important;
+    max-width: 1340px !important;
+    left: 0 !important;
+  }
+
+  #booking {
+    margin-left: 70px !important;
+    margin-right: 285px !important;
+    width: calc(100% - 355px) !important;
+    max-width: 1340px !important;
+    left: 0 !important;
   }
 }

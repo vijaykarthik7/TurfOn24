@@ -4,6 +4,7 @@ import express from "express";
 import cors from "cors";
 
 import bookingRoutes from "./src/routes/bookingRoutes.js";
+import adminRoutes from "./src/routes/adminRoutes.js";
 import { prisma } from "./src/config/prisma.js";
 
 const app = express();
@@ -129,6 +130,14 @@ app.get("/api/test-db", async (req, res) => {
 */
 
 app.use("/api/bookings", bookingRoutes);
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN ROUTES
+|--------------------------------------------------------------------------
+*/
+
+app.use("/api/admin", adminRoutes);
 
 /*
 |--------------------------------------------------------------------------

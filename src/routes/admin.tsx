@@ -2,9 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 import {
+  AlertTriangle,
   Bell,
   CalendarCheck,
   CheckCircle2,
+  Download,
+  KeyRound,
   LayoutDashboard,
   Lock,
   LogIn,
@@ -14,6 +17,7 @@ import {
   RefreshCw,
   Search,
   Settings,
+  Shield,
   TrendingUp,
   User,
   Users,
@@ -22,6 +26,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
+import InteractiveNeuralVortex from "@/components/ui/interactive-neural-vortex-background";
 import { API_URL, apiUrl } from "@/lib/api";
 
 const ADMIN_USERNAME = "demo123";
@@ -1415,6 +1420,661 @@ function MessagesView({
   );
 }
 
+function SettingsView({
+  hourlyBookings,
+  enquiries,
+}: {
+  hourlyBookings: HourlyBooking[];
+  enquiries: ExtendedBooking[];
+}) {
+  const [newUsername, setNewUsername] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [credSuccess, setCredSuccess] = useState("");
+  const [credError, setCredError] = useState("");
+  const [credBusy, setCredBusy] = useState(false);
+
+  const [downloadBusy, setDownloadBusy] = useState(false);
+  const [downloadSuccess, setDownloadSuccess] = useState("");
+  const [downloadError, setDownloadError] = useState("");
+
+  const [bookingsEnabled, setBookingsEnabled] = useState(true);
+  const [toggleBusy, setToggleBusy] = useState(false);
+  const [toggleSuccess, setToggleSuccess] = useState("");
+  const [toggleError, setToggleError] = useState("");
+  const [showDisableConfirm, setShowDisableConfirm] = useState(false);
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
+
+  useEffect(() => {
+    if (DEMO_MODE) {
+      const saved = window.localStorage.getItem("turfon24_bookings_enabled");
+      setBookingsEnabled(saved !== "off");
+      setSettingsLoaded(true);
+      return;
+    }
+
+    let cancelled = false;
+
+    fetch(apiUrl("/api/admin/settings/online_bookings_enabled"), {
+      method: "GET",
+      headers: { Accept: "application/json" },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelled) return;
+
+        if (data.setting && data.setting.value === "false") {
+          setBookingsEnabled(false);
+        } else {
+          setBookingsEnabled(true);
+        }
+
+        setSettingsLoaded(true);
+      })
+      .catch(() => {
+        if (!cancelled) setSettingsLoaded(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleChangeCredentials = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setCredError("");
+    setCredSuccess("");
+
+    if (!currentPassword.trim()) {
+      setCredError("Current password is required");
+      return;
+    }
+
+    if (!newUsername.trim() && !newPassword.trim()) {
+      setCredError("Provide a new username or new password");
+      return;
+    }
+
+    if (newPassword.trim() && newPassword !== confirmPassword) {
+      setCredError("New password and confirmation do not match");
+      return;
+    }
+
+    if (newPassword.trim() && newPassword.trim().length < 4) {
+      setCredError("New password must be at least 4 characters");
+      return;
+    }
+
+    if (newUsername.trim() && newUsername.trim().length < 3) {
+      setCredError("Username must be at least 3 characters");
+      return;
+    }
+
+    setCredBusy(true);
+
+    try {
+      if (DEMO_MODE) {
+        await new Promise((resolve) => window.setTimeout(resolve, 600));
+        setCredSuccess("Admin credentials updated successfully");
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+        setNewUsername("");
+        setCredBusy(false);
+        return;
+      }
+
+      const response = await fetch(apiUrl("/api/admin/change-credentials"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          currentPassword: currentPassword.trim(),
+          newUsername: newUsername.trim() || undefined,
+          newPassword: newPassword.trim() || undefined,
+        }),
+      });
+
+      const data: ApiResponse = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(
+          (typeof data["message"] === "string" ? data["message"] : null) ||
+            "Failed to update credentials"
+        );
+      }
+
+      setCredSuccess("Admin credentials updated successfully");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setNewUsername("");
+    } catch (error) {
+      setCredError(
+        error instanceof Error ? error.message : "Failed to update credentials"
+      );
+    } finally {
+      setCredBusy(false);
+    }
+  };
+
+  const handleDownloadCustomers = async () => {
+    setDownloadError("");
+    setDownloadSuccess("");
+    setDownloadBusy(true);
+
+    try {
+      let customers: Array<{
+        name: string;
+        phone: string;
+        email: string;
+        bookings: number;
+        registrationDate: string;
+      }> = [];
+
+      if (DEMO_MODE) {
+        await new Promise((resolve) => window.setTimeout(resolve, 500));
+
+        const customerMap = new Map<
+          string,
+          {
+            name: string;
+            phone: string;
+            bookings: number;
+            registrationDate: string;
+          }
+        >();
+
+        for (const booking of hourlyBookings) {
+          const key = booking.phone || `hourly-${booking.id}`;
+          const existing = customerMap.get(key);
+
+          if (existing) {
+            existing.bookings += 1;
+          } else {
+            customerMap.set(key, {
+              name: booking.fullName,
+              phone: booking.phone,
+              bookings: 1,
+              registrationDate: booking.createdAt,
+            });
+          }
+        }
+
+        for (const enquiry of enquiries) {
+          const key = enquiry.phone || `extended-${enquiry.id}`;
+          const existing = customerMap.get(key);
+
+          if (existing) {
+            existing.bookings += 1;
+          } else {
+            customerMap.set(key, {
+              name: enquiry.fullName,
+              phone: enquiry.phone,
+              bookings: 1,
+              registrationDate: enquiry.createdAt,
+            });
+          }
+        }
+
+        customers = Array.from(customerMap.values()).map((c) => ({
+          ...c,
+          email: "",
+        }));
+      } else {
+        const response = await fetch(apiUrl("/api/admin/customers"), {
+          method: "GET",
+          headers: { Accept: "application/json" },
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(
+            (typeof data["message"] === "string" ? data["message"] : null) ||
+              "Failed to load customer data"
+          );
+        }
+
+        customers = Array.isArray(data["customers"]) ? data["customers"] : [];
+      }
+
+      if (customers.length === 0) {
+        setDownloadError("No customer records found");
+        setDownloadBusy(false);
+        return;
+      }
+
+      const escapeCSV = (value: string) => {
+        if (value.includes(",") || value.includes('"') || value.includes("\n")) {
+          return `"${value.replace(/"/g, '""')}"`;
+        }
+        return value;
+      };
+
+      const headers = [
+        "Customer Name",
+        "Email",
+        "Phone",
+        "Number of Bookings",
+        "Registration Date",
+      ];
+
+      const rows = customers.map((c) => [
+        escapeCSV(c.name),
+        escapeCSV(c.email || ""),
+        escapeCSV(c.phone),
+        String(c.bookings),
+        escapeCSV(formatDate(c.registrationDate)),
+      ]);
+
+      const csvContent = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `turfon24-customers-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      setDownloadSuccess(`Downloaded ${customers.length} customer records`);
+    } catch (error) {
+      setDownloadError(
+        error instanceof Error ? error.message : "Failed to download customers"
+      );
+    } finally {
+      setDownloadBusy(false);
+    }
+  };
+
+  const handleToggleBookings = async (enabled: boolean) => {
+    setToggleError("");
+    setToggleSuccess("");
+    setToggleBusy(true);
+
+    try {
+      if (DEMO_MODE) {
+        await new Promise((resolve) => window.setTimeout(resolve, 400));
+        setBookingsEnabled(enabled);
+        window.localStorage.setItem(
+          "turfon24_bookings_enabled",
+          enabled ? "on" : "off"
+        );
+        setToggleSuccess(
+          enabled
+            ? "Online bookings are currently enabled"
+            : "Online bookings are currently disabled"
+        );
+        setToggleBusy(false);
+        return;
+      }
+
+      const response = await fetch(apiUrl("/api/admin/settings"), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          key: "online_bookings_enabled",
+          value: String(enabled),
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(
+          (typeof data["message"] === "string" ? data["message"] : null) ||
+            "Failed to update booking status"
+        );
+      }
+
+      setBookingsEnabled(enabled);
+      setToggleSuccess(
+        enabled
+          ? "Online bookings are currently enabled"
+          : "Online bookings are currently disabled"
+      );
+    } catch (error) {
+      setToggleError(
+        error instanceof Error
+          ? error.message
+          : "Failed to update booking status"
+      );
+    } finally {
+      setToggleBusy(false);
+    }
+  };
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <p className="text-sm text-turf">Settings</p>
+
+        <h2 className="mt-1 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+          Admin Settings
+        </h2>
+
+        <p className="mt-1 text-sm text-zinc-400">
+          Manage your account, data, and booking preferences.
+        </p>
+      </div>
+
+      {/* ─── ACCOUNT SECURITY ─── */}
+
+      <div className="rounded-2xl border border-turf/10 bg-white/[0.03] p-5">
+        <PanelHeader
+          title="Account Security"
+          subtitle="Change your admin ID and password"
+          action={
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-turf/20 bg-turf/10 text-turf">
+              <Shield className="h-5 w-5" />
+            </span>
+          }
+        />
+
+        <form
+          onSubmit={(event) => void handleChangeCredentials(event)}
+          className="mt-6 grid gap-4 sm:grid-cols-2"
+        >
+          <div className="space-y-1.5">
+            <label className="text-xs uppercase tracking-wider text-zinc-400">
+              New Admin ID
+            </label>
+
+            <div className="relative">
+              <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-turf/70" />
+
+              <input
+                type="text"
+                autoComplete="username"
+                value={newUsername}
+                onChange={(event) => setNewUsername(event.target.value)}
+                placeholder="Leave unchanged to keep current"
+                className="w-full rounded-xl border border-white/10 bg-white/[0.03] py-3 pl-10 pr-4 text-sm text-white outline-none transition-colors placeholder:text-zinc-600 focus:border-turf/40"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs uppercase tracking-wider text-zinc-400">
+              Current Password
+            </label>
+
+            <div className="relative">
+              <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-turf/70" />
+
+              <input
+                type="password"
+                autoComplete="current-password"
+                value={currentPassword}
+                onChange={(event) => setCurrentPassword(event.target.value)}
+                placeholder="Required to confirm changes"
+                className="w-full rounded-xl border border-white/10 bg-white/[0.03] py-3 pl-10 pr-4 text-sm text-white outline-none transition-colors placeholder:text-zinc-600 focus:border-turf/40"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs uppercase tracking-wider text-zinc-400">
+              New Password
+            </label>
+
+            <div className="relative">
+              <KeyRound className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-turf/70" />
+
+              <input
+                type="password"
+                autoComplete="new-password"
+                value={newPassword}
+                onChange={(event) => setNewPassword(event.target.value)}
+                placeholder="Leave unchanged to keep current"
+                className="w-full rounded-xl border border-white/10 bg-white/[0.03] py-3 pl-10 pr-4 text-sm text-white outline-none transition-colors placeholder:text-zinc-600 focus:border-turf/40"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs uppercase tracking-wider text-zinc-400">
+              Confirm New Password
+            </label>
+
+            <div className="relative">
+              <KeyRound className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-turf/70" />
+
+              <input
+                type="password"
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                placeholder="Re-enter new password"
+                className="w-full rounded-xl border border-white/10 bg-white/[0.03] py-3 pl-10 pr-4 text-sm text-white outline-none transition-colors placeholder:text-zinc-600 focus:border-turf/40"
+              />
+            </div>
+          </div>
+
+          <div className="sm:col-span-2">
+            {credError ? (
+              <p className="mb-3 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-300">
+                {credError}
+              </p>
+            ) : null}
+
+            {credSuccess ? (
+              <p className="mb-3 rounded-xl border border-turf/25 bg-turf/10 px-4 py-3 text-sm text-turf">
+                {credSuccess}
+              </p>
+            ) : null}
+
+            <button
+              type="submit"
+              disabled={credBusy}
+              className="inline-flex items-center gap-2 rounded-full bg-turf px-6 py-3 text-sm font-semibold text-night shadow-[0_0_35px_rgba(60,235,120,0.35)] transition hover:brightness-110 disabled:opacity-60"
+            >
+              {credBusy ? (
+                <>
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-night/30 border-t-night" />
+                  Saving...
+                </>
+              ) : (
+                "Save Changes"
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* ─── CUSTOMER DATA ─── */}
+
+      <div className="rounded-2xl border border-turf/10 bg-white/[0.03] p-5">
+        <PanelHeader
+          title="Customer Data"
+          subtitle="Export your customer records"
+          action={
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-turf/20 bg-turf/10 text-turf">
+              <Users className="h-5 w-5" />
+            </span>
+          }
+        />
+
+        <p className="mt-4 text-sm text-zinc-400">
+          Download a CSV file with all customer records including name, phone,
+          number of bookings, and registration date.
+        </p>
+
+        <div className="mt-5">
+          {downloadError ? (
+            <p className="mb-3 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-300">
+              {downloadError}
+            </p>
+          ) : null}
+
+          {downloadSuccess ? (
+            <p className="mb-3 rounded-xl border border-turf/25 bg-turf/10 px-4 py-3 text-sm text-turf">
+              {downloadSuccess}
+            </p>
+          ) : null}
+
+          <button
+            type="button"
+            disabled={downloadBusy}
+            onClick={() => void handleDownloadCustomers()}
+            className="inline-flex items-center gap-2 rounded-full bg-turf px-6 py-3 text-sm font-semibold text-night shadow-[0_0_35px_rgba(60,235,120,0.35)] transition hover:brightness-110 disabled:opacity-60"
+          >
+            {downloadBusy ? (
+              <>
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-night/30 border-t-night" />
+                Preparing...
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4" />
+                Download Customers List
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* ─── BOOKING CONTROLS ─── */}
+
+      <div className="rounded-2xl border border-turf/10 bg-white/[0.03] p-5">
+        <PanelHeader
+          title="Booking Controls"
+          subtitle="Manage online booking availability"
+          action={
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-turf/20 bg-turf/10 text-turf">
+              <Settings className="h-5 w-5" />
+            </span>
+          }
+        />
+
+        <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-medium text-white">Online Bookings</p>
+
+            <p className="mt-1 text-sm text-zinc-400">
+              {bookingsEnabled
+                ? "Online bookings are currently enabled"
+                : "Online bookings are currently disabled"}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ${
+                bookingsEnabled
+                  ? "border-turf/25 bg-turf/10 text-turf"
+                  : "border-rose-400/25 bg-rose-400/10 text-rose-300"
+              }`}
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-current" />
+              {bookingsEnabled ? "Active" : "Disabled"}
+            </span>
+
+            <button
+              type="button"
+              disabled={toggleBusy}
+              onClick={() => {
+                if (bookingsEnabled) {
+                  setShowDisableConfirm(true);
+                } else {
+                  void handleToggleBookings(true);
+                }
+              }}
+              className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                bookingsEnabled ? "bg-turf" : "bg-zinc-600"
+              }`}
+            >
+              <span
+                className={`pointer-events-none inline-flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-lg transition-transform duration-200 ${
+                  bookingsEnabled
+                    ? "translate-x-5"
+                    : "translate-x-0.5"
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+
+        {toggleError ? (
+          <p className="mt-4 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-300">
+            {toggleError}
+          </p>
+        ) : null}
+
+        {toggleSuccess ? (
+          <p className="mt-4 rounded-xl border border-turf/25 bg-turf/10 px-4 py-3 text-sm text-turf">
+            {toggleSuccess}
+          </p>
+        ) : null}
+      </div>
+
+      {/* ─── DISABLE CONFIRMATION DIALOG ─── */}
+
+      {showDisableConfirm ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowDisableConfirm(false)}
+          />
+
+          <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-turf/15 bg-night-soft/95 p-6 shadow-[0_0_80px_rgba(16,221,86,0.12)] backdrop-blur-2xl">
+            <div className="flex items-start gap-4">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/10">
+                <AlertTriangle className="h-5 w-5 text-amber-300" />
+              </span>
+
+              <div>
+                <h3 className="text-lg font-semibold text-white">
+                  Disable Online Bookings?
+                </h3>
+
+                <p className="mt-2 text-sm text-zinc-400">
+                  When disabled, customers will see a message that online
+                  bookings are unavailable and will not be able to create new
+                  bookings. Existing bookings will not be affected.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-6 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                disabled={toggleBusy}
+                onClick={() => setShowDisableConfirm(false)}
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-5 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:bg-white/[0.06]"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                disabled={toggleBusy}
+                onClick={() => {
+                  setShowDisableConfirm(false);
+                  void handleToggleBookings(false);
+                }}
+                className="inline-flex items-center gap-2 rounded-full border border-rose-400/30 bg-rose-400/10 px-5 py-2.5 text-sm font-semibold text-rose-300 transition-colors hover:bg-rose-400/20 disabled:opacity-60"
+              >
+                {toggleBusy ? (
+                  <>
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-rose-300/30 border-t-rose-300" />
+                    Disabling...
+                  </>
+                ) : (
+                  "Yes, Disable"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function AdminLoginPage({
   username,
   password,
@@ -1433,8 +2093,9 @@ function AdminLoginPage({
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-night-soft px-4 py-10 text-zinc-200">
-      <div className="relative w-full max-w-md overflow-hidden rounded-[1.75rem] border border-turf/15 bg-white/[0.04] p-8 shadow-[0_0_80px_rgba(16,221,86,0.12)] backdrop-blur-2xl">
+    <div className="relative flex min-h-screen items-center justify-center px-4 py-10 text-zinc-200">
+      <InteractiveNeuralVortex />
+      <div className="relative z-10 w-full max-w-md overflow-hidden rounded-[1.75rem] border border-turf/15 bg-white/[0.04] p-8 shadow-[0_0_80px_rgba(16,221,86,0.12)] backdrop-blur-2xl">
         <div className="pointer-events-none absolute left-0 top-0 h-24 w-24 rounded-full bg-turf/10 blur-3xl" />
         <div className="pointer-events-none absolute right-0 bottom-0 h-24 w-24 rounded-full bg-turf/10 blur-3xl" />
 
@@ -1828,16 +2489,48 @@ function AdminPage() {
     setMobileOpen(false);
   };
 
-  const handleLogin = (event: FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoginError("");
+    setLoginBusy(true);
+
+    try {
+      if (!DEMO_MODE) {
+        const response = await fetch(apiUrl("/api/admin/login"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: loginUsername.trim(),
+            password: loginPassword,
+          }),
+        });
+
+        const data: ApiResponse = await response.json().catch(() => ({}));
+
+        if (response.ok) {
+          window.sessionStorage.setItem(AUTH_STORAGE_KEY, "1");
+          setAuthenticated(true);
+          setLoginPassword("");
+          setLoginBusy(false);
+          return;
+        }
+
+        setLoginError(
+          (typeof data["message"] === "string" ? data["message"] : null) ||
+            "Invalid username or password"
+        );
+        setLoginBusy(false);
+        return;
+      }
+    } catch {
+      /* Backend unavailable, fall through to demo credentials */
+    }
 
     if (loginUsername !== ADMIN_USERNAME || loginPassword !== ADMIN_PASSWORD) {
       setLoginError("Invalid username or password. Try demo123 / demo123.");
+      setLoginBusy(false);
       return;
     }
-
-    setLoginBusy(true);
 
     window.setTimeout(() => {
       window.sessionStorage.setItem(AUTH_STORAGE_KEY, "1");
@@ -2012,17 +2705,10 @@ function AdminPage() {
           ) : null}
 
           {view === "settings" ? (
-            <div className="rounded-2xl border border-turf/10 bg-white/[0.03] p-10 text-center">
-              <Settings className="mx-auto h-10 w-10 text-turf" />
-
-              <h2 className="mt-4 text-xl font-semibold text-white">
-                Settings
-              </h2>
-
-              <p className="mt-2 text-sm text-zinc-400">
-                Settings module coming soon.
-              </p>
-            </div>
+            <SettingsView
+              hourlyBookings={hourlyBookings}
+              enquiries={enquiries}
+            />
           ) : null}
         </main>
       </div>
