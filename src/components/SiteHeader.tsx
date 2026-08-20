@@ -1,5 +1,6 @@
 import { ArrowRight, Menu, X } from "lucide-react";
-import heroImg from "@/assets/turf-hero.jpg";
+import logoImg from "@/assets/Logo.png";
+import taglineImg from "@/assets/Tagline.png";
 import { useState } from "react";
 
 const navLinks = [
@@ -21,18 +22,10 @@ export function SiteHeader() {
           {/* Brand (left) */}
           <div className="flex items-center gap-3">
             <a href="#hero" data-cursor="VIEW" className="relative flex min-w-0 items-center gap-3 overflow-visible">
-              <div className="absolute -left-1 -top-1 z-0 flex h-16 w-16 items-center justify-center rounded-full border border-turf/20 bg-white/10 shadow-[0_0_32px_rgba(60,235,120,0.12)] backdrop-blur-sm">
-                <div className="absolute inset-0 rounded-full border border-dotted border-turf/30" />
-                <span className="relative z-10 text-[0.55rem] font-bold uppercase tracking-[0.35em] text-turf">24/7</span>
-              </div>
-
-              <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full border border-turf/25 bg-white/10 shadow-[0_0_20px_rgba(60,235,120,0.14)] backdrop-blur-sm">
-                <img src={heroImg} alt="TurfOn24" className="h-10 w-10 rounded-full object-cover" />
-              </div>
+              <img src={logoImg} alt="TurfOn24" className="h-12 w-12 object-contain" />
 
               <div className="relative z-10 flex flex-col justify-center gap-1">
-                <h1 className="text-xl font-bold tracking-tight">TurfOn24</h1>
-                <p className="text-[0.65rem] uppercase tracking-[0.35em] text-turf/80">Book • Play • Win</p>
+                <img src={taglineImg} alt="TurfOn24 - Your Turf. Your Time. Your Game." className="h-auto w-36 object-contain" />
               </div>
             </a>
           </div>
@@ -49,7 +42,7 @@ export function SiteHeader() {
                     className={`flex-shrink-0 rounded-full px-3 py-2 text-sm transition-colors ${
                       "isAdmin" in l && l.isAdmin
                         ? "bg-turf/15 text-turf shadow-[inset_0_0_0_1px_rgba(60,235,120,0.25)] hover:bg-turf/25"
-                        : "hover:text-turf"
+                        : "text-foreground hover:text-turf-bright"
                     }`}
                   >
                     {l.label}
@@ -60,7 +53,7 @@ export function SiteHeader() {
           </div>
 
           <div className="flex items-center gap-3">
-            <button type="button" aria-label="Toggle menu" onClick={() => setOpen((v) => !v)} className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-turf/25 bg-night-soft/70 text-turf lg:hidden">
+            <button type="button" aria-label="Toggle menu" onClick={() => setOpen((v) => !v)} className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-turf/25 bg-night-soft/70 text-foreground lg:hidden">
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>

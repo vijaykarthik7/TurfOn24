@@ -9,6 +9,9 @@ import {
   Clock,
   IndianRupee,
   Lightbulb,
+  Mail,
+  MapPin,
+  Phone,
   ShieldCheck,
   Sparkles,
   Star,
@@ -1382,7 +1385,7 @@ function Index() {
               <div className="h-full w-full rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.7)_0%,rgba(160,255,190,0.2)_40%,transparent_72%)] blur-md motion-safe:animate-[spin_24s_linear_infinite_reverse]" />
             </div>
 
-            <div className="field-pulse absolute right-0 top-[80%] h-[40%] w-[70%] bg-[radial-gradient(ellipse_at_70%_40%,rgba(60,235,120,0.35)_0%,transparent_65%)]" />
+            <div className="field-pulse absolute right-0 top-[80%] h-[40%] w-[70%] bg-[radial-gradient(ellipse_at_70%_40%,rgba(15,168,87,0.18)_0%,transparent_65%)]" />
 
             <div className="dot-grid absolute left-0 top-32 h-96 w-40" />
           </div>
@@ -1411,7 +1414,7 @@ function Index() {
                     >
                       <svg
                         viewBox="0 0 200 200"
-                        className="h-28 w-28 lg:h-32 lg:w-32"
+                        className="hidden h-28 w-28 lg:h-32 lg:w-32"
                       >
                         <defs>
                           <linearGradient
@@ -1542,7 +1545,7 @@ function Index() {
                           fontFamily="Manrope, ui-sans-serif, sans-serif"
                           fontWeight="800"
                           fill="#3ceb78"
-                          filter="drop-shadow(0 0 12px rgba(60,235,120,0.45))"
+                          filter="drop-shadow(0 0 8px rgba(15,168,87,0.22))"
                         >
                           24/7
                         </text>
@@ -1583,7 +1586,7 @@ function Index() {
                   <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
                     <a
                       href="#pricing"
-                      className="inline-flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                      className="inline-flex items-center gap-3 rounded-xl border border-foreground/25 bg-transparent px-6 py-3 text-sm font-semibold text-foreground transition hover:border-turf-bright hover:text-turf-bright"
                     >
                       <CalendarDays className="h-5 w-5 text-turf" />
                       Check Pricing
@@ -1591,7 +1594,7 @@ function Index() {
 
                     <a
                       href="#booking"
-                      className="inline-flex items-center gap-3 rounded-xl bg-turf px-6 py-3 text-sm font-semibold text-night shadow-[0_0_35px_rgba(60,235,120,0.45)] transition hover:brightness-110"
+                      className="inline-flex items-center gap-3 rounded-xl bg-turf px-6 py-3 text-sm font-semibold text-night shadow-[0_0_20px_rgba(15,168,87,0.24)] transition hover:bg-turf-bright hover:shadow-[0_0_24px_rgba(57,255,122,0.28)]"
                     >
                       Book Now
                       <ArrowRight className="h-5 w-5" />
@@ -1647,7 +1650,7 @@ function Index() {
         <div className="grid gap-6 lg:gap-7 xl:grid-cols-[1.55fr_1fr]">
           <div
             ref={aboutCardRef}
-            className={`group relative overflow-hidden rounded-[1.75rem] border border-turf/15 bg-white/15 p-8 shadow-[0_0_80px_rgba(16,221,86,0.14)] backdrop-blur-2xl transition duration-500 hover:-translate-y-1 hover:shadow-[0_0_90px_rgba(16,221,86,0.18)] lg:p-9 ${
+                      className={`group relative overflow-hidden rounded-[1.75rem] border border-turf/15 bg-[#0a1012]/90 p-8 shadow-[0_0_36px_rgba(15,168,87,0.06)] backdrop-blur-2xl transition duration-500 hover:-translate-y-1 hover:shadow-[0_0_42px_rgba(15,168,87,0.09)] lg:p-9 ${
               starReveal
                 ? "about-star-reveal"
                 : ""
@@ -1693,11 +1696,11 @@ function Index() {
                       className={`rounded-2xl border border-turf/10 bg-night/10 p-5 text-sm transition duration-300 ${
                         hoveredStatIndex ===
                         index
-                          ? "scale-[1.02] border-turf/30 bg-black/20 shadow-[0_0_30px_rgba(96,240,120,0.16)]"
+                          ? "scale-[1.02] border-turf/30 bg-black/20 shadow-[0_0_20px_rgba(15,168,87,0.1)]"
                           : "hover:border-turf/20 hover:bg-white/5"
                       }`}
                     >
-                      <p className="text-2xl font-bold text-turf">
+                      <p className="text-2xl font-bold text-foreground">
                         {stat.value}
                       </p>
 
@@ -1728,7 +1731,7 @@ function Index() {
                 }) => (
                   <div
                     key={id}
-                    className="relative overflow-hidden rounded-[1.5rem] border border-turf/15 bg-black/40 p-6 shadow-[0_0_40px_rgba(16,221,86,0.08)] backdrop-blur-2xl transition duration-500 hover:-translate-y-1 hover:shadow-[0_0_50px_rgba(16,221,86,0.12)] lg:p-7"
+                    className="relative overflow-hidden rounded-[1.5rem] border border-turf/15 bg-[#0a1012]/90 p-6 shadow-[0_0_24px_rgba(15,168,87,0.05)] backdrop-blur-2xl transition duration-500 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(15,168,87,0.08)] lg:p-7"
                   >
                     <div className="absolute left-6 top-6 h-14 w-14 rounded-full bg-turf/10 blur-3xl" />
 
@@ -2275,7 +2278,7 @@ function Index() {
               type="button"
               onClick={closeGalleryLightbox}
               aria-label="Close gallery"
-              className="gallery-lightbox-close absolute right-6 top-6 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full border border-turf/30 bg-black/70 text-turf shadow-[0_0_30px_rgba(60,235,120,0.25)] transition hover:bg-black/80"
+              className="gallery-lightbox-close absolute right-6 top-6 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full border border-turf/30 bg-black/70 text-turf shadow-[0_0_18px_rgba(15,168,87,0.16)] transition hover:bg-black/80"
             >
               <span
                 className="text-2xl leading-none"
@@ -2292,7 +2295,7 @@ function Index() {
                 handleLightboxPrev();
               }}
               aria-label="Previous image"
-              className="gallery-lightbox-nav absolute left-6 top-1/2 z-20 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-turf/30 bg-black/70 text-turf shadow-[0_0_30px_rgba(60,235,120,0.2)] transition hover:bg-black/80"
+              className="gallery-lightbox-nav absolute left-6 top-1/2 z-20 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-turf/30 bg-black/70 text-turf shadow-[0_0_18px_rgba(15,168,87,0.14)] transition hover:bg-black/80"
             >
               <ChevronLeft className="h-6 w-6" />
             </button>
@@ -2304,7 +2307,7 @@ function Index() {
                 handleLightboxNext();
               }}
               aria-label="Next image"
-              className="gallery-lightbox-nav absolute right-6 top-1/2 z-20 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-turf/30 bg-black/70 text-turf shadow-[0_0_30px_rgba(60,235,120,0.2)] transition hover:bg-black/80"
+              className="gallery-lightbox-nav absolute right-6 top-1/2 z-20 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-turf/30 bg-black/70 text-turf shadow-[0_0_18px_rgba(15,168,87,0.14)] transition hover:bg-black/80"
             >
               <ChevronRight className="h-6 w-6" />
             </button>
@@ -2494,35 +2497,41 @@ function Index() {
           Reach out for bookings and enquiries
         </h2>
 
-        <div className="mt-12 grid items-stretch gap-6 lg:grid-cols-3">
-          <div className="flex h-full flex-col rounded-3xl border border-turf/15 bg-black/50 p-8 shadow-[0_0_25px_-12px_rgba(60,235,120,0.45)] backdrop-blur-2xl transition-all duration-500 ease-out hover:-translate-y-1 hover:border-turf/25 hover:shadow-[0_0_35px_-10px_rgba(60,235,120,0.6)]">
-            <p className="font-semibold text-white">
-              Location
-            </p>
-
-            <p className="mt-3 text-sm text-muted-foreground">
-              Sector 12, Sports City, Cityville
-            </p>
+        <div className="mt-12 grid items-stretch gap-5 md:grid-cols-3">
+          <div className="group flex min-h-32 items-center gap-4 rounded-3xl border border-[rgba(15,168,87,0.25)] bg-[#0a1012]/90 p-6 shadow-[0_0_24px_-14px_rgba(15,168,87,0.22)] backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 hover:border-[#39FF7A] hover:shadow-[0_0_30px_-12px_rgba(57,255,122,0.32)]">
+            <MapPin className="h-7 w-7 shrink-0 text-[#39FF7A]" />
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#39FF7A]">
+                Location
+              </p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                Periya Kanganankuppam, (Behind KUN HYNDAI/TRUE VALUE Show Room), Cuddalore - 607002
+              </p>
+            </div>
           </div>
 
-          <div className="flex h-full flex-col rounded-3xl border border-turf/15 bg-black/50 p-8 shadow-[0_0_25px_-12px_rgba(60,235,120,0.45)] backdrop-blur-2xl transition-all duration-500 ease-out hover:-translate-y-1 hover:border-turf/25 hover:shadow-[0_0_35px_-10px_rgba(60,235,120,0.6)]">
-            <p className="font-semibold text-white">
-              Phone
-            </p>
-
-            <p className="mt-3 text-sm text-muted-foreground">
-              +91 98765 43210
-            </p>
+          <div className="group flex min-h-32 items-center gap-4 rounded-3xl border border-[rgba(15,168,87,0.25)] bg-[#0a1012]/90 p-6 shadow-[0_0_24px_-14px_rgba(15,168,87,0.22)] backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 hover:border-[#39FF7A] hover:shadow-[0_0_30px_-12px_rgba(57,255,122,0.32)]">
+            <Phone className="h-7 w-7 shrink-0 text-[#39FF7A]" />
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#39FF7A]">
+                Phone
+              </p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                89399 89366
+              </p>
+            </div>
           </div>
 
-          <div className="flex h-full flex-col rounded-3xl border border-turf/15 bg-black/50 p-8 shadow-[0_0_25px_-12px_rgba(60,235,120,0.45)] backdrop-blur-2xl transition-all duration-500 ease-out hover:-translate-y-1 hover:border-turf/25 hover:shadow-[0_0_35px_-10px_rgba(60,235,120,0.6)]">
-            <p className="font-semibold text-white">
-              Email
-            </p>
-
-            <p className="mt-3 text-sm text-muted-foreground">
-              play@turfon24.com
-            </p>
+          <div className="group flex min-h-32 items-center gap-4 rounded-3xl border border-[rgba(15,168,87,0.25)] bg-[#0a1012]/90 p-6 shadow-[0_0_24px_-14px_rgba(15,168,87,0.22)] backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 hover:border-[#39FF7A] hover:shadow-[0_0_30px_-12px_rgba(57,255,122,0.32)]">
+            <Mail className="h-7 w-7 shrink-0 text-[#39FF7A]" />
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#39FF7A]">
+                Email
+              </p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                play@turfon24.com
+              </p>
+            </div>
           </div>
         </div>
       </section>

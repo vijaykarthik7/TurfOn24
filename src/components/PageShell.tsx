@@ -16,8 +16,8 @@ export function PageShell({
   return (
     <main className="min-h-screen bg-night text-foreground">
       <div className="relative overflow-hidden border-b border-turf/15">
-        <div className="flood-blink pointer-events-none absolute -top-24 right-[12%] h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.35)_0%,rgba(160,255,190,0.18)_35%,transparent_70%)] blur-lg" />
-        <div className="field-pulse pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-[radial-gradient(ellipse_at_60%_100%,rgba(60,235,120,0.25),transparent_70%)]" />
+        <div className="flood-blink pointer-events-none absolute -top-24 right-[12%] h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(242,244,242,0.35)_0%,rgba(57,255,122,0.18)_35%,transparent_70%)] blur-lg" />
+        <div className="field-pulse pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-[radial-gradient(ellipse_at_60%_100%,rgba(15,168,87,0.25),transparent_70%)]" />
         <div className="dot-grid pointer-events-none absolute left-0 top-24 h-72 w-32" />
         <div className="relative mx-auto max-w-7xl px-6 pb-20 pt-6 lg:px-10 xl:px-12">
           <SiteHeader />

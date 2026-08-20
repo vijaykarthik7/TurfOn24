@@ -1421,7 +1421,7 @@ export function BookingSection({
       <section
         id="booking"
         ref={sectionRef}
-        className="mx-auto mb-16 max-w-7xl scroll-mt-24 rounded-3xl border border-turf/15 bg-black/40 px-6 py-16 shadow-[0_0_35px_-18px_rgba(60,235,120,0.45)] backdrop-blur-2xl md:mb-0 lg:px-10 xl:px-12"
+        className="mx-auto mb-16 max-w-7xl scroll-mt-24 rounded-3xl border border-turf/15 bg-[#030607]/85 px-6 py-16 shadow-[0_0_35px_-18px_rgba(15,168,87,0.35)] backdrop-blur-2xl md:mb-0 lg:px-10 xl:px-12"
       >
         <p className="text-sm font-semibold uppercase tracking-[0.35em] text-turf">
           Bookings

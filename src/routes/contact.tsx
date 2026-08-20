@@ -10,7 +10,7 @@ export const Route = createFileRoute("/contact")({
       {
         name: "description",
         content:
-          "Reach the TurfOn24 team any hour: phone, email, WhatsApp or the ground office at Sector 12, Sports City. Send us a message and we reply within an hour.",
+          "Reach the TurfOn24 team any hour: phone, email, WhatsApp or the ground office at Periya Kanganankuppam, Cuddalore. Send us a message and we reply within an hour.",
       },
       { property: "og:title", content: "Contact TurfOn24 — Call, Visit or Message Us" },
       {
@@ -25,10 +25,10 @@ export const Route = createFileRoute("/contact")({
 });
 
 const channels = [
-  { icon: Phone, title: "Call the ground", value: "+91 98765 43210", note: "Answered 24 hours" },
+  { icon: Phone, title: "Call the ground", value: "89399 89366", note: "Answered 24 hours" },
   { icon: Mail, title: "Email us", value: "play@turfon24.com", note: "Replies within an hour" },
-  { icon: MessageSquare, title: "WhatsApp", value: "+91 98765 43211", note: "Fastest for slot swaps" },
-  { icon: MapPin, title: "Visit", value: "Sector 12, Sports City", note: "Free parking on site" },
+  { icon: MessageSquare, title: "WhatsApp", value: "89399 89366", note: "Fastest for slot swaps" },
+  { icon: MapPin, title: "Visit", value: "Periya Kanganankuppam, (Behind KUN HYNDAI/TRUE VALUE Show Room), Cuddalore - 607002", note: "Free parking on site" },
 ];
 
 function ContactPage() {

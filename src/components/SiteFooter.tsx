@@ -36,10 +36,10 @@ export function SiteFooter() {
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-turf">Reach Us</p>
           <ul className="mt-4 space-y-3 text-sm text-foreground/80">
             <li className="flex items-start gap-2">
-              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-turf" /> Sector 12, Sports City
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-turf" /> Periya Kanganankuppam, (Behind KUN HYNDAI/TRUE VALUE Show Room), Cuddalore - 607002
             </li>
             <li className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-turf" /> +91 98765 43210
+              <Phone className="h-4 w-4 text-turf" /> 89399 89366
             </li>
             <li className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-turf" /> play@turfon24.com

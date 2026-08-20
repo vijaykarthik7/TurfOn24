@@ -6,7 +6,10 @@ import {
   Bell,
   CalendarCheck,
   CheckCircle2,
+  Clock,
   Download,
+  Eye,
+  Filter,
   KeyRound,
   LayoutDashboard,
   Lock,
@@ -14,10 +17,12 @@ import {
   LogOut,
   Menu,
   MessageSquare,
+  Moon,
   RefreshCw,
   Search,
   Settings,
   Shield,
+  Sun,
   TrendingUp,
   User,
   Users,
@@ -26,8 +31,12 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-import InteractiveNeuralVortex from "@/components/ui/interactive-neural-vortex-background";
 import { API_URL, apiUrl } from "@/lib/api";
+import turfLoginImage from "@/assets/login-stadium-green.jpg";
+import turfBlackImage from "@/assets/turf black.jpg";
+import logoImg from "@/assets/Logo.png";
+import taglineImg from "@/assets/Tagline.png";
+import { ShaderBackground } from "@/components/ui/waves-header-green";
 
 const ADMIN_USERNAME = "demo123";
 const ADMIN_PASSWORD = "demo123";
@@ -47,7 +56,6 @@ type ViewKey =
   | "dashboard"
   | "bookings"
   | "customers"
-  | "messages"
   | "settings";
 
 type Tone = "green" | "amber" | "sky" | "rose" | "zinc";
@@ -101,7 +109,6 @@ const navItems: Array<{
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "bookings", label: "Bookings", icon: CalendarCheck },
   { id: "customers", label: "Customers", icon: Users },
-  { id: "messages", label: "Messages", icon: MessageSquare },
   { id: "settings", label: "Settings", icon: Settings },
 ];
 
@@ -777,267 +784,6 @@ function PanelHeader({
   );
 }
 
-function HourlyBookingsTable({
-  bookings,
-  onRefresh,
-  onUpdateStatus,
-  updatingId,
-  loading,
-}: {
-  bookings: HourlyBooking[];
-  onRefresh: () => void;
-  onUpdateStatus: (id: number, status: string) => void;
-  updatingId: number | null;
-  loading: boolean;
-}) {
-  return (
-    <div className="rounded-2xl border border-turf/10 bg-white/[0.03] p-5">
-      <PanelHeader
-        title="Hourly Bookings"
-        subtitle={`${bookings.length} hourly booking${bookings.length === 1 ? "" : "s"} found`}
-        action={
-          <button
-            type="button"
-            onClick={onRefresh}
-            disabled={loading}
-            className="inline-flex items-center gap-2 rounded-full border border-turf/30 bg-turf/10 px-4 py-2 text-sm font-medium text-turf transition-colors hover:bg-turf/20 disabled:opacity-50"
-          >
-            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-            Refresh
-          </button>
-        }
-      />
-
-      {bookings.length === 0 ? (
-        <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.02] p-8 text-center">
-          <CalendarCheck className="mx-auto h-10 w-10 text-zinc-600" />
-
-          <p className="mt-3 text-sm font-medium text-zinc-300">
-            No hourly bookings yet
-          </p>
-
-          <p className="mt-1 text-xs text-zinc-500">
-            New hourly bookings will appear here automatically.
-          </p>
-        </div>
-      ) : (
-        <div className="mt-4 overflow-x-auto">
-          <table className="w-full min-w-[900px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-turf/10 text-xs uppercase tracking-wider text-zinc-500">
-                <th className="px-4 py-3 font-medium">ID</th>
-                <th className="px-4 py-3 font-medium">Customer</th>
-                <th className="px-4 py-3 font-medium">Phone</th>
-                <th className="px-4 py-3 font-medium">Date</th>
-                <th className="px-4 py-3 font-medium">Time</th>
-                <th className="px-4 py-3 font-medium">Players</th>
-                <th className="px-4 py-3 font-medium">Hours</th>
-                <th className="px-4 py-3 font-medium">Amount</th>
-                <th className="px-4 py-3 font-medium">Actions</th>
-              </tr>
-            </thead>
-
-            <tbody className="divide-y divide-white/5">
-              {bookings.map((booking) => (
-                <tr
-                  key={booking.id}
-                  className="transition-colors hover:bg-white/[0.03]"
-                >
-                  <td className="px-4 py-4">
-                    <span className="font-semibold text-turf">
-                      #{booking.id}
-                    </span>
-                  </td>
-
-                  <td className="px-4 py-4">
-                    <span className="flex items-center gap-3">
-                      <Avatar name={booking.fullName} />
-
-                      <span className="font-medium text-white">
-                        {booking.fullName}
-                      </span>
-                    </span>
-                  </td>
-
-                  <td className="px-4 py-4 text-zinc-400">
-                    {booking.phone || "-"}
-                  </td>
-
-                  <td className="px-4 py-4 text-zinc-400">
-                    {formatDate(booking.preferredDate)}
-                  </td>
-
-                  <td className="px-4 py-4 text-zinc-400">
-                    {formatTime(booking.preferredTime)}
-                  </td>
-
-                  <td className="px-4 py-4 text-zinc-300">
-                    {booking.players || "-"}
-                  </td>
-
-                  <td className="px-4 py-4 text-zinc-300">
-                    {booking.hours || "-"}
-                  </td>
-
-                  <td className="px-4 py-4 font-medium text-white">
-                    ₹{booking.totalPrice.toLocaleString("en-IN")}
-                  </td>
-
-                  <td className="px-4 py-4">
-                    <BookingActions
-                      status={booking.status}
-                      busy={updatingId === booking.id}
-                      onApprove={() =>
-                        onUpdateStatus(booking.id, "confirmed")
-                      }
-                      onReject={() =>
-                        onUpdateStatus(booking.id, "cancelled")
-                      }
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ExtendedBookingsTable({
-  enquiries,
-  onRefresh,
-  onUpdateStatus,
-  updatingId,
-  loading,
-}: {
-  enquiries: ExtendedBooking[];
-  onRefresh: () => void;
-  onUpdateStatus: (id: number, status: string) => void;
-  updatingId: number | null;
-  loading: boolean;
-}) {
-  return (
-    <div className="rounded-2xl border border-turf/10 bg-white/[0.03] p-5">
-      <PanelHeader
-        title="Extended Bookings"
-        subtitle={`${enquiries.length} extended booking${enquiries.length === 1 ? "" : "s"} / enquir${enquiries.length === 1 ? "y" : "ies"} found`}
-        action={
-          <button
-            type="button"
-            onClick={onRefresh}
-            disabled={loading}
-            className="inline-flex items-center gap-2 rounded-full border border-turf/30 bg-turf/10 px-4 py-2 text-sm font-medium text-turf transition-colors hover:bg-turf/20 disabled:opacity-50"
-          >
-            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-            Refresh
-          </button>
-        }
-      />
-
-      {enquiries.length === 0 ? (
-        <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.02] p-8 text-center">
-          <MessageSquare className="mx-auto h-10 w-10 text-zinc-600" />
-
-          <p className="mt-3 text-sm font-medium text-zinc-300">
-            No extended bookings yet
-          </p>
-
-          <p className="mt-1 text-xs text-zinc-500">
-            Extended booking enquiries will appear here automatically.
-          </p>
-        </div>
-      ) : (
-        <div className="mt-4 overflow-x-auto">
-          <table className="w-full min-w-[1000px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-turf/10 text-xs uppercase tracking-wider text-zinc-500">
-                <th className="px-4 py-3 font-medium">ID</th>
-                <th className="px-4 py-3 font-medium">Customer</th>
-                <th className="px-4 py-3 font-medium">Phone</th>
-                <th className="px-4 py-3 font-medium">Start Date</th>
-                <th className="px-4 py-3 font-medium">End Date</th>
-                <th className="px-4 py-3 font-medium">Time</th>
-                <th className="px-4 py-3 font-medium">Players</th>
-                <th className="px-4 py-3 font-medium">Customer Message</th>
-                <th className="px-4 py-3 font-medium">Actions</th>
-              </tr>
-            </thead>
-
-            <tbody className="divide-y divide-white/5">
-              {enquiries.map((enquiry) => (
-                <tr
-                  key={enquiry.id}
-                  className="transition-colors hover:bg-white/[0.03]"
-                >
-                  <td className="px-4 py-4">
-                    <span className="font-semibold text-turf">
-                      #{enquiry.id}
-                    </span>
-                  </td>
-
-                  <td className="px-4 py-4">
-                    <span className="flex items-center gap-3">
-                      <Avatar name={enquiry.fullName} />
-
-                      <span className="font-medium text-white">
-                        {enquiry.fullName}
-                      </span>
-                    </span>
-                  </td>
-
-                  <td className="px-4 py-4 text-zinc-400">
-                    {enquiry.phone || "-"}
-                  </td>
-
-                  <td className="px-4 py-4 text-zinc-400">
-                    {formatDate(enquiry.startDate)}
-                  </td>
-
-                  <td className="px-4 py-4 text-zinc-400">
-                    {formatDate(enquiry.endDate)}
-                  </td>
-
-                  <td className="px-4 py-4 text-zinc-400">
-                    {formatTime(enquiry.startTime)} -{" "}
-                    {formatTime(enquiry.endTime)}
-                  </td>
-
-                  <td className="px-4 py-4 text-zinc-300">
-                    {enquiry.players || "-"}
-                  </td>
-
-                  <td className="max-w-[320px] px-4 py-4">
-                    <div className="rounded-lg border border-turf/10 bg-turf/[0.04] p-3">
-                      <p className="whitespace-normal break-words text-sm leading-5 text-zinc-300">
-                        {enquiry.message || "No message provided"}
-                      </p>
-                    </div>
-                  </td>
-
-                  <td className="px-4 py-4">
-                    <BookingActions
-                      status={enquiry.status}
-                      busy={updatingId === enquiry.id}
-                      onApprove={() =>
-                        onUpdateStatus(enquiry.id, "confirmed")
-                      }
-                      onReject={() =>
-                        onUpdateStatus(enquiry.id, "cancelled")
-                      }
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
-}
-
 function DashboardView({
   hourlyBookings,
   enquiries,
@@ -1137,21 +883,71 @@ function DashboardView({
         />
       </div>
 
-      <HourlyBookingsTable
-        bookings={hourlyBookings}
-        onRefresh={onRefresh}
-        onUpdateStatus={onUpdateStatus}
-        updatingId={updatingId}
-        loading={loading}
-      />
+      <div className="rounded-2xl border border-turf/10 bg-white/[0.03] p-5">
+        <PanelHeader
+          title="Recent Hourly Bookings"
+          subtitle={`${hourlyBookings.length} hourly booking${hourlyBookings.length === 1 ? "" : "s"} total`}
+        />
 
-      <ExtendedBookingsTable
-        enquiries={enquiries}
-        onRefresh={onRefresh}
-        onUpdateStatus={onUpdateStatus}
-        updatingId={updatingId}
-        loading={loading}
-      />
+        {hourlyBookings.length === 0 ? (
+          <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.02] p-8 text-center">
+            <CalendarCheck className="mx-auto h-10 w-10 text-zinc-600" />
+            <p className="mt-3 text-sm font-medium text-zinc-300">
+              No hourly bookings yet
+            </p>
+          </div>
+        ) : (
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full min-w-[800px] text-left text-sm">
+              <thead>
+                <tr className="border-b border-turf/10 text-xs uppercase tracking-wider text-zinc-500">
+                  <th className="px-4 py-3 font-medium">Customer</th>
+                  <th className="px-4 py-3 font-medium">Phone</th>
+                  <th className="px-4 py-3 font-medium">Date</th>
+                  <th className="px-4 py-3 font-medium">Time</th>
+                  <th className="px-4 py-3 font-medium">Amount</th>
+                  <th className="px-4 py-3 font-medium">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {hourlyBookings.slice(0, 5).map((booking) => (
+                  <tr
+                    key={booking.id}
+                    className="transition-colors hover:bg-white/[0.03]"
+                  >
+                    <td className="px-4 py-4">
+                      <span className="flex items-center gap-3">
+                        <Avatar name={booking.fullName} />
+                        <span className="font-medium text-white">
+                          {booking.fullName}
+                        </span>
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 text-zinc-400">
+                      {booking.phone || "-"}
+                    </td>
+                    <td className="px-4 py-4 text-zinc-400">
+                      {formatDate(booking.preferredDate)}
+                    </td>
+                    <td className="px-4 py-4 text-zinc-400">
+                      {formatTime(booking.preferredTime)}
+                    </td>
+                    <td className="px-4 py-4 font-medium text-white">
+                      ₹{booking.totalPrice.toLocaleString("en-IN")}
+                    </td>
+                    <td className="px-4 py-4">
+                      <StatusBadge
+                        label={capitalize(booking.status)}
+                        tone={getStatusTone(booking.status)}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -1171,6 +967,176 @@ function BookingsView({
   onUpdateStatus: (id: number, status: string) => void;
   updatingId: number | null;
 }) {
+  const [bookingType, setBookingType] = useState<"hourly" | "extended">(
+    "hourly",
+  );
+  const [bookingTab, setBookingTab] = useState<"current" | "history">(
+    "current",
+  );
+  const [showFilter, setShowFilter] = useState(false);
+  const [filterDate, setFilterDate] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterCustomer, setFilterCustomer] = useState("");
+  const [messageModal, setMessageModal] = useState<{
+    message: string;
+    customer: string;
+  } | null>(null);
+
+  const filteredHourly = useMemo(() => {
+    let result = hourlyBookings;
+    if (bookingTab === "current") {
+      result = result.filter(
+        (b) =>
+          !["completed", "cancelled", "canceled"].includes(
+            b.status.toLowerCase(),
+          ),
+      );
+    } else {
+      result = result.filter((b) =>
+        ["completed", "cancelled", "canceled"].includes(
+          b.status.toLowerCase(),
+        ),
+      );
+    }
+    if (filterDate)
+      result = result.filter((b) => b.preferredDate === filterDate);
+    if (filterStatus)
+      result = result.filter(
+        (b) => b.status.toLowerCase() === filterStatus.toLowerCase(),
+      );
+    if (filterCustomer)
+      result = result.filter((b) =>
+        b.fullName.toLowerCase().includes(filterCustomer.toLowerCase()),
+      );
+    return result;
+  }, [hourlyBookings, bookingTab, filterDate, filterStatus, filterCustomer]);
+
+  const filteredExtended = useMemo(() => {
+    let result = enquiries;
+    if (bookingTab === "current") {
+      result = result.filter(
+        (b) =>
+          !["completed", "cancelled", "canceled"].includes(
+            b.status.toLowerCase(),
+          ),
+      );
+    } else {
+      result = result.filter((b) =>
+        ["completed", "cancelled", "canceled"].includes(
+          b.status.toLowerCase(),
+        ),
+      );
+    }
+    if (filterDate)
+      result = result.filter((b) => b.startDate === filterDate);
+    if (filterStatus)
+      result = result.filter(
+        (b) => b.status.toLowerCase() === filterStatus.toLowerCase(),
+      );
+    if (filterCustomer)
+      result = result.filter((b) =>
+        b.fullName.toLowerCase().includes(filterCustomer.toLowerCase()),
+      );
+    return result;
+  }, [enquiries, bookingTab, filterDate, filterStatus, filterCustomer]);
+
+  const hasActiveFilters = filterDate || filterStatus || filterCustomer;
+
+  const exportCSV = () => {
+    const escapeCSV = (value: string) => {
+      if (
+        value.includes(",") ||
+        value.includes('"') ||
+        value.includes("\n")
+      ) {
+        return `"${value.replace(/"/g, '""')}"`;
+      }
+      return value;
+    };
+
+    const today = new Date().toISOString().slice(0, 10);
+
+    if (bookingType === "hourly") {
+      const headers = [
+        "Customer Name",
+        "Phone Number",
+        "Booking Date",
+        "Time Slot",
+        "Players",
+        "Amount",
+        "Status",
+      ];
+      const rows = filteredHourly.map((b) => [
+        escapeCSV(b.fullName),
+        escapeCSV(b.phone),
+        escapeCSV(formatDate(b.preferredDate)),
+        escapeCSV(formatTime(b.preferredTime)),
+        String(b.players),
+        String(b.totalPrice),
+        escapeCSV(b.status),
+      ]);
+      const csv = [
+        headers.join(","),
+        ...rows.map((r) => r.join(",")),
+      ].join("\n");
+      const blob = new Blob([csv], {
+        type: "text/csv;charset=utf-8;",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `turfon24-hourly-bookings-${today}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } else {
+      const headers = [
+        "Customer Name",
+        "Phone Number",
+        "Start Date & Time",
+        "End Date & Time",
+        "Players",
+        "Enquiry Message",
+        "Status",
+      ];
+      const rows = filteredExtended.map((b) => [
+        escapeCSV(b.fullName),
+        escapeCSV(b.phone),
+        escapeCSV(
+          `${formatDate(b.startDate)} ${formatTime(b.startTime)}`,
+        ),
+        escapeCSV(
+          `${formatDate(b.endDate)} ${formatTime(b.endTime)}`,
+        ),
+        String(b.players),
+        escapeCSV(b.message),
+        escapeCSV(b.status),
+      ]);
+      const csv = [
+        headers.join(","),
+        ...rows.map((r) => r.join(",")),
+      ].join("\n");
+      const blob = new Blob([csv], {
+        type: "text/csv;charset=utf-8;",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `turfon24-extended-bookings-${today}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  };
+
+  const clearFilters = () => {
+    setFilterDate("");
+    setFilterStatus("");
+    setFilterCustomer("");
+  };
+
   return (
     <div className="space-y-5">
       <div>
@@ -1185,21 +1151,468 @@ function BookingsView({
         </p>
       </div>
 
-      <HourlyBookingsTable
-        bookings={hourlyBookings}
-        onRefresh={onRefresh}
-        onUpdateStatus={onUpdateStatus}
-        updatingId={updatingId}
-        loading={loading}
-      />
+      {/* ─── SEGMENTED TOGGLE ─── */}
 
-      <ExtendedBookingsTable
-        enquiries={enquiries}
-        onRefresh={onRefresh}
-        onUpdateStatus={onUpdateStatus}
-        updatingId={updatingId}
-        loading={loading}
-      />
+      <div className="booking-toggle-track w-fit">
+        <div
+          className="booking-toggle-pill"
+          data-state={bookingType}
+        />
+
+        <button
+          type="button"
+          className="booking-toggle-btn"
+          data-active={bookingType === "hourly"}
+          onClick={() => {
+            setBookingType("hourly");
+            setBookingTab("current");
+            clearFilters();
+          }}
+        >
+          <CalendarCheck className="h-4 w-4" />
+          Hourly Bookings
+        </button>
+
+        <button
+          type="button"
+          className="booking-toggle-btn"
+          data-active={bookingType === "extended"}
+          onClick={() => {
+            setBookingType("extended");
+            setBookingTab("current");
+            clearFilters();
+          }}
+        >
+          <Clock className="h-4 w-4" />
+          Extended Bookings
+        </button>
+      </div>
+
+      {/* ─── ACTION BAR ─── */}
+
+      <div className="booking-actions-bar">
+        <button
+          type="button"
+          className="booking-action-btn"
+          data-active={bookingTab === "current"}
+          onClick={() => setBookingTab("current")}
+        >
+          <CalendarCheck className="h-3.5 w-3.5" />
+          Current Bookings
+        </button>
+
+        <button
+          type="button"
+          className="booking-action-btn"
+          data-active={bookingTab === "history"}
+          onClick={() => setBookingTab("history")}
+        >
+          <Clock className="h-3.5 w-3.5" />
+          Booking History
+        </button>
+
+        <button
+          type="button"
+          className="booking-action-btn"
+          data-active={showFilter}
+          onClick={() => setShowFilter(!showFilter)}
+        >
+          <Filter className="h-3.5 w-3.5" />
+          Filter
+          {hasActiveFilters ? (
+            <span className="ml-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-turf/20 text-[0.6rem] font-bold text-turf">
+              {(filterDate ? 1 : 0) +
+                (filterStatus ? 1 : 0) +
+                (filterCustomer ? 1 : 0)}
+            </span>
+          ) : null}
+        </button>
+
+        <button
+          type="button"
+          className="booking-action-btn"
+          data-variant="export"
+          onClick={exportCSV}
+        >
+          <Download className="h-3.5 w-3.5" />
+          Export CSV
+        </button>
+
+        <div className="ml-auto">
+          <button
+            type="button"
+            onClick={onRefresh}
+            disabled={loading}
+            className="inline-flex items-center gap-2 rounded-full border border-turf/30 bg-turf/10 px-4 py-2 text-sm font-medium text-turf transition-colors hover:bg-turf/20 disabled:opacity-50"
+          >
+            <RefreshCw
+              className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
+            />
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      {/* ─── FILTER PANEL ─── */}
+
+      {showFilter ? (
+        <div className="booking-filter-panel">
+          <div className="mb-3 flex items-center justify-between">
+            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+              Filter Bookings
+            </p>
+
+            {hasActiveFilters ? (
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="text-xs font-medium text-turf hover:underline"
+              >
+                Clear all
+              </button>
+            ) : null}
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="space-y-1">
+              <label className="text-xs text-zinc-500">Date</label>
+
+              <input
+                type="date"
+                value={filterDate}
+                onChange={(e) => setFilterDate(e.target.value)}
+                className="booking-filter-input"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs text-zinc-500">Status</label>
+
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="booking-filter-select"
+              >
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs text-zinc-500">
+                Customer
+              </label>
+
+              <input
+                type="text"
+                value={filterCustomer}
+                onChange={(e) =>
+                  setFilterCustomer(e.target.value)
+                }
+                placeholder="Search by name..."
+                className="booking-filter-input"
+              />
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* ─── HOURLY TABLE (visible only when hourly is selected) ─── */}
+
+      {bookingType === "hourly" ? (
+        <div className="rounded-2xl border border-turf/10 bg-white/[0.03] p-5">
+          <PanelHeader
+            title={`${bookingTab === "current" ? "Current" : "History"} Hourly Bookings`}
+            subtitle={`${filteredHourly.length} booking${filteredHourly.length === 1 ? "" : "s"} found`}
+          />
+
+          {filteredHourly.length === 0 ? (
+            <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.02] p-8 text-center">
+              <CalendarCheck className="mx-auto h-10 w-10 text-zinc-600" />
+
+              <p className="mt-3 text-sm font-medium text-zinc-300">
+                No hourly bookings found
+              </p>
+
+              <p className="mt-1 text-xs text-zinc-500">
+                {bookingTab === "current"
+                  ? "All hourly bookings are completed or cancelled."
+                  : "No booking history yet."}
+              </p>
+            </div>
+          ) : (
+            <div className="mt-4 booking-table-wrapper">
+              <table className="w-full min-w-[900px] text-left text-sm">
+                <thead>
+                  <tr className="border-b border-turf/10 text-xs uppercase tracking-wider text-zinc-500">
+                    <th className="px-4 py-3 font-medium">
+                      Customer Name
+                    </th>
+                    <th className="px-4 py-3 font-medium">
+                      Phone Number
+                    </th>
+                    <th className="px-4 py-3 font-medium">
+                      Booking Date
+                    </th>
+                    <th className="px-4 py-3 font-medium">
+                      Time Slot
+                    </th>
+                    <th className="px-4 py-3 font-medium">
+                      Players
+                    </th>
+                    <th className="px-4 py-3 font-medium">
+                      Amount
+                    </th>
+                    <th className="px-4 py-3 font-medium">
+                      Status
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-white/5">
+                  {filteredHourly.map((booking) => (
+                    <tr
+                      key={booking.id}
+                      className="transition-colors hover:bg-white/[0.03]"
+                    >
+                      <td className="px-4 py-4">
+                        <span className="flex items-center gap-3">
+                          <Avatar name={booking.fullName} />
+
+                          <span className="font-medium text-white">
+                            {booking.fullName}
+                          </span>
+                        </span>
+                      </td>
+
+                      <td className="px-4 py-4 text-zinc-400">
+                        {booking.phone || "-"}
+                      </td>
+
+                      <td className="px-4 py-4 text-zinc-400">
+                        {formatDate(booking.preferredDate)}
+                      </td>
+
+                      <td className="px-4 py-4 text-zinc-400">
+                        {formatTime(booking.preferredTime)}
+                      </td>
+
+                      <td className="px-4 py-4 text-zinc-300">
+                        {booking.players || "-"}
+                      </td>
+
+                      <td className="px-4 py-4 font-medium text-white">
+                        ₹
+                        {booking.totalPrice.toLocaleString(
+                          "en-IN",
+                        )}
+                      </td>
+
+                      <td className="px-4 py-4">
+                        <BookingActions
+                          status={booking.status}
+                          busy={updatingId === booking.id}
+                          onApprove={() =>
+                            onUpdateStatus(
+                              booking.id,
+                              "confirmed",
+                            )
+                          }
+                          onReject={() =>
+                            onUpdateStatus(
+                              booking.id,
+                              "cancelled",
+                            )
+                          }
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      ) : null}
+
+      {/* ─── EXTENDED TABLE (visible only when extended is selected) ─── */}
+
+      {bookingType === "extended" ? (
+        <div className="rounded-2xl border border-turf/10 bg-white/[0.03] p-5">
+          <PanelHeader
+            title={`${bookingTab === "current" ? "Current" : "History"} Extended Bookings`}
+            subtitle={`${filteredExtended.length} booking${filteredExtended.length === 1 ? "" : "s"} found`}
+          />
+
+          {filteredExtended.length === 0 ? (
+            <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.02] p-8 text-center">
+              <Clock className="mx-auto h-10 w-10 text-zinc-600" />
+
+              <p className="mt-3 text-sm font-medium text-zinc-300">
+                No extended bookings found
+              </p>
+
+              <p className="mt-1 text-xs text-zinc-500">
+                {bookingTab === "current"
+                  ? "All extended bookings are completed or cancelled."
+                  : "No booking history yet."}
+              </p>
+            </div>
+          ) : (
+            <div className="mt-4 booking-table-wrapper">
+              <table className="w-full min-w-[1000px] text-left text-sm">
+                <thead>
+                  <tr className="border-b border-turf/10 text-xs uppercase tracking-wider text-zinc-500">
+                    <th className="px-4 py-3 font-medium">
+                      Customer Name
+                    </th>
+                    <th className="px-4 py-3 font-medium">
+                      Phone Number
+                    </th>
+                    <th className="px-4 py-3 font-medium">
+                      Start Date & Time
+                    </th>
+                    <th className="px-4 py-3 font-medium">
+                      End Date & Time
+                    </th>
+                    <th className="px-4 py-3 font-medium">
+                      Players
+                    </th>
+                    <th className="px-4 py-3 font-medium">
+                      Enquiry Message
+                    </th>
+                    <th className="px-4 py-3 font-medium">
+                      Status
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-white/5">
+                  {filteredExtended.map((enquiry) => (
+                    <tr
+                      key={enquiry.id}
+                      className="transition-colors hover:bg-white/[0.03]"
+                    >
+                      <td className="px-4 py-4">
+                        <span className="flex items-center gap-3">
+                          <Avatar name={enquiry.fullName} />
+
+                          <span className="font-medium text-white">
+                            {enquiry.fullName}
+                          </span>
+                        </span>
+                      </td>
+
+                      <td className="px-4 py-4 text-zinc-400">
+                        {enquiry.phone || "-"}
+                      </td>
+
+                      <td className="px-4 py-4 text-zinc-400">
+                        {formatDate(enquiry.startDate)}{" "}
+                        {formatTime(enquiry.startTime)}
+                      </td>
+
+                      <td className="px-4 py-4 text-zinc-400">
+                        {formatDate(enquiry.endDate)}{" "}
+                        {formatTime(enquiry.endTime)}
+                      </td>
+
+                      <td className="px-4 py-4 text-zinc-300">
+                        {enquiry.players || "-"}
+                      </td>
+
+                      <td className="px-4 py-4">
+                        <span
+                          className="booking-message-truncate text-sm text-zinc-300"
+                          onClick={() =>
+                            setMessageModal({
+                              message:
+                                enquiry.message ||
+                                "No message provided",
+                              customer: enquiry.fullName,
+                            })
+                          }
+                        >
+                          {enquiry.message ||
+                            "No message provided"}
+                        </span>
+                      </td>
+
+                      <td className="px-4 py-4">
+                        <BookingActions
+                          status={enquiry.status}
+                          busy={updatingId === enquiry.id}
+                          onApprove={() =>
+                            onUpdateStatus(
+                              enquiry.id,
+                              "confirmed",
+                            )
+                          }
+                          onReject={() =>
+                            onUpdateStatus(
+                              enquiry.id,
+                              "cancelled",
+                            )
+                          }
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      ) : null}
+
+      {/* ─── MESSAGE MODAL ─── */}
+
+      {messageModal ? (
+        <div
+          className="booking-modal-backdrop"
+          onClick={() => setMessageModal(null)}
+        >
+          <div
+            className="booking-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-5 pb-0">
+              <div className="flex items-center gap-3">
+                <Avatar name={messageModal.customer} />
+
+                <div>
+                  <h3 className="font-semibold text-white">
+                    {messageModal.customer}
+                  </h3>
+
+                  <p className="text-xs text-zinc-500">
+                    Enquiry Message
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setMessageModal(null)}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 text-zinc-400 hover:border-turf/40 hover:text-turf"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="p-5">
+              <div className="rounded-xl border border-turf/10 bg-turf/[0.04] p-4">
+                <p className="text-sm leading-6 text-zinc-300">
+                  {messageModal.message}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -1321,112 +1734,7 @@ function CustomersView({
   );
 }
 
-function MessagesView({
-  enquiries,
-}: {
-  enquiries: ExtendedBooking[];
-}) {
-  return (
-    <div className="space-y-5">
-      <div>
-        <p className="text-sm text-turf">Messages</p>
-
-        <h2 className="mt-1 text-2xl font-bold tracking-tight text-white sm:text-3xl">
-          Customer Messages
-        </h2>
-
-        <p className="mt-1 text-sm text-zinc-400">
-          Messages submitted through booking enquiries.
-        </p>
-      </div>
-
-      <div className="grid gap-4">
-        {enquiries.length === 0 ? (
-          <div className="rounded-2xl border border-turf/10 bg-white/[0.03] p-10 text-center">
-            <MessageSquare className="mx-auto h-10 w-10 text-zinc-600" />
-
-            <p className="mt-3 text-zinc-400">
-              No customer messages yet.
-            </p>
-          </div>
-        ) : (
-          enquiries.map((enquiry) => (
-            <div
-              key={enquiry.id}
-              className="rounded-2xl border border-turf/10 bg-white/[0.03] p-5"
-            >
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <Avatar name={enquiry.fullName} />
-
-                  <div>
-                    <h3 className="font-semibold text-white">
-                      {enquiry.fullName}
-                    </h3>
-
-                    <p className="text-sm text-zinc-500">
-                      {enquiry.phone || "-"}
-                    </p>
-                  </div>
-                </div>
-
-                <StatusBadge
-                  label={capitalize(enquiry.status)}
-                  tone={getStatusTone(enquiry.status)}
-                />
-              </div>
-
-              <div className="mt-4 rounded-xl border border-turf/10 bg-turf/[0.04] p-4">
-                <p className="text-xs uppercase tracking-wider text-turf">
-                  Customer Message
-                </p>
-
-                <p className="mt-2 text-sm leading-6 text-zinc-300">
-                  {enquiry.message || "No message provided"}
-                </p>
-              </div>
-
-              <div className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
-                <div>
-                  <p className="text-xs text-zinc-600">Start Date</p>
-
-                  <p className="mt-1 text-zinc-300">
-                    {formatDate(enquiry.startDate)}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-xs text-zinc-600">End Date</p>
-
-                  <p className="mt-1 text-zinc-300">
-                    {formatDate(enquiry.endDate)}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-xs text-zinc-600">Time</p>
-
-                  <p className="mt-1 text-zinc-300">
-                    {formatTime(enquiry.startTime)} -{" "}
-                    {formatTime(enquiry.endTime)}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-    </div>
-  );
-}
-
-function SettingsView({
-  hourlyBookings,
-  enquiries,
-}: {
-  hourlyBookings: HourlyBooking[];
-  enquiries: ExtendedBooking[];
-}) {
+function SettingsView() {
   const [newUsername, setNewUsername] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -1435,16 +1743,31 @@ function SettingsView({
   const [credError, setCredError] = useState("");
   const [credBusy, setCredBusy] = useState(false);
 
-  const [downloadBusy, setDownloadBusy] = useState(false);
-  const [downloadSuccess, setDownloadSuccess] = useState("");
-  const [downloadError, setDownloadError] = useState("");
-
   const [bookingsEnabled, setBookingsEnabled] = useState(true);
   const [toggleBusy, setToggleBusy] = useState(false);
   const [toggleSuccess, setToggleSuccess] = useState("");
   const [toggleError, setToggleError] = useState("");
   const [showDisableConfirm, setShowDisableConfirm] = useState(false);
   const [settingsLoaded, setSettingsLoaded] = useState(false);
+
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    if (typeof window === "undefined") return "dark";
+    const saved = window.localStorage.getItem("turfon24_theme");
+    if (saved === "light" || saved === "dark") return saved;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+    window.localStorage.setItem("turfon24_theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     if (DEMO_MODE) {
@@ -1555,138 +1878,6 @@ function SettingsView({
       );
     } finally {
       setCredBusy(false);
-    }
-  };
-
-  const handleDownloadCustomers = async () => {
-    setDownloadError("");
-    setDownloadSuccess("");
-    setDownloadBusy(true);
-
-    try {
-      let customers: Array<{
-        name: string;
-        phone: string;
-        email: string;
-        bookings: number;
-        registrationDate: string;
-      }> = [];
-
-      if (DEMO_MODE) {
-        await new Promise((resolve) => window.setTimeout(resolve, 500));
-
-        const customerMap = new Map<
-          string,
-          {
-            name: string;
-            phone: string;
-            bookings: number;
-            registrationDate: string;
-          }
-        >();
-
-        for (const booking of hourlyBookings) {
-          const key = booking.phone || `hourly-${booking.id}`;
-          const existing = customerMap.get(key);
-
-          if (existing) {
-            existing.bookings += 1;
-          } else {
-            customerMap.set(key, {
-              name: booking.fullName,
-              phone: booking.phone,
-              bookings: 1,
-              registrationDate: booking.createdAt,
-            });
-          }
-        }
-
-        for (const enquiry of enquiries) {
-          const key = enquiry.phone || `extended-${enquiry.id}`;
-          const existing = customerMap.get(key);
-
-          if (existing) {
-            existing.bookings += 1;
-          } else {
-            customerMap.set(key, {
-              name: enquiry.fullName,
-              phone: enquiry.phone,
-              bookings: 1,
-              registrationDate: enquiry.createdAt,
-            });
-          }
-        }
-
-        customers = Array.from(customerMap.values()).map((c) => ({
-          ...c,
-          email: "",
-        }));
-      } else {
-        const response = await fetch(apiUrl("/api/admin/customers"), {
-          method: "GET",
-          headers: { Accept: "application/json" },
-        });
-
-        const data = await response.json().catch(() => ({}));
-
-        if (!response.ok) {
-          throw new Error(
-            (typeof data["message"] === "string" ? data["message"] : null) ||
-              "Failed to load customer data"
-          );
-        }
-
-        customers = Array.isArray(data["customers"]) ? data["customers"] : [];
-      }
-
-      if (customers.length === 0) {
-        setDownloadError("No customer records found");
-        setDownloadBusy(false);
-        return;
-      }
-
-      const escapeCSV = (value: string) => {
-        if (value.includes(",") || value.includes('"') || value.includes("\n")) {
-          return `"${value.replace(/"/g, '""')}"`;
-        }
-        return value;
-      };
-
-      const headers = [
-        "Customer Name",
-        "Email",
-        "Phone",
-        "Number of Bookings",
-        "Registration Date",
-      ];
-
-      const rows = customers.map((c) => [
-        escapeCSV(c.name),
-        escapeCSV(c.email || ""),
-        escapeCSV(c.phone),
-        String(c.bookings),
-        escapeCSV(formatDate(c.registrationDate)),
-      ]);
-
-      const csvContent = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
-
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `turfon24-customers-${new Date().toISOString().slice(0, 10)}.csv`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-
-      setDownloadSuccess(`Downloaded ${customers.length} customer records`);
-    } catch (error) {
-      setDownloadError(
-        error instanceof Error ? error.message : "Failed to download customers"
-      );
-    } finally {
-      setDownloadBusy(false);
     }
   };
 
@@ -1885,52 +2076,50 @@ function SettingsView({
         </form>
       </div>
 
-      {/* ─── CUSTOMER DATA ─── */}
+      {/* ─── APPEARANCE ─── */}
 
       <div className="rounded-2xl border border-turf/10 bg-white/[0.03] p-5">
         <PanelHeader
-          title="Customer Data"
-          subtitle="Export your customer records"
+          title="Appearance"
+          subtitle="Switch between light and dark theme"
           action={
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-turf/20 bg-turf/10 text-turf">
-              <Users className="h-5 w-5" />
+              {theme === "dark" ? (
+                <Moon className="h-5 w-5" />
+              ) : (
+                <Sun className="h-5 w-5" />
+              )}
             </span>
           }
         />
 
-        <p className="mt-4 text-sm text-zinc-400">
-          Download a CSV file with all customer records including name, phone,
-          number of bookings, and registration date.
-        </p>
-
-        <div className="mt-5">
-          {downloadError ? (
-            <p className="mb-3 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-300">
-              {downloadError}
+        <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-medium text-white">
+              {theme === "dark" ? "Dark Mode" : "Light Mode"}
             </p>
-          ) : null}
 
-          {downloadSuccess ? (
-            <p className="mb-3 rounded-xl border border-turf/25 bg-turf/10 px-4 py-3 text-sm text-turf">
-              {downloadSuccess}
+            <p className="mt-1 text-sm text-zinc-400">
+              {theme === "dark"
+                ? "Currently using the dark theme"
+                : "Currently using the light theme"}
             </p>
-          ) : null}
+          </div>
 
           <button
             type="button"
-            disabled={downloadBusy}
-            onClick={() => void handleDownloadCustomers()}
-            className="inline-flex items-center gap-2 rounded-full bg-turf px-6 py-3 text-sm font-semibold text-night shadow-[0_0_35px_rgba(60,235,120,0.35)] transition hover:brightness-110 disabled:opacity-60"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-5 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:bg-white/[0.06]"
           >
-            {downloadBusy ? (
+            {theme === "dark" ? (
               <>
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-night/30 border-t-night" />
-                Preparing...
+                <Sun className="h-4 w-4" />
+                Switch to Light
               </>
             ) : (
               <>
-                <Download className="h-4 w-4" />
-                Download Customers List
+                <Moon className="h-4 w-4" />
+                Switch to Dark
               </>
             )}
           </button>
@@ -2093,46 +2282,67 @@ function AdminLoginPage({
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }) {
   return (
-    <div className="relative flex min-h-screen items-center justify-center px-4 py-10 text-zinc-200">
-      <InteractiveNeuralVortex />
-      <div className="relative z-10 w-full max-w-md overflow-hidden rounded-[1.75rem] border border-turf/15 bg-white/[0.04] p-8 shadow-[0_0_80px_rgba(16,221,86,0.12)] backdrop-blur-2xl">
-        <div className="pointer-events-none absolute left-0 top-0 h-24 w-24 rounded-full bg-turf/10 blur-3xl" />
-        <div className="pointer-events-none absolute right-0 bottom-0 h-24 w-24 rounded-full bg-turf/10 blur-3xl" />
-
-        <div className="relative z-10">
-          <div className="flex items-center gap-3">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-turf/30 bg-turf/10 text-xl font-bold text-turf">
-              T
-            </span>
-
-            <div>
-              <p className="text-sm font-bold text-white">TurfOn24</p>
-
-              <p className="text-[0.65rem] uppercase tracking-[0.3em] text-turf/70">
-                Admin Panel
-              </p>
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#030607] px-4 py-10 text-foreground">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url(${turfLoginImage})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center center",
+          backgroundRepeat: "no-repeat",
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(rgba(3,6,7,0.75), rgba(3,6,7,0.75))",
+        }}
+      />
+      <div className="admin-login-card relative z-10 w-full max-w-[620px] overflow-hidden rounded-2xl border border-[#000000] bg-transparent shadow-[0_0_30px_rgba(57,255,122,0.2)] backdrop-blur-md sm:min-h-[600px]">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 top-[30%] z-0 overflow-hidden bg-transparent">
+          <ShaderBackground className="h-full w-full" />
+        </div>
+        <div
+          className="login-header pointer-events-none absolute inset-x-0 top-0 z-20 h-[30%] overflow-visible bg-[#000000] bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url(${turfBlackImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center center",
+            backgroundRepeat: "no-repeat",
+          }}
+        >
+          <div className="absolute inset-x-0 top-7 flex justify-center">
+            <div className="text-center">
+              <img src={taglineImg} alt="TurfOn24 - Your Turf. Your Time. Your Game." className="h-auto w-48 object-contain" />
             </div>
           </div>
+        </div>
 
-          <h1 className="mt-8 text-2xl font-bold tracking-tight text-white">
-            Admin Login
-          </h1>
+        <div className="relative z-10 px-6 pb-10 pt-[190px] sm:px-12 sm:pb-12 sm:pt-[200px]">
+          <div className="mx-auto max-w-md">
+            <div>
+              <h1 className="text-center text-3xl font-black uppercase tracking-tight text-[#000000]">
+                LOGIN
+              </h1>
 
-          <p className="mt-1.5 text-sm text-zinc-400">
-            Sign in to manage bookings and enquiries.
-          </p>
+              <p className="mt-2 text-center text-sm text-[#030607]/75">
+                Sign in to manage bookings and enquiries.
+              </p>
 
-          <form className="mt-8 space-y-4" onSubmit={onSubmit}>
+              <form className="mt-7 space-y-5" onSubmit={onSubmit}>
             <div>
               <label
                 htmlFor="admin-username"
-                className="text-xs uppercase tracking-wider text-zinc-400"
+                className="text-xs uppercase tracking-wider text-[#000000]"
               >
                 Username
               </label>
 
               <div className="relative mt-2">
-                <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-turf/70" />
+                <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-cyan" />
 
                 <input
                   id="admin-username"
@@ -2141,7 +2351,7 @@ function AdminLoginPage({
                   value={username}
                   onChange={(event) => onUsernameChange(event.target.value)}
                   placeholder="demo123"
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.03] py-3 pl-10 pr-4 text-sm text-white outline-none transition-colors placeholder:text-zinc-600 focus:border-turf/40"
+                  className="w-full border-0 border-b border-[#000000]/60 bg-transparent py-3 pl-10 pr-4 text-sm text-[#000000] outline-none transition-colors placeholder:text-[#030607]/60 focus:border-[#000000]"
                 />
               </div>
             </div>
@@ -2149,13 +2359,13 @@ function AdminLoginPage({
             <div>
               <label
                 htmlFor="admin-password"
-                className="text-xs uppercase tracking-wider text-zinc-400"
+                className="text-xs uppercase tracking-wider text-[#000000]"
               >
                 Password
               </label>
 
               <div className="relative mt-2">
-                <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-turf/70" />
+                <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-cyan" />
 
                 <input
                   id="admin-password"
@@ -2164,7 +2374,7 @@ function AdminLoginPage({
                   value={password}
                   onChange={(event) => onPasswordChange(event.target.value)}
                   placeholder="••••••"
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.03] py-3 pl-10 pr-4 text-sm text-white outline-none transition-colors placeholder:text-zinc-600 focus:border-turf/40"
+                  className="w-full border-0 border-b border-[#000000]/60 bg-transparent py-3 pl-10 pr-4 text-sm text-[#000000] outline-none transition-colors placeholder:text-[#030607]/60 focus:border-[#000000]"
                 />
               </div>
             </div>
@@ -2178,17 +2388,19 @@ function AdminLoginPage({
             <button
               type="submit"
               disabled={busy}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-turf px-6 py-3 text-sm font-semibold text-night shadow-[0_0_35px_rgba(60,235,120,0.35)] transition hover:brightness-110 disabled:opacity-60"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#000000] px-6 py-3 text-sm font-semibold text-[#39FF7A] shadow-[0_0_16px_rgba(0,0,0,0.2)] transition hover:bg-[#0FA857] hover:text-[#000000] hover:shadow-[0_0_18px_rgba(57,255,122,0.2)] disabled:opacity-60"
             >
               <LogIn className="h-4 w-4" />
               {busy ? "Signing in..." : "Sign In"}
             </button>
-          </form>
+              </form>
 
-          <p className="mt-6 text-center text-xs text-zinc-500">
+              <p className="mt-5 text-center text-xs text-[#030607]/75">
             Demo credentials:{" "}
-            <span className="text-turf/80">demo123 / demo123</span>
-          </p>
+            <span className="text-[#000000]/80">demo123 / demo123</span>
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -2210,18 +2422,10 @@ function SidebarContent({
         href="/"
         className="flex items-center gap-3 px-4 pt-6 lg:px-5"
       >
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-turf/30 bg-turf/10 text-lg font-bold text-turf">
-          T
-        </span>
+        <img src={logoImg} alt="TurfOn24" className="h-10 w-10 shrink-0 rounded-full object-cover" />
 
         <span className="hidden min-w-0 lg:block">
-          <span className="block truncate text-sm font-bold text-white">
-            TurfOn24
-          </span>
-
-          <span className="block text-[0.6rem] uppercase tracking-[0.3em] text-turf/70">
-            Admin Panel
-          </span>
+          <img src={taglineImg} alt="TurfOn24 - Your Turf. Your Time. Your Game." className="h-auto w-36 object-contain" />
         </span>
       </a>
 
@@ -2700,15 +2904,8 @@ function AdminPage() {
             />
           ) : null}
 
-          {view === "messages" ? (
-            <MessagesView enquiries={enquiries} />
-          ) : null}
-
           {view === "settings" ? (
-            <SettingsView
-              hourlyBookings={hourlyBookings}
-              enquiries={enquiries}
-            />
+            <SettingsView />
           ) : null}
         </main>
       </div>

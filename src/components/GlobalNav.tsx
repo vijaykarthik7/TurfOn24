@@ -129,14 +129,14 @@ export function GlobalNav() {
     <div className="fixed right-2 top-1/2 z-50 hidden lg:flex -translate-y-1/2">
       <nav
         aria-label="Football match timeline"
-        className="relative h-[min(750px,calc(100vh-4rem))] max-w-[175px] w-[min(175px,calc(100vw-3rem))] overflow-hidden rounded-[32px] border border-[rgba(255,255,255,0.12)] bg-[rgba(5,12,10,0.82)] p-3 shadow-[0_20px_50px_rgba(0,0,0,0.35)] backdrop-blur-[18px]"
+        className="relative h-[min(750px,calc(100vh-4rem))] max-w-[175px] w-[min(175px,calc(100vw-3rem))] overflow-hidden rounded-[32px] border border-[rgba(15,168,87,0.25)] bg-[rgba(3,6,7,0.85)] p-3 shadow-[0_20px_50px_rgba(0,0,0,0.35)] backdrop-blur-[18px]"
       >
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 rounded-b-[32px] bg-[radial-gradient(circle_at_bottom,rgba(32,205,85,0.12),transparent_70%)]" />
         <div className="relative flex h-full items-start gap-6">
           <div className="relative flex h-full flex-col items-center">
             <div className="absolute inset-y-0 left-1/2 w-[2px] -translate-x-1/2 rounded-full bg-slate-700/70" />
             <div
-              className="absolute left-1/2 top-4 w-[2px] -translate-x-1/2 rounded-full bg-turf/70 shadow-[0_0_12px_rgba(96,240,120,0.14)] transition-[height] duration-[450ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+              className="absolute left-1/2 top-4 w-[2px] -translate-x-1/2 rounded-full bg-turf/70 shadow-[0_0_12px_rgba(15,168,87,0.14)] transition-[height] duration-[450ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
               style={{ height: lineFillHeight }}
             />
             <div
@@ -163,13 +163,13 @@ export function GlobalNav() {
                     isActive ? "" : "hover:bg-white/5"
                   }`}
                 >
-                  <span className={`text-[11px] font-semibold font-mono transition ${isActive ? "text-white" : "text-slate-300/80"}`}>{String(index + 1).padStart(2, "0")}</span>
-                  <span className={`text-[12px] uppercase tracking-[0.18em] font-mono transition ${isActive ? "text-turf" : "text-slate-300/80"}`}>{step.title}</span>
+                  <span className={`text-[11px] font-semibold font-mono transition ${isActive ? "text-foreground" : "text-muted-foreground"}`}>{String(index + 1).padStart(2, "0")}</span>
+                  <span className={`text-[12px] uppercase tracking-[0.18em] font-mono transition ${isActive ? "text-foreground" : "text-muted-foreground"}`}>{step.title}</span>
                 </button>
               );
             })}
             <div
-              className="pointer-events-none absolute left-0 h-4 w-4 rounded-full border border-[rgba(255,255,255,0.14)] bg-black shadow-[0_0_16px_rgba(25,255,120,0.3)] transition-all duration-300 ease-out"
+              className="pointer-events-none absolute left-0 h-4 w-4 rounded-full border border-[rgba(15,168,87,0.25)] bg-[#030607] shadow-[0_0_16px_rgba(57,255,122,0.3)] transition-all duration-300 ease-out"
               style={{ top: indicatorTop, transform: "translate(-160%, -50%)" }}
             >
               <div className="flex h-full w-full items-center justify-center rounded-full bg-black/90">
