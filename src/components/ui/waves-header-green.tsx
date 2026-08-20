@@ -84,6 +84,7 @@ export function ShaderBackground({ className }: { className?: string }) {
     gl.attachShader(program, vertexShader)
     gl.attachShader(program, fragmentShader)
     gl.linkProgram(program)
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return
     gl.useProgram(program)
 
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
@@ -126,5 +127,10 @@ export function ShaderBackground({ className }: { className?: string }) {
     }
   }, [])
 
-  return <canvas ref={canvasRef} className={className} aria-hidden="true" />
+  return (
+    <div className="shader-background relative h-full w-full overflow-hidden">
+      <div className="shader-background-fallback absolute inset-0" aria-hidden="true" />
+      <canvas ref={canvasRef} className={`relative ${className ?? ""}`} aria-hidden="true" />
+    </div>
+  )
 }
