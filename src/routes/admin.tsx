@@ -34,7 +34,6 @@ import type { LucideIcon } from "lucide-react";
 import { API_URL, apiUrl } from "@/lib/api";
 import turfLoginImage from "@/assets/login-stadium-green.jpg";
 import turfBlackImage from "@/assets/turf black.jpg";
-import logoImg from "@/assets/Logo.png";
 import taglineImg from "@/assets/Tagline.png";
 import { ShaderBackground } from "@/components/ui/waves-header-green";
 
@@ -84,6 +83,7 @@ type ExtendedBooking = {
   startTime: string;
   endTime: string;
   players: number;
+  totalPrice?: number;
   message: string;
   status: string;
   createdAt: string;
@@ -609,6 +609,11 @@ function normalizeExtendedBooking(value: unknown): ExtendedBooking | null {
       "time",
     ]),
     players: firstNumber(value, ["players", "numberOfPlayers", "playerCount"], 0),
+    totalPrice: firstNumber(
+      value,
+      ["totalPrice", "amount", "price", "totalAmount"],
+      0,
+    ),
     message: firstString(value, [
       "message",
       "customerMessage",
@@ -1469,7 +1474,7 @@ function BookingsView({
                     <th className="px-4 py-3 font-medium">
                       Customer Name
                     </th>
-                    <th className="px-4 py-3 font-medium">
+                    <th className="booking-phone-column px-4 py-3 font-medium">
                       Phone Number
                     </th>
                     <th className="px-4 py-3 font-medium">
@@ -1506,8 +1511,9 @@ function BookingsView({
                         </span>
                       </td>
 
-                      <td className="px-4 py-4 text-zinc-400">
-                        {enquiry.phone || "-"}
+                      <td className="booking-phone-column px-4 py-4 text-zinc-400">
+                        {(enquiry.phone ?? "").replace(/\s+/g, " ").trim() ||
+                          "-"}
                       </td>
 
                       <td className="px-4 py-4 text-zinc-400">
@@ -1624,13 +1630,20 @@ function CustomersView({
   hourlyBookings: HourlyBooking[];
   enquiries: ExtendedBooking[];
 }) {
+  const [customerType, setCustomerType] = useState<"hourly" | "extended">(
+    "hourly",
+  );
+
   const customers = useMemo(() => {
     const customerMap = new Map<
       string,
       {
         name: string;
         phone: string;
-        bookings: number;
+        hourlyBookings: number;
+        extendedBookings: number;
+        hourlyAmount: number;
+        extendedAmount: number;
       }
     >();
 
@@ -1641,7 +1654,10 @@ function CustomersView({
       customerMap.set(key, {
         name: booking.fullName,
         phone: booking.phone,
-        bookings: (existing?.bookings ?? 0) + 1,
+        hourlyBookings: (existing?.hourlyBookings ?? 0) + 1,
+        extendedBookings: existing?.extendedBookings ?? 0,
+        hourlyAmount: (existing?.hourlyAmount ?? 0) + booking.totalPrice,
+        extendedAmount: existing?.extendedAmount ?? 0,
       });
     }
 
@@ -1652,12 +1668,29 @@ function CustomersView({
       customerMap.set(key, {
         name: enquiry.fullName,
         phone: enquiry.phone,
-        bookings: (existing?.bookings ?? 0) + 1,
+        hourlyBookings: existing?.hourlyBookings ?? 0,
+        extendedBookings: (existing?.extendedBookings ?? 0) + 1,
+        hourlyAmount: existing?.hourlyAmount ?? 0,
+        extendedAmount:
+          (existing?.extendedAmount ?? 0) + (enquiry.totalPrice ?? 0),
       });
     }
 
-    return Array.from(customerMap.values());
-  }, [hourlyBookings, enquiries]);
+    return Array.from(customerMap.values()).filter((customer) =>
+      customerType === "hourly"
+        ? customer.hourlyBookings > 0
+        : customer.extendedBookings > 0,
+    );
+  }, [hourlyBookings, enquiries, customerType]);
+
+  const hourlyTotal = hourlyBookings.reduce(
+    (total, booking) => total + booking.totalPrice,
+    0,
+  );
+  const extendedTotal = enquiries.reduce(
+    (total, enquiry) => total + (enquiry.totalPrice ?? 0),
+    0,
+  );
 
   return (
     <div className="space-y-5">
@@ -1673,11 +1706,52 @@ function CustomersView({
         </p>
       </div>
 
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="rounded-2xl border border-turf/10 bg-white/[0.03] p-4">
+          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+            Total Hourly Booking Amount
+          </p>
+          <p className="mt-2 text-2xl font-bold text-turf">
+            ₹{hourlyTotal.toLocaleString("en-IN")}
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-turf/10 bg-white/[0.03] p-4">
+          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+            Total Extended Booking Amount
+          </p>
+          <p className="mt-2 text-2xl font-bold text-turf">
+            ₹{extendedTotal.toLocaleString("en-IN")}
+          </p>
+        </div>
+      </div>
+
       <div className="rounded-2xl border border-turf/10 bg-white/[0.03] p-5">
         <PanelHeader
           title="Customers"
           subtitle={`${customers.length} customer${customers.length === 1 ? "" : "s"} found`}
         />
+
+        <div className="booking-actions-bar mt-4">
+          <button
+            type="button"
+            className="booking-action-btn"
+            data-active={customerType === "hourly"}
+            onClick={() => setCustomerType("hourly")}
+          >
+            <CalendarCheck className="h-3.5 w-3.5" />
+            Hourly Bookings
+          </button>
+          <button
+            type="button"
+            className="booking-action-btn"
+            data-active={customerType === "extended"}
+            onClick={() => setCustomerType("extended")}
+          >
+            <Clock className="h-3.5 w-3.5" />
+            Extended Bookings
+          </button>
+        </div>
 
         {customers.length === 0 ? (
           <div className="mt-6 rounded-xl border border-white/10 p-8 text-center">
@@ -1689,12 +1763,13 @@ function CustomersView({
           </div>
         ) : (
           <div className="mt-4 overflow-x-auto">
-            <table className="w-full min-w-[700px] text-left text-sm">
+            <table className="w-full min-w-[900px] text-left text-sm">
               <thead>
                 <tr className="border-b border-turf/10 text-xs uppercase tracking-wider text-zinc-500">
                   <th className="px-4 py-3">Customer</th>
                   <th className="px-4 py-3">Phone</th>
                   <th className="px-4 py-3">Bookings</th>
+                  <th className="px-4 py-3">Amount Spent</th>
                   <th className="px-4 py-3">Status</th>
                 </tr>
               </thead>
@@ -1717,7 +1792,17 @@ function CustomersView({
                     </td>
 
                     <td className="px-4 py-4 text-zinc-300">
-                      {customer.bookings}
+                      {customerType === "hourly"
+                        ? customer.hourlyBookings
+                        : customer.extendedBookings}
+                    </td>
+
+                    <td className="px-4 py-4 font-medium text-white">
+                      ₹
+                      {(customerType === "hourly"
+                        ? customer.hourlyAmount
+                        : customer.extendedAmount
+                      ).toLocaleString("en-IN")}
                     </td>
 
                     <td className="px-4 py-4">
@@ -1734,7 +1819,13 @@ function CustomersView({
   );
 }
 
-function SettingsView() {
+function SettingsView({
+  theme,
+  onToggleTheme,
+}: {
+  theme: "light" | "dark";
+  onToggleTheme: () => void;
+}) {
   const [newUsername, setNewUsername] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -1749,25 +1840,6 @@ function SettingsView() {
   const [toggleError, setToggleError] = useState("");
   const [showDisableConfirm, setShowDisableConfirm] = useState(false);
   const [settingsLoaded, setSettingsLoaded] = useState(false);
-
-  const [theme, setTheme] = useState<"light" | "dark">(() => {
-    if (typeof window === "undefined") return "dark";
-    const saved = window.localStorage.getItem("turfon24_theme");
-    if (saved === "light" || saved === "dark") return saved;
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
-  });
-
-  useEffect(() => {
-    const root = document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-    window.localStorage.setItem("turfon24_theme", theme);
-  }, [theme]);
 
   useEffect(() => {
     if (DEMO_MODE) {
@@ -2108,7 +2180,7 @@ function SettingsView() {
 
           <button
             type="button"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            onClick={onToggleTheme}
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-5 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:bg-white/[0.06]"
           >
             {theme === "dark" ? (
@@ -2422,10 +2494,8 @@ function SidebarContent({
         href="/"
         className="flex items-center gap-3 px-4 pt-6 lg:px-5"
       >
-        <img src={logoImg} alt="TurfOn24" className="h-10 w-10 shrink-0 rounded-full object-cover" />
-
         <span className="hidden min-w-0 lg:block">
-          <img src={taglineImg} alt="TurfOn24 - Your Turf. Your Time. Your Game." className="h-auto w-36 object-contain" />
+          <img src={taglineImg} alt="TurfOn24 - Your Turf. Your Time. Your Game." className="h-auto w-48 object-contain" />
         </span>
       </a>
 
@@ -2501,6 +2571,19 @@ function AdminPage() {
   const [loginPassword, setLoginPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   const [loginBusy, setLoginBusy] = useState(false);
+
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    if (typeof window === "undefined") return "dark";
+    const saved = window.localStorage.getItem("turfon24_theme");
+    if (saved === "light" || saved === "dark") return saved;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  });
+
+  useEffect(() => {
+    window.localStorage.setItem("turfon24_theme", theme);
+  }, [theme]);
 
   const [hourlyBookings, setHourlyBookings] = useState<HourlyBooking[]>(
     [],
@@ -2753,20 +2836,22 @@ function AdminPage() {
 
   if (!authenticated) {
     return (
-      <AdminLoginPage
-        username={loginUsername}
-        password={loginPassword}
-        error={loginError}
-        busy={loginBusy}
-        onUsernameChange={setLoginUsername}
-        onPasswordChange={setLoginPassword}
-        onSubmit={handleLogin}
-      />
+      <div className={theme === "light" ? "admin-light" : undefined}>
+        <AdminLoginPage
+          username={loginUsername}
+          password={loginPassword}
+          error={loginError}
+          busy={loginBusy}
+          onUsernameChange={setLoginUsername}
+          onPasswordChange={setLoginPassword}
+          onSubmit={handleLogin}
+        />
+      </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-night-soft text-zinc-200">
+    <div className={`min-h-screen bg-night-soft text-zinc-200${theme === "light" ? " admin-light" : ""}`}>
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[76px] flex-col border-r border-turf/10 bg-white/[0.03] backdrop-blur-xl md:flex lg:w-[268px]">
         <SidebarContent
           view={view}
@@ -2905,7 +2990,12 @@ function AdminPage() {
           ) : null}
 
           {view === "settings" ? (
-            <SettingsView />
+            <SettingsView
+              theme={theme}
+              onToggleTheme={() =>
+                setTheme(theme === "dark" ? "light" : "dark")
+              }
+            />
           ) : null}
         </main>
       </div>

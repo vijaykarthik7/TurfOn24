@@ -1,5 +1,4 @@
 import { ArrowRight, Menu, X } from "lucide-react";
-import logoImg from "@/assets/Logo.png";
 import taglineImg from "@/assets/Tagline.png";
 import { useState } from "react";
 
@@ -22,10 +21,8 @@ export function SiteHeader() {
           {/* Brand (left) */}
           <div className="flex items-center gap-3">
             <a href="#hero" data-cursor="VIEW" className="relative flex min-w-0 items-center gap-3 overflow-visible">
-              <img src={logoImg} alt="TurfOn24" className="h-12 w-12 object-contain" />
-
               <div className="relative z-10 flex flex-col justify-center gap-1">
-                <img src={taglineImg} alt="TurfOn24 - Your Turf. Your Time. Your Game." className="h-auto w-36 object-contain" />
+                <img src={taglineImg} alt="TurfOn24 - Your Turf. Your Time. Your Game." className="h-auto w-48 object-contain" />
               </div>
             </a>
           </div>

@@ -2096,7 +2096,7 @@ function Index() {
                           src={item.src}
                           alt={item.alt}
                           draggable={false}
-                          className="gallery-card-img absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out"
+                          className="gallery-card-img absolute inset-0 h-full w-full object-contain object-top bg-black transition-transform duration-500 ease-out"
                         />
 
                         <svg
