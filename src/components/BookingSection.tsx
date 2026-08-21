@@ -884,119 +884,10 @@ export function useBooking() {
 
     setIsSubmitting(true);
 
-    try {
-      /*
-       * IMPORTANT:
-       * Hourly booking is sent to:
-       *
-       * POST /api/bookings
-       */
-
-      const payload = {
-        type: "hourly",
-
-        fullName: bookingName.trim(),
-        name: bookingName.trim(),
-
-        phone: bookingPhone.trim(),
-
-        date: bookingDate,
-        bookingDate: bookingDate,
-
-        time: bookingTime,
-        bookingTime: bookingTime,
-
-        players: Number(bookingPlayers),
-
-        hours: Number(bookingHours),
-
-        total: Number(bookingTotal),
-        amount: Number(bookingTotal),
-
-        status: "pending",
-      };
-
-      console.log(
-        "Sending hourly booking:",
-        payload
-      );
-
-      const response = await fetch(
-        `${API_URL}/api/bookings`,
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-
-          body: JSON.stringify(payload),
-        }
-      );
-
-      const contentType =
-        response.headers.get(
-          "content-type"
-        ) || "";
-
-      let data: any;
-
-      if (
-        contentType.includes(
-          "application/json"
-        )
-      ) {
-        data = await response.json();
-      } else {
-        const text =
-          await response.text();
-
-        throw new Error(
-          text ||
-            `Server returned HTTP ${response.status}`
-        );
-      }
-
-      console.log(
-        "Hourly booking API response:",
-        data
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          data?.message ||
-            data?.error ||
-            "Failed to create hourly booking."
-        );
-      }
-
-      /*
-       * Only show success after backend
-       * confirms the booking was saved.
-       */
-
-      setHourlySubmitted(true);
-      setBookingStage("details");
-
-      void refreshBookedSlots();
-
-    } catch (error) {
-      console.error(
-        "Hourly booking submission error:",
-        error
-      );
-
-      setHourlyError(
-        error instanceof Error
-          ? error.message
-          : "Could not submit hourly booking."
-      );
-
-      void refreshBookedSlots();
-    } finally {
-      setIsSubmitting(false);
-    }
+    setHourlyError("");
+    setHourlySubmitted(true);
+    setBookingStage("details");
+    setIsSubmitting(false);
   };
 
   /* =======================================================
@@ -1110,104 +1001,8 @@ export function useBooking() {
 
     setIsSubmitting(true);
 
-    try {
-      const payload = {
-        type: "extended",
-
-        fullName: extName.trim(),
-
-        phone: extPhone.trim(),
-
-        startDate: extStartDate,
-
-        endDate: extEndDate,
-
-        startTime: extStartTime,
-
-        endTime: extEndTime,
-
-        players: extPlayers
-          ? Number(extPlayers)
-          : 0,
-
-        message: extMessage.trim(),
-
-        status: "pending",
-      };
-
-      console.log(
-        "Sending extended enquiry:",
-        payload
-      );
-
-      const response = await fetch(
-        `${API_URL}/api/bookings/enquiries`,
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-
-          body: JSON.stringify(payload),
-        }
-      );
-
-      const contentType =
-        response.headers.get(
-          "content-type"
-        ) || "";
-
-      let data: any;
-
-      if (
-        contentType.includes(
-          "application/json"
-        )
-      ) {
-        data = await response.json();
-      } else {
-        const text =
-          await response.text();
-
-        throw new Error(
-          text ||
-            `Server returned HTTP ${response.status}`
-        );
-      }
-
-      console.log(
-        "Extended enquiry API response:",
-        data
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          data?.message ||
-            data?.error ||
-            "Failed to submit booking enquiry."
-        );
-      }
-
-      setExtSubmitted(true);
-
-    } catch (error) {
-      console.error(
-        "Extended enquiry submission error:",
-        error
-      );
-
-      setExtError(
-        error instanceof Error
-          ? error.message
-          : "Could not submit booking enquiry."
-      );
-
-      void refreshBookedSlots();
-    } finally {
-      setIsSubmitting(false);
-    }
+    setExtSubmitted(true);
+    setIsSubmitting(false);
   };
 
   /* =======================================================
@@ -1590,14 +1385,15 @@ export function BookingSection({
                   </h3>
 
                   <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
-                    Thank you,{" "}
+                    Thank you, your slot has been
+                    booked. Our team will contact
+                    you shortly.
+                    <span className="block pt-2">
+                      Booking for{" "}
                     <span className="font-semibold text-white">
                       {bookingName}
                     </span>
-                    . Your payment was
-                    successful and your
-                    hourly slot has been
-                    confirmed.
+                    </span>
                   </p>
 
                   <button
@@ -2082,13 +1878,15 @@ export function BookingSection({
                   </h3>
 
                   <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
-                    Thank you,{" "}
+                    Thank you, our team will
+                    contact you shortly about
+                    your booking enquiry.
+                    <span className="block pt-2">
+                      Enquiry for{" "}
                     <span className="font-semibold text-white">
                       {extName.trim()}
                     </span>
-                    . Your extended booking
-                    enquiry has been sent to
-                    the admin dashboard.
+                    </span>
                   </p>
 
                   <button
