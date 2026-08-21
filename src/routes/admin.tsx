@@ -1477,10 +1477,10 @@ function BookingsView({
                     <th className="booking-phone-column px-4 py-3 font-medium">
                       Phone Number
                     </th>
-                    <th className="px-4 py-3 font-medium">
+                    <th className="booking-date-column px-4 py-3 font-medium">
                       Start Date & Time
                     </th>
-                    <th className="px-4 py-3 font-medium">
+                    <th className="booking-date-column px-4 py-3 font-medium">
                       End Date & Time
                     </th>
                     <th className="px-4 py-3 font-medium">
@@ -1516,12 +1516,12 @@ function BookingsView({
                           "-"}
                       </td>
 
-                      <td className="px-4 py-4 text-zinc-400">
+                      <td className="booking-date-column px-4 py-4 text-zinc-400">
                         {formatDate(enquiry.startDate)}{" "}
                         {formatTime(enquiry.startTime)}
                       </td>
 
-                      <td className="px-4 py-4 text-zinc-400">
+                      <td className="booking-date-column px-4 py-4 text-zinc-400">
                         {formatDate(enquiry.endDate)}{" "}
                         {formatTime(enquiry.endTime)}
                       </td>

@@ -2319,6 +2319,12 @@ nav[aria-label="Football match timeline"]
   font-variant-numeric: tabular-nums;
 }
 
+.booking-date-column {
+  min-width: 145px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
 .booking-message-truncate {
   max-width: 200px;
   overflow: hidden;
