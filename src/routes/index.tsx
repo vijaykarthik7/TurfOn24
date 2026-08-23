@@ -1603,6 +1603,15 @@ function Index() {
                 </div>
               </section>
 
+              <div className="mobile-hero-status hidden" aria-label="Open 24/7, floodlit, match ready">
+                <span aria-hidden="true" />
+                <span>Open 24/7</span>
+                <span aria-hidden="true">•</span>
+                <span>Floodlit</span>
+                <span aria-hidden="true">•</span>
+                <span>Match Ready</span>
+              </div>
+
               <section className="mt-4 grid grid-cols-1 items-stretch gap-4 overflow-hidden sm:grid-cols-2 lg:grid-cols-4">
                 {trustItems.map(
                   ({
