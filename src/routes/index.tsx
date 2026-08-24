@@ -1605,7 +1605,7 @@ function Index() {
 
               <div className="mobile-hero-status hidden" aria-label="Open 24/7, floodlit, match ready">
                 <span aria-hidden="true" />
-                <span>Open 24/7</span>
+                <span>Opens Now</span>
                 <span aria-hidden="true">•</span>
                 <span>Floodlit</span>
                 <span aria-hidden="true">•</span>
